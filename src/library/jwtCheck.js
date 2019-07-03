@@ -2,7 +2,12 @@ const jwt = require('jsonwebtoken');
 
 const { errorResponse } = require('../library/response');
 const { jwtKey, jwtOptions, refreshOptions } = require('../../config/jwtConfig');
-const errorResponseObject = require('../../config/errorResponseObject');
+
+async function getUserIdFromJwt(jwttoken) {
+  const result = await jwt.verify(jwttoken, jwtKey).userId;
+
+  return result;
+}
 
 async function jwtCheck(req, res, next) {
   const { authorization } = req.headers;
@@ -41,4 +46,5 @@ module.exports = {
   jwtCheck,
   sign,
   verify,
+  getUserIdFromJwt,
 };
