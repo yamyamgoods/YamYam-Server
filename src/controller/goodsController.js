@@ -16,6 +16,15 @@ async function getBestGoods(req, res) {
   }
 }
 
+async function getBestReviews(req, res) {
+  try {
+      const lastIndex = req.params.lastIndex;
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getBestGoods,
 };
