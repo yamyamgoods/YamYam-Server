@@ -16,9 +16,9 @@ async function getBestGoods(userId, lastIndex) {
     const user = await userDao.selectUserWithGoods(userId, goods[i].goods_idx);
 
     if (user.length === 0) {
-      goods[i].scrapFlag = 0;
+      goods[i].scrap_flag = 0;
     } else {
-      goods[i].scrapFlag = 1;
+      goods[i].scrap_flag = 1;
     }
 
     result.push(goods[i]);
