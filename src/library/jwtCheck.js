@@ -18,7 +18,7 @@ async function jwtCheck(req, res, next) {
 
 async function sign(userId) {
   const payload = {
-    id: userId,
+    userId,
   };
 
   const token = jwt.sign(payload, jwtKey, jwtOptions);
