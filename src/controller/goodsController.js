@@ -1,13 +1,13 @@
 const goodsService = require('../service/goodsService');
+const { verify } = require('../library/jwtCheck');
 const { response, errorResponse } = require('../library/response');
 
 async function getBestGoods(req, res) {
   try {
     const lastIndex = req.params.lastIndex;
-    //const userId = req.user.id;
+    const userId = await verify(req.headers.jwttoken).userId;
 
-    //const result = await goodsService.getBestGoods(userId, lastIndex);
-    const result = await goodsService.getBestGoods(1, lastIndex);
+    const result = await goodsService.getBestGoods(userId, lastIndex);
 
     response('Success', result, res, 200);
   } catch (error) {
