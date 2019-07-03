@@ -3,8 +3,10 @@ const jwt = require('jsonwebtoken');
 const { errorResponse } = require('../library/response');
 const { jwtKey, jwtOptions, refreshOptions } = require('../../config/jwtConfig');
 
-async function getUserIdFromJwt(jwttoken) {
-  const result = await jwt.verify(jwttoken, jwtKey).userId;
+async function getUserIdFromJwt(authorization) {
+  if (!authorization) return undefined;
+
+  const result = await jwt.verify(authorization, jwtKey).userId;
 
   return result;
 }
