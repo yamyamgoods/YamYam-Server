@@ -5,7 +5,8 @@ const { response, errorResponse } = require('../library/response');
 async function getBestGoods(req, res) {
   try {
     const lastIndex = req.params.lastIndex;
-    const userId = await getUserIdFromJwt(req.headers.jwttoken);
+
+    const userId = await getUserIdFromJwt(req.headers.authorization);
 
     const result = await goodsService.getBestGoods(userId, lastIndex);
 
@@ -18,7 +19,9 @@ async function getBestGoods(req, res) {
 
 async function getBestReviews(req, res) {
   try {
-      const lastIndex = req.params.lastIndex;
+    const lastIndex = req.params.lastIndex;
+
+    const result = await goodsService;
   } catch (error) {
     console.log(error);
     errorResponse(error.message, res, error.statusCode);
