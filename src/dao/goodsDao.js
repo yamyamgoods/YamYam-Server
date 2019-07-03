@@ -14,7 +14,9 @@ async function selectFirstBestGoods() {
   goods_minimum_amount,
   goods_review_cnt
   FROM GOODS 
-  JOIN STORE ON GOODS.store_idx = STORE.store_idx ORDER BY goods_score, goods_idx DESC LIMIT ${mysqlConfig.paginationCnt}
+  JOIN STORE ON GOODS.store_idx = STORE.store_idx 
+  ORDER BY goods_score, goods_idx DESC 
+  LIMIT ${mysqlConfig.paginationCnt}
   `;
 
   const result = await mysql.query(sql);
@@ -25,7 +27,17 @@ async function selectFirstBestGoods() {
 // BestGoods 다음 N개 가져오기
 async function selectNextBestGoods(lastIndex) {
   const sql = `
-  SELECT * FROM GOODS 
+  SELECT 
+  GOODS.goods_idx as goods_idx,
+  store_name,
+  goods_category_idx,
+  goods_name,
+  goods_rating,
+  goods_price,
+  goods_minimum_amount,
+  goods_review_cnt
+  FROM GOODS 
+  JOIN STORE ON GOODS.store_idx = STORE.store_idx 
   WHERE goods_idx < ?
   ORDER BY goods_score, goods_idx DESC 
   LIMIT ${mysqlConfig.paginationCnt}
