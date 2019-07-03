@@ -1,5 +1,5 @@
 const mysql = require('promise-mysql');
-const mysqlConfig = require('../../config/mysqlConfig');
+const { mysqlConfig } = require('../../config/mysqlConfig');
 const errorResponseObject = require('../../config/errorResponseObject');
 
 let mysqlPool;
