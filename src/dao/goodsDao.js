@@ -67,7 +67,6 @@ async function selectFirstBestReviews() {
   SELECT 
   USER.user_name as user_name,
   goods_review_idx,
-  goods_idx,
   goods_review_date,
   goods_review_rating,
   goods_review_content,
