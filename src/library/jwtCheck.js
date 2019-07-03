@@ -3,19 +3,19 @@ const jwt = require('jsonwebtoken');
 const { errorResponse } = require('../library/response');
 const { jwtKey, jwtOptions, refreshOptions } = require('../../config/jwtConfig');
 
-async function getUserIdFromJwt(authorization) {
+function getUserIdFromJwt(authorization) {
   if (!authorization) return undefined;
 
-  const result = await jwt.verify(authorization, jwtKey).userId;
+  const result = jwt.verify(authorization, jwtKey).userId;
 
   return result;
 }
 
-async function jwtCheck(req, res, next) {
+function jwtCheck(req, res, next) {
   const { authorization } = req.headers;
 
   try {
-    req.user = await jwt.verify(authorization);
+    req.user = jwt.verify(authorization, jwtKey);
 
     next();
   } catch (error) {
@@ -23,7 +23,7 @@ async function jwtCheck(req, res, next) {
   }
 }
 
-async function sign(userId) {
+function sign(userId) {
   const payload = {
     userId,
   };
@@ -33,8 +33,8 @@ async function sign(userId) {
   return token;
 }
 
-async function verify(jwtToken) {
-  const decoded = jwt.verify(jwtToken, jwtKey);
+function verify(authorization) {
+  const decoded = jwt.verify(authorization, jwtKey);
 
   if (!decoded) {
     return -1;

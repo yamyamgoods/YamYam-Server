@@ -122,6 +122,41 @@ async function selectReviewImg(reviewIdx) {
   return result;
 }
 
+// 좋아요 여부 확인
+async function getReviewLike(userId, reviewIdx) {
+  const sql = `
+  SELECT * FROM GOODS_REVIEW_LIKE
+  WHERE user_idx = ? AND goods_review_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [userId, reviewIdx]);
+
+  return result;
+}
+
+
+// 리뷰 좋아요
+async function insertReviewLike(userId, reviewIdx) {
+  const sql = `
+  INSERT INTO GOODS_REVIEW_LIKE
+  (goods_review_idx, user_idx)
+  VALUES
+  (?, ?)
+  `;
+
+  await mysql.query(sql, [userId, reviewIdx]);
+}
+
+// 리뷰 좋아요 취소
+async function deleteReviewLike(userId, reviewIdx) {
+  const sql = `
+  DELETE FROM GOODS_REVIEW_LIKE
+  WHERE user_idx = ? AND goods_review_idx = ?
+  `;
+
+  await mysql.query(sql, [userId, reviewIdx]);
+}
+
 module.exports = {
   selectFirstBestGoods,
   selectNextBestGoods,
@@ -129,4 +164,7 @@ module.exports = {
   selectFirstBestReviews,
   selectNextBestReviews,
   selectReviewImg,
+  getReviewLike,
+  insertReviewLike,
+  deleteReviewLike,
 };

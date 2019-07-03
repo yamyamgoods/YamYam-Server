@@ -36,7 +36,7 @@ async function getBestGoods(userId, lastIndex) {
   return result;
 }
 
-async function getBestReviews(lastIndex) {
+async function getBestReviews(userId, lastIndex) {
   const result = [];
 
   let reviews;
@@ -69,13 +69,32 @@ async function getBestReviews(lastIndex) {
     // 작성시간 String 수정
     reviews[i].goods_review_date = makeReviewTimeString(reviews[i].goods_review_date);
 
+    // 댓글 좋아요 여부
+    const reviewLike = await goodsDao.getReviewLike(userId, reviews[i].goods_review_idx);
+
+    if (reviewLike.length != 0) {
+      reviews[i].review_like_flag = 1;
+    } else {
+      reviews[i].review_like_flag = 0;
+    }
+
     result.push(reviews[i]);
   }
 
   return result;
 }
 
+async function addReviewLike(userId, reviewIdx) {
+  await goodsDao.insertReviewLike(userId, reviewIdx);
+}
+
+async function removeReviewLike(userId, reviewIdx) {
+  await goodsDao.deleteReviewLike(userId, reviewIdx);
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
+  addReviewLike,
+  removeReviewLike,
 };
