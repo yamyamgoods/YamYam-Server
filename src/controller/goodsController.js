@@ -21,7 +21,9 @@ async function getBestReviews(req, res) {
   try {
     const lastIndex = req.params.lastIndex;
 
-    const result = await goodsService;
+    const result = await goodsService.getBestReviews(lastIndex);
+
+    response('Success', result, res, 200);
   } catch (error) {
     console.log(error);
     errorResponse(error.message, res, error.statusCode);
@@ -30,4 +32,5 @@ async function getBestReviews(req, res) {
 
 module.exports = {
   getBestGoods,
+  getBestReviews,
 };
