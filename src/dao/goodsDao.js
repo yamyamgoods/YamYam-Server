@@ -123,20 +123,20 @@ async function selectReviewImg(reviewIdx) {
 }
 
 // 좋아요 여부 확인
-async function getReviewLike(userId, reviewIdx) {
+async function getReviewLike(userIdx, reviewIdx) {
   const sql = `
   SELECT * FROM GOODS_REVIEW_LIKE
   WHERE user_idx = ? AND goods_review_idx = ?
   `;
 
-  const result = await mysql.query(sql, [userId, reviewIdx]);
+  const result = await mysql.query(sql, [userIdx, reviewIdx]);
 
   return result;
 }
 
 
 // 리뷰 좋아요
-async function insertReviewLike(userId, reviewIdx) {
+async function insertReviewLike(userIdx, reviewIdx) {
   const sql = `
   INSERT INTO GOODS_REVIEW_LIKE
   (user_idx, goods_review_idx)
@@ -144,21 +144,21 @@ async function insertReviewLike(userId, reviewIdx) {
   (?, ?)
   `;
 
-  await mysql.query(sql, [userId, reviewIdx]);
+  await mysql.query(sql, [userIdx, reviewIdx]);
 }
 
 // 리뷰 좋아요 취소
-async function deleteReviewLike(userId, reviewIdx) {
+async function deleteReviewLike(userIdx, reviewIdx) {
   const sql = `
   DELETE FROM GOODS_REVIEW_LIKE
   WHERE user_idx = ? AND goods_review_idx = ?
   `;
 
-  await mysql.query(sql, [userId, reviewIdx]);
+  await mysql.query(sql, [userIdx, reviewIdx]);
 }
 
 // 굿즈 찜하기 (견적 없음)
-async function insertGoodsScrap(userId, goodsIdx, goodsScrapPrice, label) {
+async function insertGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, label) {
   const sql = `
   INSERT INTO GOODS_SCRAP
   (user_idx, goods_idx, goods_scrap_label, goods_scrap_price)
@@ -166,11 +166,11 @@ async function insertGoodsScrap(userId, goodsIdx, goodsScrapPrice, label) {
   (?, ?, ?, ?)
   `;
 
-  await mysql.query(sql, [userId, goodsIdx, label, goodsScrapPrice]);
+  await mysql.query(sql, [userIdx, goodsIdx, label, goodsScrapPrice]);
 }
 
 // 모든 견적의 옵션 가져오기
-async function getAllGoodsScrapOption(userId, goodsIdx) {
+async function getAllGoodsScrapOption(userIdx, goodsIdx) {
   const sql = `
   SELECT * FROM GOODS_SCRAP 
   JOIN
@@ -179,19 +179,19 @@ async function getAllGoodsScrapOption(userId, goodsIdx) {
   WHERE GOODS_SCRAP.user_idx = ? AND GOODS_SCRAP.goods_idx = ?
   `;
 
-  const result = await mysql.query(sql, [userId, goodsIdx]);
+  const result = await mysql.query(sql, [userIdx, goodsIdx]);
 
   return result;
 }
 
 // 굿즈탭에서 찜해제
-async function deleteGoodsScrap(userId, goodsIdx) {
+async function deleteGoodsScrap(userIdx, goodsIdx) {
   const sql = `
   DELETE FROM GOODS_SCRAP
   WHERE user_idx = ? AND goods_idx = ? AND goods_scrap_option_flag = 0
   `;
 
-  await mysql.query(sql, [userId, goodsIdx]);
+  await mysql.query(sql, [userIdx, goodsIdx]);
 }
 
 // 찜탭에서 찜해제

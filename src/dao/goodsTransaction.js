@@ -1,6 +1,6 @@
 const mysql = require('../library/mysql');
 
-async function insertGoodsScrap(connection, userId, goodsIdx, goodsScrapPrice, label) {
+async function insertGoodsScrap(connection, userId, goodsIdx, goodsScrapPrice, goodsScrapLabel) {
   const sql = `
     INSERT INTO GOODS_SCRAP
     (user_idx, goods_idx, goods_scrap_label, goods_scrap_price, goods_scrap_option_flag)
@@ -8,7 +8,7 @@ async function insertGoodsScrap(connection, userId, goodsIdx, goodsScrapPrice, l
     (?, ?, ?, ?, ?)
     `;
 
-  const result = await connection.query(sql, [userId, goodsIdx, label, goodsScrapPrice, 1]);
+  const result = await connection.query(sql, [userId, goodsIdx, goodsScrapLabel, goodsScrapPrice, 1]);
 
   return result;
 }

@@ -3,10 +3,10 @@ const jwt = require('jsonwebtoken');
 const { errorResponse } = require('../library/response');
 const { jwtKey, jwtOptions, refreshOptions } = require('../../config/jwtConfig');
 
-function getUserIdFromJwt(authorization) {
+function getUserIdxFromJwt(authorization) {
   if (!authorization) return undefined;
 
-  const result = jwt.verify(authorization, jwtKey).userId;
+  const result = jwt.verify(authorization, jwtKey).userIdx;
 
   return result;
 }
@@ -23,9 +23,9 @@ function jwtCheck(req, res, next) {
   }
 }
 
-function sign(userId) {
+function sign(userIdx) {
   const payload = {
-    userId,
+    userIdx,
   };
 
   const token = jwt.sign(payload, jwtKey, jwtOptions);
@@ -48,5 +48,5 @@ module.exports = {
   jwtCheck,
   sign,
   verify,
-  getUserIdFromJwt,
+  getUserIdxFromJwt,
 };

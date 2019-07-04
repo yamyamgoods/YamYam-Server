@@ -6,9 +6,9 @@ async function getBestGoods(req, res) {
   try {
     const lastIndex = req.params.lastIndex;
 
-    const userId = getUserIdFromJwt(req.headers.authorization);
+    const userIdx = getUserIdxFromJwt(req.headers.authorization);
 
-    const result = await goodsService.getBestGoods(userId, lastIndex);
+    const result = await goodsService.getBestGoods(userIdx, lastIndex);
 
     response('Success', result, res, 200);
   } catch (error) {
@@ -21,9 +21,9 @@ async function getBestReviews(req, res) {
   try {
     const lastIndex = req.params.lastIndex;
 
-    const userId = getUserIdFromJwt(req.headers.authorization);
+    const userIdx = getUserIdxFromJwt(req.headers.authorization);
 
-    const result = await goodsService.getBestReviews(userId, lastIndex);
+    const result = await goodsService.getBestReviews(userIdx, lastIndex);
 
     response('Success', result, res, 200);
   } catch (error) {
@@ -34,12 +34,10 @@ async function getBestReviews(req, res) {
 
 async function addReviewLike(req, res) {
   try {
-    const userId = req.user.userId;
+    const userIdx = req.user.userIdx;
     const reviewIdx = req.body.reviewIdx;
 
-    console.log(reviewIdx);
-
-    await goodsService.addReviewLike(userId, reviewIdx);
+    await goodsService.addReviewLike(userIdx, reviewIdx);
 
     response('Success', null, res, 201);
   } catch (error) {
@@ -50,10 +48,10 @@ async function addReviewLike(req, res) {
 
 async function removeReviewLike(req, res) {
   try {
-    const userId = req.user.userId;
+    const userIdx = req.user.userIdx;
     const reviewIdx = req.params.reviewIdx;
 
-    await goodsService.removeReviewLike(userId, reviewIdx);
+    await goodsService.removeReviewLike(userIdx, reviewIdx);
 
     response('Success', null, res, 204);
   } catch (error) {
@@ -64,15 +62,15 @@ async function removeReviewLike(req, res) {
 
 async function addGoodsScrap(req, res) {
   try {
-    const userId = req.user.userId;
+    const userIdx = req.user.userIdx;
     const goodsIdx = req.body.goodsIdx;
-    const label = req.body.label;
+    const goodsScrapLabel = req.body.goodsScrapLabel;
     const goodsScrapPrice = req.body.goodsScrapPrice;
 
     // JSON -> String 변환 후 저장
     const options = JSON.stringify(req.body.options);
 
-    await goodsService.addGoodsScrap(userId, goodsIdx, goodsScrapPrice, label, options);
+    await goodsService.addGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel, options);
 
     response('Success', null, res, 201);
   } catch (error) {
@@ -83,13 +81,13 @@ async function addGoodsScrap(req, res) {
 
 async function removeGoodsScrap(req, res) {
   try {
-    const userId = req.user.userId;
+    const userIdx = req.user.userIdx;
     const goodsIdx = req.params.goodsIdx;
     const scrapIdx = req.params.scrapIdx;
 
-    await goodsService.removeGoodsScrap(userId, goodsIdx, scrapIdx);
+    await goodsService.removeGoodsScrap(userIdx, goodsIdx, scrapIdx);
 
-      response('Success', null, res, 204);
+    response('Success', null, res, 204);
   } catch (error) {
     console.log(error);
     errorResponse(error.message, res, error.statusCode);

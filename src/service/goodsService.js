@@ -4,7 +4,7 @@ const goodsTransaction = require('../dao/goodsTransaction');
 const errorResponseObject = require('../../config/errorResponseObject');
 const { makeReviewTimeString } = require('../library/changeTimeString');
 
-async function getBestGoods(userId, lastIndex) {
+async function getBestGoods(userIdx, lastIndex) {
   const result = [];
   let goods;
 
@@ -18,7 +18,7 @@ async function getBestGoods(userId, lastIndex) {
   for (let i = 0; i < goodsLength; i++) {
     const goodsIdx = goods[i].goods_idx;
     // 유저 즐겨찾기 flag 추가
-    const user = await userDao.selectUserWithGoods(userId, goodsIdx);
+    const user = await userDao.selectUserWithGoods(userIdx, goodsIdx);
 
     if (user.length === 0) {
       goods[i].scrap_flag = 0;
@@ -37,7 +37,7 @@ async function getBestGoods(userId, lastIndex) {
   return result;
 }
 
-async function getBestReviews(userId, lastIndex) {
+async function getBestReviews(userIdx, lastIndex) {
   const result = [];
 
   let reviews;
@@ -71,7 +71,7 @@ async function getBestReviews(userId, lastIndex) {
     reviews[i].goods_review_date = makeReviewTimeString(reviews[i].goods_review_date);
 
     // 댓글 좋아요 여부
-    const reviewLike = await goodsDao.getReviewLike(userId, reviews[i].goods_review_idx);
+    const reviewLike = await goodsDao.getReviewLike(userIdx, reviews[i].goods_review_idx);
 
     if (reviewLike.length != 0) {
       reviews[i].review_like_flag = 1;
@@ -85,22 +85,22 @@ async function getBestReviews(userId, lastIndex) {
   return result;
 }
 
-async function addReviewLike(userId, reviewIdx) {
-  await goodsDao.insertReviewLike(userId, reviewIdx);
+async function addReviewLike(userIdx, reviewIdx) {
+  await goodsDao.insertReviewLike(userIdx, reviewIdx);
 }
 
-async function removeReviewLike(userId, reviewIdx) {
-  await goodsDao.deleteReviewLike(userId, reviewIdx);
+async function removeReviewLike(userIdx, reviewIdx) {
+  await goodsDao.deleteReviewLike(userIdx, reviewIdx);
 }
 
-async function addGoodsScrap(userId, goodsIdx, goodsScrapPrice, label, options) {
+async function addGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel, options) {
   if (!options) { // 견적 옵션이 없는 경우
-    await goodsDao.insertGoodsScrap(userId, goodsIdx, goodsScrapPrice, label);
+    await goodsDao.insertGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel);
   } else {
     // 견적 옵션이 있는 경우
 
     // 이미 견적이 있는 경우
-    const allOptions = await goodsDao.getAllGoodsScrapOption(userId, goodsIdx);
+    const allOptions = await goodsDao.getAllGoodsScrapOption(userIdx, goodsIdx);
     const allOptionsLength = allOptions.length;
 
     for (let i = 0; i < allOptionsLength; i++) {
@@ -111,13 +111,13 @@ async function addGoodsScrap(userId, goodsIdx, goodsScrapPrice, label, options) 
       }
     }
 
-    await goodsTransaction.insertGoodsScrapTransaction(userId, goodsIdx, goodsScrapPrice, label, options);
+    await goodsTransaction.insertGoodsScrapTransaction(userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel, options);
   }
 }
 
-async function removeGoodsScrap(userId, goodsIdx, scrapIdx) {
+async function removeGoodsScrap(userIdx, goodsIdx, scrapIdx) {
   if (!scrapIdx) { // scrapIdx가 없는 경우 : 굿즈 탭에서 찜해제
-    await goodsDao.deleteGoodsScrap(userId, goodsIdx);
+    await goodsDao.deleteGoodsScrap(userIdx, goodsIdx);
   } else {
     // 찜탭에서 찜해제
     await goodsDao.deleteGoodsScrapByscrapIdx(scrapIdx);
