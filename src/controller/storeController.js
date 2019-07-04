@@ -54,8 +54,24 @@ async function addStoreScrap(req, res) {
   }
 }
 
+// store 즐겨찾기 삭제
+async function removeStoreScrap(req, res) {
+  try {
+    const userIdx = req.user.userIdx;
+    const storeIdx = req.params.storeIdx;
+
+    await storeService.removeStoreScrap(storeIdx, userIdx);
+
+    response('Success', null, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getStoreRank,
   getStoreScrap,
   addStoreScrap,
+  removeStoreScrap,
 };

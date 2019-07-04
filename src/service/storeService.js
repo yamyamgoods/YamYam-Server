@@ -1,7 +1,7 @@
 const storeDao = require('../dao/storeDao');
 // const errorResponseObject = require('../../config/errorResponseObject');
 
-// 문자열 객체 => 배열
+// 단일 키 객체 => 값 배열
 function parseObj(dataArr, attr) {
   const res = [];
 
@@ -49,11 +49,19 @@ async function getStoreScrap(userIdx, lastIndex) {
 }
 
 async function addStoreScrap(storeIdx, userIdx) {
-  await storeDao.insertStoreScrap(storeIdx, userIdx);
+  const chkScrap = await storeDao.selectUserScrapWithStoreIdx(storeIdx, userIdx);
+  if (chkScrap.length == 0) {
+    await storeDao.insertStoreScrap(storeIdx, userIdx);
+  }
+}
+
+async function removeStoreScrap(storeIdx, userIdx) {
+  await storeDao.deleteStoreScrap(storeIdx, userIdx);
 }
 
 module.exports = {
   getStoreRank,
   getStoreScrap,
   addStoreScrap,
+  removeStoreScrap,
 };
