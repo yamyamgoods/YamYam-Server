@@ -94,6 +94,57 @@ async function removeGoodsScrap(req, res) {
   }
 }
 
+// 굿즈탭 보기 (위에 카테고리랑 아래 기획전 및 관련 굿즈들)
+async function getGoodsTab(req, res) {
+  try {
+    const result = await goodsService.getGoodsTab();
+    response('Success', result, res, 200);
+
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
+// 굿즈카테고리 페이지네이션
+async function getGoodsCategoryPagination(req, res) {
+  try {
+    const goodsCategoryIdx = req.params.lastIndex;
+    const result = await goodsService.getGoodsCategoryPagination(goodsCategoryIdx);
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
+// 기획전 페이지네이션
+async function getExhibitionPagination(req, res) {
+  try {
+    const exhibitionIdx = req.params.lastIndex;
+    const result = await goodsService.getExhibitionPagination(exhibitionIdx);
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode); 
+  }
+}
+
+
+async function getExhibitionGoodsAll(req, res) {
+  try {
+    const exhibitionIdx = req.params.exhibitionIdx;
+    const goodsIdx = req.params.lastIndex;
+
+    const result = await goodsService.getExhibitionGoodsAll(exhibitionIdx, goodsIdx);
+    response('Success', result, res, 200);
+
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -101,4 +152,8 @@ module.exports = {
   removeReviewLike,
   addGoodsScrap,
   removeGoodsScrap,
+  getGoodsTab,
+  getGoodsCategoryPagination,
+  getExhibitionPagination,
+  getExhibitionGoodsAll,
 };
