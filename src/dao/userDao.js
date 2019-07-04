@@ -18,7 +18,6 @@ async function selectFirstGoodsScrap(userIdx) {
   SELECT 
   GOODS.goods_idx as goods_idx,
   store_idx,
-  goods_name,
   goods_scrap_price,
   goods_scrap_idx,
   goods_scrap_label
@@ -41,7 +40,6 @@ async function selectNextGoodsScrap(userIdx, lastIndex) {
   SELECT 
   GOODS.goods_idx as goods_idx,
   store_idx,
-  goods_name,
   goods_scrap_price,
   goods_scrap_idx,
   goods_scrap_label
