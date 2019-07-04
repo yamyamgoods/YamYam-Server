@@ -53,18 +53,20 @@ async function selectStoreHashtag(storeIdx) {
   return result;
 }
 
-// userIdx가 스크랩한 StoreIdx 가져오기
-async function getUserScrapStoreIdx(userIdx) {
+// userIdx가 스크랩한 StoreIdx 가져오기 (페이징)
+async function getUserScrapStoreIdx(userIdx, lastIndex) {
   const sql = `
   SELECT
   store_idx
 
   FROM STORE_SCRAP
 
-  WHERE user_idx = ?
+  WHERE user_idx = ? AND store_idx > ?
+
+  LIMIT ${mysqlConfig.paginationCnt}
   `;
 
-  const result = await mysql.query(sql, [userIdx]);
+  const result = await mysql.query(sql, [userIdx, lastIndex]);
 
   return result;
 }
@@ -84,8 +86,8 @@ async function selectStoreScrap(userIdx, lastIndex) {
 
   WHERE
   S.store_idx = C.store_idx
-  and C.user_idx = ?
-  and S.store_idx > ? 
+  AND C.user_idx = ?
+  AND S.store_idx > ? 
 
   ORDER BY store_rank_score DESC, store_name
 
@@ -97,10 +99,46 @@ async function selectStoreScrap(userIdx, lastIndex) {
   return result;
 }
 
+// userIdx가 storeIdx를 스크랩했는지
+async function selectUserScrapWithStoreIdx(storeIdx, userIdx) {
+  const sql = `
+  SELECT store_scrap_idx
+  FROM STORE_SCRAP
+  WHERE store_idx = ? AND user_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [storeIdx, userIdx]);
+
+  return result;
+}
+
+async function insertStoreScrap(storeIdx, userIdx) {
+  const sql = `
+  INSERT INTO STORE_SCRAP
+  (store_idx, user_idx)
+  VALUES
+  (?, ?)
+  `;
+
+  await mysql.query(sql, [storeIdx, userIdx]);
+}
+
+async function deleteStoreScrap(storeIdx, userIdx) {
+  const sql = `
+  DELETE FROM STORE_SCRAP
+  WHERE store_idx = ? AND user_idx = ?
+  `;
+
+  await mysql.query(sql, [storeIdx, userIdx]);
+}
+
 module.exports = {
   selectStoreName,
   selectStoreRank,
   selectStoreHashtag,
   getUserScrapStoreIdx,
   selectStoreScrap,
+  selectUserScrapWithStoreIdx,
+  insertStoreScrap,
+  deleteStoreScrap,
 };

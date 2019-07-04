@@ -1,12 +1,12 @@
 const storeDao = require('../dao/storeDao');
 // const errorResponseObject = require('../../config/errorResponseObject');
 
-// hashtag 문자열 객체 => 배열
-function parseHashtags(dataArr) {
+// 단일 키 객체 => 값 배열
+function parseObj(dataArr, attr) {
   const res = [];
 
   for (let i = 0; i < dataArr.length; i++) {
-    res.push(dataArr[i].store_hashtag_name);
+    res.push(dataArr[i][attr]);
   }
 
   return res;
@@ -19,13 +19,14 @@ async function getStoreRank(userIdx, lastIndex) {
   const storeLength = store.length;
   let scrapStoreIdx;
   if (userIdx != 0) {
-    scrapStoreIdx = await storeDao.getUserScrapStoreIdx(userIdx);
+    scrapStoreIdx = await storeDao.getUserScrapStoreIdx(userIdx, lastIndex);
+    scrapStoreIdx = parseObj(scrapStoreIdx, 'store_idx');
   }
 
   for (let i = 0; i < storeLength; i++) {
     // hashtags
     store[i].store_hashtags = await storeDao.selectStoreHashtag(store[i].store_idx) || [];
-    store[i].store_hashtags = parseHashtags(store[i].store_hashtags);
+    store[i].store_hashtags = parseObj(store[i].store_hashtags, 'store_hashtag_name');
     // scrap_flag
     if (userIdx != 0) {
       store[i].store_scrap_flag = scrapStoreIdx.includes(store[i].store_idx);
@@ -34,21 +35,33 @@ async function getStoreRank(userIdx, lastIndex) {
   return store;
 }
 
-async function getStoreScrap(userId, lastIndex) {
+async function getStoreScrap(userIdx, lastIndex) {
   // idx, name, img, url, rating, review_cnt
-  const store = await storeDao.selectStoreScrap(lastIndex);
+  const store = await storeDao.selectStoreScrap(userIdx, lastIndex);
 
   const storeLength = store.length;
   for (let i = 0; i < storeLength; i++) {
     // hashtags
     store[i].store_hashtags = await storeDao.selectStoreHashtag(store[i].store_idx) || [];
-    console.log(parseHashtags(store[i].store_hashtags));
-    Object.values(store[i].store_hashtags);
+    store[i].store_hashtags = parseObj(store[i].store_hashtags, 'store_hashtag_name');
   }
   return store;
+}
+
+async function addStoreScrap(storeIdx, userIdx) {
+  const chkScrap = await storeDao.selectUserScrapWithStoreIdx(storeIdx, userIdx);
+  if (chkScrap.length == 0) {
+    await storeDao.insertStoreScrap(storeIdx, userIdx);
+  }
+}
+
+async function removeStoreScrap(storeIdx, userIdx) {
+  await storeDao.deleteStoreScrap(storeIdx, userIdx);
 }
 
 module.exports = {
   getStoreRank,
   getStoreScrap,
+  addStoreScrap,
+  removeStoreScrap,
 };
