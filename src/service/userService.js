@@ -34,6 +34,17 @@ async function getGoodsScrap(userIdx, lastIndex) {
   return result;
 }
 
+async function getUserScrapOption(goodsScrapIdx) {
+  const result = await userDao.selectUserScrapOption(goodsScrapIdx);
+
+  if (result.length != 0) {
+    result[0].goods_scrap_options = JSON.parse(result[0].goods_scrap_options);
+  }
+
+  return result;
+}
+
 module.exports = {
   getGoodsScrap,
+  getUserScrapOption,
 };

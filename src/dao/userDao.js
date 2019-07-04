@@ -59,8 +59,21 @@ async function selectNextGoodsScrap(userIdx, lastIndex) {
   return result;
 }
 
+async function selectUserScrapOption(goodsScrapIdx) {
+  const sql = `
+  SELECT goods_scrap_options
+  FROM USER_SCRAP_OPTION
+  WHERE goods_scrap_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [goodsScrapIdx]);
+
+  return result;
+}
+
 module.exports = {
   selectUserWithGoods,
   selectFirstGoodsScrap,
   selectNextGoodsScrap,
+  selectUserScrapOption,
 };
