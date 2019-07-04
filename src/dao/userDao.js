@@ -1,6 +1,18 @@
 const mysql = require('../library/mysql');
 const mysqlConfig = require('../../config/mysqlConfig');
 
+async function selectUserWithGoods(userId, goodsId) {
+  const sql = `
+    SELECT *
+    FROM GOODS_SCRAP
+    WHERE user_idx = ? AND goods_idx = ?
+    `;
+
+  const result = await mysql.query(sql, [userId, goodsId]);
+
+  return result;
+}
+
 async function selectFirstGoodsScrap(userIdx) {
   const sql = `
   SELECT 
@@ -48,6 +60,7 @@ async function selectNextGoodsScrap(userIdx, lastIndex) {
 }
 
 module.exports = {
+  selectUserWithGoods,
   selectFirstGoodsScrap,
   selectNextGoodsScrap,
 };
