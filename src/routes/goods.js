@@ -21,6 +21,14 @@ router.post('/scrap', jwtCheck, goodsController.addGoodsScrap);
 router.delete('/:goodsIdx/scrap', jwtCheck, goodsController.removeGoodsScrap);
 // 찜해제 (찜탭)
 router.delete('/scrap/:scrapIdx', jwtCheck, goodsController.removeGoodsScrap);
+// 굿즈탭
+router.get('/', goodsController.getGoodsTab);
+// 굿즈 카테고리 페이지네이션
+router.get('/category/:lastIndex', goodsController.getGoodsCategoryPagination);
+// 기획전 페이지네이션
+router.get('/exhibition/:lastIndex', goodsController.getExhibitionPagination);
+// 기획전 굿즈 모두보기
+router.get('/exhibition/:exhibitionIdx/:lastIndex', goodsController.getExhibitionGoodsAll);
 
 
 module.exports = router;

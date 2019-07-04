@@ -204,6 +204,93 @@ async function deleteGoodsScrapByscrapIdx(scrapIdx) {
   await mysql.query(sql, [scrapIdx]);
 }
 
+// 굿즈탭 보기 (위에 카테고리랑 아래 기획전 및 관련 굿즈들)
+async function selectGoodsCategory() {
+  const sql = `
+  SELECT goods_category_name 
+  FROM GOODS_CATEGORY 
+  LIMIT ${mysqlConfig.paginationCnt}
+  `;
+  const result = await mysql.query(sql);
+  return result;
+
+}
+async function selectExhibition() {
+  const sql = `
+  SELECT *
+  FROM EXHIBITION
+  ORDER BY exhibition_idx DESC
+  LIMIT ${mysqlConfig.exhibitionPaginationCnt}
+  `;
+  const result = await mysql.query(sql);
+  return result;
+}
+async function selectExhibitionGoods() {
+  const sql = `
+  SELECT ex.exhibition_idx,g.*
+  FROM GOODS g,EXHIBITION ex,EXHIBITION_GOODS ex_g
+  WHERE ex_g.goods_idx = g.goods_idx and ex.exhibition_idx = ex_g.exhibition_idx
+  ORDER BY ex.exhibition_idx DESC
+  LIMIT ${mysqlConfig.paginationCnt}
+  `;
+  const result = await mysql.query(sql);
+  return result;
+}
+
+// 굿즈카테고리 페이지네이션
+async function selectGoodsCategoryPaging(lastIndex) {
+  const sql = `
+  SELECT goods_category_idx,goods_category_name 
+  FROM GOODS_CATEGORY 
+  WHERE goods_category_idx < ?
+  ORDER BY goods_category_idx ASC
+  LIMIT ${mysqlConfig.paginationCnt}
+  `;
+  const result = await mysql.query(sql, [lastIndex]);
+
+  return result;
+}
+
+// 기획전 페이지네이션
+async function selectExhibitionPaging(lastIndex) {
+  const sql = `
+  SELECT ex.*
+  FROM EXHIBITION ex
+  WHERE ex.exhibition_idx < ?
+  ORDER BY ex.exhibition_idx DESC
+  LIMIT ${mysqlConfig.exhibitionPaginationCnt}
+  `;
+  const result = await mysql.query(sql, [lastIndex]);
+
+  return result;
+}
+
+// 기획전 굿즈
+async function selectExhibitionGoodsAll(exhibitionIdx, lastIndex) {
+  const sql = `
+  SELECT g.goods_idx,
+  g.goods_category_idx,
+  g.goods_name,
+  g.goods_rating,
+  g.goods_price,
+  g.goods_delivery_charge,
+  g.goods_delivery_period,
+  g.goods_minimum_amount,
+  g.goods_detail,
+  g.goods_review_cnt
+  FROM GOODS g, EXHIBITION ex, EXHIBITION_GOODS exg
+  WHERE ex.exhibition_idx = ?
+  AND ex.exhibition_idx = exg.exhibition_idx
+  AND g.goods_idx = exg.goods_idx
+  AND g.goods_idx < ?
+  ORDER BY g.goods_idx DESC
+  LIMIT ${mysqlConfig.paginationCnt}
+  `;
+  const result = await mysql.query(sql, [exhibitionIdx, lastIndex]);
+
+  return result;
+}
+
 module.exports = {
   selectFirstBestGoods,
   selectNextBestGoods,
@@ -218,4 +305,11 @@ module.exports = {
   getAllGoodsScrapOption,
   deleteGoodsScrap,
   deleteGoodsScrapByscrapIdx,
+  selectGoodsCategory,
+  selectExhibition,
+  selectExhibitionGoods,
+  selectGoodsCategoryPaging,
+  selectExhibitionPaging,
+  selectExhibitionGoodsAll,
+
 };
