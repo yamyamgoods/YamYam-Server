@@ -48,7 +48,12 @@ async function getStoreScrap(userId, lastIndex) {
   return store;
 }
 
+async function addStoreScrap(storeIdx, userIdx) {
+  await storeDao.insertStoreScrap(storeIdx, userIdx);
+}
+
 module.exports = {
   getStoreRank,
   getStoreScrap,
+  addStoreScrap,
 };

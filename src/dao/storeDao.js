@@ -97,10 +97,22 @@ async function selectStoreScrap(userIdx, lastIndex) {
   return result;
 }
 
+async function insertStoreScrap(storeIdx, userIdx) {
+  const sql = `
+  INSERT INTO STORE_SCRAP
+  (store_idx, user_idx)
+  VALUES
+  (?, ?)
+  `;
+
+  await mysql.query(sql, [storeIdx, userIdx]);
+}
+
 module.exports = {
   selectStoreName,
   selectStoreRank,
   selectStoreHashtag,
   getUserScrapStoreIdx,
   selectStoreScrap,
+  insertStoreScrap,
 };

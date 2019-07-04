@@ -13,4 +13,7 @@ router.get('/rank/:lastIndex', storeController.getStoreRank);
 // 단골 store 가져오기
 router.get('/scrap/:lastIndex', jwtCheck, storeController.getStoreScrap);
 
+// store 즐겨찾기 추가
+router.post('/scrap', jwtCheck, storeController.addStoreScrap);
+
 module.exports = router;
