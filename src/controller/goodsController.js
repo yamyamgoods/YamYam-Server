@@ -1,5 +1,5 @@
 const goodsService = require('../service/goodsService');
-const { getUserIdFromJwt } = require('../library/jwtCheck');
+const { getUserIdxFromJwt } = require('../library/jwtCheck');
 const { response, errorResponse } = require('../library/response');
 
 async function getBestGoods(req, res) {
