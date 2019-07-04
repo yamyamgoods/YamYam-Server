@@ -15,7 +15,6 @@ async function getGoodsScrap(userIdx, lastIndex) {
   const goodsScrapLength = goodsScrap.length;
   for (let i = 0; i < goodsScrapLength; i++) {
     const goodsScrapObj = {};
-    goodsScrapObj.goods_name = goodsScrap[i].goods_name;
     goodsScrapObj.goods_price = goodsScrap[i].goods_scrap_price;
     goodsScrapObj.goods_scrap_idx = goodsScrap[i].goods_scrap_idx;
     goodsScrapObj.goods_scrap_label = goodsScrap[i].goods_scrap_label;
@@ -34,6 +33,17 @@ async function getGoodsScrap(userIdx, lastIndex) {
   return result;
 }
 
+async function getUserScrapOption(goodsScrapIdx) {
+  const result = await userDao.selectUserScrapOption(goodsScrapIdx);
+
+  if (result.length != 0) {
+    result[0].goods_scrap_options = JSON.parse(result[0].goods_scrap_options);
+  }
+
+  return result;
+}
+
 module.exports = {
   getGoodsScrap,
+  getUserScrapOption,
 };

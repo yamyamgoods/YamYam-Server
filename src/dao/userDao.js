@@ -18,7 +18,6 @@ async function selectFirstGoodsScrap(userIdx) {
   SELECT 
   GOODS.goods_idx as goods_idx,
   store_idx,
-  goods_name,
   goods_scrap_price,
   goods_scrap_idx,
   goods_scrap_label
@@ -41,7 +40,6 @@ async function selectNextGoodsScrap(userIdx, lastIndex) {
   SELECT 
   GOODS.goods_idx as goods_idx,
   store_idx,
-  goods_name,
   goods_scrap_price,
   goods_scrap_idx,
   goods_scrap_label
@@ -59,8 +57,21 @@ async function selectNextGoodsScrap(userIdx, lastIndex) {
   return result;
 }
 
+async function selectUserScrapOption(goodsScrapIdx) {
+  const sql = `
+  SELECT goods_scrap_options
+  FROM USER_SCRAP_OPTION
+  WHERE goods_scrap_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [goodsScrapIdx]);
+
+  return result;
+}
+
 module.exports = {
   selectUserWithGoods,
   selectFirstGoodsScrap,
   selectNextGoodsScrap,
+  selectUserScrapOption,
 };

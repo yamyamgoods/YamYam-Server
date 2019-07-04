@@ -16,7 +16,7 @@ async function insertGoodsScrap(connection, userId, goodsIdx, goodsScrapPrice, g
 async function insertUserScrapOption(connection, goodsScrapId, options) {
   const sql = `
   INSERT INTO USER_SCRAP_OPTION
-  (goods_scrap_idx, goods_scrap_options)
+  (goods_scrap_idx, goods_scrap_option)
   VALUES
   (?, ?)
   `;

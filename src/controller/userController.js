@@ -15,6 +15,22 @@ async function getGoodsScrap(req, res) {
   }
 }
 
+async function getUserScrapOption(req, res) {
+  try {
+    const goodsScrapIdx = req.params.goodsScrapIdx;
+
+    console.log(goodsScrapIdx);
+
+    const result = await userService.getUserScrapOption(goodsScrapIdx);
+
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getGoodsScrap,
+  getUserScrapOption,
 };
