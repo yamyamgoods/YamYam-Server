@@ -15,7 +15,6 @@ async function getGoodsScrap(userIdx, lastIndex) {
   const goodsScrapLength = goodsScrap.length;
   for (let i = 0; i < goodsScrapLength; i++) {
     const goodsScrapObj = {};
-    goodsScrapObj.goods_name = goodsScrap[i].goods_name;
     goodsScrapObj.goods_price = goodsScrap[i].goods_scrap_price;
     goodsScrapObj.goods_scrap_idx = goodsScrap[i].goods_scrap_idx;
     goodsScrapObj.goods_scrap_label = goodsScrap[i].goods_scrap_label;
