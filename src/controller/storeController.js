@@ -27,7 +27,6 @@ async function getStoreRank(req, res) {
 async function getStoreScrap(req, res) {
   try {
     const lastIndex = req.params.lastIndex;
-
     const userIdx = req.user.userIdx;
 
     const result = await storeService.getStoreScrap(userIdx, lastIndex);

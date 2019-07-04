@@ -54,17 +54,19 @@ async function selectStoreHashtag(storeIdx) {
 }
 
 // userIdx가 스크랩한 StoreIdx 가져오기
-async function getUserScrapStoreIdx(userIdx) {
+async function getUserScrapStoreIdx(userIdx, lastIndex) {
   const sql = `
   SELECT
   store_idx
 
   FROM STORE_SCRAP
 
-  WHERE user_idx = ?
+  WHERE user_idx = ? AND store_idx > ?
+
+  LIMIT ${mysqlConfig.paginationCnt}
   `;
 
-  const result = await mysql.query(sql, [userIdx]);
+  const result = await mysql.query(sql, [userIdx, lastIndex]);
 
   return result;
 }
@@ -84,8 +86,8 @@ async function selectStoreScrap(userIdx, lastIndex) {
 
   WHERE
   S.store_idx = C.store_idx
-  and C.user_idx = ?
-  and S.store_idx > ? 
+  AND C.user_idx = ?
+  AND S.store_idx > ? 
 
   ORDER BY store_rank_score DESC, store_name
 
