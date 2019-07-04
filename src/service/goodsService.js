@@ -1,6 +1,7 @@
 const goodsDao = require('../dao/goodsDao');
 const userDao = require('../dao/userDao');
-
+const goodsTransaction = require('../dao/goodsTransaction');
+const errorResponseObject = require('../../config/errorResponseObject');
 const { makeReviewTimeString } = require('../library/changeTimeString');
 
 async function getBestGoods(userId, lastIndex) {
@@ -56,7 +57,7 @@ async function getBestReviews(userId, lastIndex) {
     } else { // 리뷰에 이미지가 있는 경우
       const imgObjArr = await goodsDao.selectReviewImg(reviewIdx);
 
-      // Mysql로부터 얻은 이미지 데이터 배열로 변
+      // Mysql로부터 얻은 이미지 데이터 배열로 변경
       const imgObjArrLength = imgObjArr.length;
       const imgResultArray = [];
       for (let j = 0; j < imgObjArrLength; j++) {
@@ -92,9 +93,42 @@ async function removeReviewLike(userId, reviewIdx) {
   await goodsDao.deleteReviewLike(userId, reviewIdx);
 }
 
+async function addGoodsScrap(userId, goodsIdx, goodsScrapPrice, label, options) {
+  if (!options) { // 견적 옵션이 없는 경우
+    await goodsDao.insertGoodsScrap(userId, goodsIdx, goodsScrapPrice, label);
+  } else {
+    // 견적 옵션이 있는 경우
+
+    // 이미 견적이 있는 경우
+    const allOptions = await goodsDao.getAllGoodsScrapOption(userId, goodsIdx);
+    const allOptionsLength = allOptions.length;
+
+    for (let i = 0; i < allOptionsLength; i++) {
+      console.log(options);
+      console.log(allOptions[i].goods_scrap_options);
+      if (options == allOptions[i].goods_scrap_options) {
+        throw errorResponseObject.duplicateDataError;
+      }
+    }
+
+    await goodsTransaction.insertGoodsScrapTransaction(userId, goodsIdx, goodsScrapPrice, label, options);
+  }
+}
+
+async function removeGoodsScrap(userId, goodsIdx, scrapIdx) {
+  if (!scrapIdx) { // scrapIdx가 없는 경우 : 굿즈 탭에서 찜해제
+    await goodsDao.deleteGoodsScrap(userId, goodsIdx);
+  } else {
+    // 찜탭에서 찜해제
+    await goodsDao.deleteGoodsScrapByscrapIdx(scrapIdx);
+  }
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
   addReviewLike,
   removeReviewLike,
+  addGoodsScrap,
+  removeGoodsScrap,
 };
