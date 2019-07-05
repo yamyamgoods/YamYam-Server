@@ -13,14 +13,7 @@ function parseObj(dataArr, attr) {
 
 async function getStoreRank(userIdx, lastIndex, storeCategoryIdx) {
   // idx, name, img, url, rating, review_cnt
-  let store;
-
-  if (storeCategoryIdx) {
-    store = await storeDao.selectStoreRankWithCategoryIdx(lastIndex, storeCategoryIdx);
-  } else {
-    store = await storeDao.selectStoreRank(lastIndex);
-  }
-
+  const store = await storeDao.selectStoreRank(lastIndex, storeCategoryIdx);
 
   const storeLength = store.length;
   let scrapStoreIdx;
@@ -43,13 +36,7 @@ async function getStoreRank(userIdx, lastIndex, storeCategoryIdx) {
 
 async function getStoreScrap(userIdx, lastIndex, storeCategoryIdx) {
   // idx, name, img, url, rating, review_cnt
-  let store;
-
-  if (storeCategoryIdx) {
-    store = storeDao.selectStoreScrapWithCategoryIdx(userIdx, lastIndex, storeCategoryIdx);
-  } else {
-    store = await storeDao.selectStoreScrap(userIdx, lastIndex);
-  }
+  const store = await storeDao.selectStoreScrap(userIdx, lastIndex, storeCategoryIdx);
 
   const storeLength = store.length;
   for (let i = 0; i < storeLength; i++) {
