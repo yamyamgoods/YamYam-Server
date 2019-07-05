@@ -206,7 +206,7 @@ async function getExhibitionGoodsAll(userIdx, exhibitionIdx, lastIndex) {
     const user = await userDao.selectUserWithGoods(userIdx, goodsIdx);
 
     // 해당 굿즈의 스토어 이름 추가
-    const storeName = await stroeDao.selectStoreName(goodsStoreIdx);
+    const storeName = await storeDao.selectStoreName(goodsStoreIdx);
     exhibitionGoodsAll[i].store_name = storeName[0].store_name;
 
     // 유저 즐겨찾기 flag 추가

@@ -123,6 +123,23 @@ async function selectUserIdxByCommentIdx(commentIdx) {
   return result;
 }
 
+async function selectUserRecentGoods(userIdx, lastIndex) {
+  const sql = `
+  SELECT g.goods_idx,
+  g.goods_name,
+  g.goods_price,
+  g.store_idx
+  FROM USER_RECENT_GOODS urg, GOODS g
+  WHERE urg.user_idx = ?
+  AND urg.goods_idx = g.goods_idx
+  AND urg.user_recent_goods_idx < ?
+  ORDER BY urg.user_recent_goods_date_time DESC
+  LIMIT ${mysqlConfig.paginationCnt} 
+  `;
+  const result = await mysql.query(sql, [userIdx, lastIndex]);
+  return result;
+}
+
 module.exports = {
   selectUserWithGoods,
   selectFirstGoodsScrap,
@@ -132,4 +149,5 @@ module.exports = {
   updateRefreshToken,
   getRefreshToken,
   selectUserIdxByCommentIdx,
+  selectUserRecentGoods,
 };

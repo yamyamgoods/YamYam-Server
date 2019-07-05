@@ -75,8 +75,56 @@ async function getNewToken(refreshToken, userIdx) {
   throw errorResponseObject.refreshTokenError;
 }
 
+async function getUserInfo(userIdx) {
+  const user = await userDao.selectUser(userIdx);
+  const result = [];
+  const userInfoObject = {};
+  userInfoObject.user_idx = user[0].user_idx;
+  userInfoObject.user_name = user[0].user_name;
+  userInfoObject.user_email = user[0].user_email;
+  userInfoObject.user_img = user[0].user_img;
+  userInfoObject.user_point = user[0].user_point;
+  userInfoObject.user_alarm_cnt = user[0].user_alarm_cnt;
+
+  result.push(userInfoObject);
+  return result;
+}
+
+async function getUserRecentGoods(userIdx, lastIndex) {
+  const result = [];
+  const userRecentGoods = await userDao.selectUserRecentGoods(userIdx, lastIndex);
+  const userRecentGoodsLength = userRecentGoods.length;
+
+  for (let i = 0;i < userRecentGoodsLength; i++) {
+
+    const goodsIdx = userRecentGoods[i].goods_idx;
+    const goodsStoreIdx = userRecentGoods[i].store_idx;
+    const user = await userDao.selectUserWithGoods(userIdx,goodsIdx);
+
+    // 해당 굿즈의 스토어 이름 추가
+    const storeName = await storeDao.selectStoreName(goodsStoreIdx);
+    userRecentGoods[i].store_name = storeName[0].store_name;
+
+    // 유저 즐겨찾기 flag 추가
+    if (user.length === 0) {
+      userRecentGoods[i].scrap_flag = 0;
+    } else {
+      userRecentGoods[i].scrap_flag = 1;
+    }
+
+    // 굿즈이미지 한개 골라서 추가
+    const goodsImg = await goodsDao.selectGoodsImg(goodsIdx);
+    userRecentGoods[i].goods_img = goodsImg[0].goods_img;
+
+    result.push(userRecentGoods[i]);
+  }
+  return result;
+}
+
 module.exports = {
   getGoodsScrap,
   getUserScrapOption,
   getNewToken,
+  getUserInfo,
+  getUserRecentGoods,
 };
