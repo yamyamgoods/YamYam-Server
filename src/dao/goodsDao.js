@@ -213,7 +213,6 @@ async function selectGoodsCategory() {
   `;
   const result = await mysql.query(sql);
   return result;
-
 }
 async function selectExhibition() {
   const sql = `
@@ -283,7 +282,85 @@ async function selectExhibitionGoodsAll(exhibitionIdx, lastIndex) {
   LIMIT ${mysqlConfig.paginationCnt}
   `;
   const result = await mysql.query(sql, [exhibitionIdx, lastIndex]);
-  console.log(result);
+
+  return result;
+}
+
+async function selectGoodsIdxByReviewIdx(reviewIdx) {
+  const sql = `
+  SELECT
+  goods_idx
+  FROM GOODS_REVIEW
+  WHERE goods_review_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [reviewIdx]);
+
+  return result;
+}
+
+// 굿즈 데이터 가져오기
+async function selectGoods(goodsIdx) {
+  const sql = `
+  SELECT 
+  goods_idx,
+  goods_name,
+  goods_rating,
+  goods_price,
+  goods_delivery_charge
+  goods_delivery_period,
+  goods_minimum_amount,
+  goods_detail,
+  goods_stock,
+  goods_review_cnt,
+  store_name
+  FROM GOODS
+  JOIN
+  STORE
+  ON GOODS.store_idx = STORE.store_idx
+  WHERE goods_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [goodsIdx]);
+
+  return result;
+}
+
+// 첫 리뷰 N개 가져오기
+async function selectFirstReviewComments(reviewIdx) {
+  const sql = `
+  SELECT 
+  goods_review_cmt_idx,
+  user_idx,
+  goods_review_cmt_content,
+  goods_review_cmt_date
+  FROM GOODS_REVIEW_COMMENT
+  WHERE goods_review_idx = ?
+  ORDER BY goods_review_cmt_idx DESC
+  LIMIT ${mysqlConfig.paginationCnt}
+  `;
+
+  const result = await mysql.query(sql, [reviewIdx]);
+
+  return result;
+}
+
+// 다음 리뷰 N개 가져오기
+async function selectNextReviewComments(reviewIdx, lastIndex) {
+  const sql = `
+  SELECT 
+  goods_review_cmt_idx,
+  user_idx,
+  goods_review_cmt_content
+  goods_review_cmt_date,
+  FROM GOODS_REVIEW_COMMENT
+  WHERE goods_review_idx = ? AND goods_review_cmt_idx < ?
+  ORDER BY goods_review_cmt_idx DESC
+  LIMIT ${mysqlConfig.paginationCnt}
+  `;
+
+  const result = await mysql.query(sql, [reviewIdx, lastIndex]);
+
   return result;
 }
 
@@ -307,5 +384,8 @@ module.exports = {
   selectGoodsCategoryPaging,
   selectExhibitionPaging,
   selectExhibitionGoodsAll,
-
+  selectGoodsIdxByReviewIdx,
+  selectGoods,
+  selectFirstReviewComments,
+  selectNextReviewComments,
 };
