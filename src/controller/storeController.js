@@ -6,6 +6,7 @@ const { response, errorResponse } = require('../library/response');
 async function getStoreRank(req, res) {
   try {
     const lastIndex = req.params.lastIndex;
+    const storeCategoryIdx = req.query.storeCategoryIdx;
     let userIdx;
 
     if (req.headers.authorization) {
@@ -14,7 +15,7 @@ async function getStoreRank(req, res) {
       userIdx = 0;
     }
 
-    const result = await storeService.getStoreRank(userIdx, lastIndex);
+    const result = await storeService.getStoreRank(userIdx, lastIndex, storeCategoryIdx);
 
     response('Success', result, res, 200);
   } catch (error) {
@@ -27,9 +28,10 @@ async function getStoreRank(req, res) {
 async function getStoreScrap(req, res) {
   try {
     const lastIndex = req.params.lastIndex;
+    const storeCategoryIdx = req.query.storeCategoryIdx;
     const userIdx = req.user.userIdx;
 
-    const result = await storeService.getStoreScrap(userIdx, lastIndex);
+    const result = await storeService.getStoreScrap(userIdx, lastIndex, storeCategoryIdx);
 
     response('Success', result, res, 200);
   } catch (error) {
@@ -69,9 +71,37 @@ async function removeStoreScrap(req, res) {
   }
 }
 
+// store의 굿즈 카테고리 보기
+async function getStoreGoodsCategory(req, res) {
+  try {
+    const storeIdx = req.params.storeIdx;
+
+    const result = await storeService.getStoreGoodsCategory(storeIdx);
+
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
+// store 카테고리 보기
+async function getStoreCategory(req, res) {
+  try {
+    const result = await storeService.getStoreCategory();
+
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getStoreRank,
   getStoreScrap,
   addStoreScrap,
   removeStoreScrap,
+  getStoreGoodsCategory,
+  getStoreCategory,
 };

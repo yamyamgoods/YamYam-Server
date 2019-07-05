@@ -1,6 +1,8 @@
 const userDao = require('../dao/userDao');
 const goodsDao = require('../dao/goodsDao');
 const storeDao = require('../dao/storeDao');
+const errorResponseObject = require('../../config/errorResponseObject');
+const { sign, getRefreshToken } = require('../library/jwtCheck');
 
 async function getGoodsScrap(userIdx, lastIndex) {
   let goodsScrap;
@@ -54,7 +56,26 @@ async function getUserScrapOption(goodsScrapIdx) {
   return result;
 }
 
+async function getNewToken(refreshToken, userIdx) {
+  const refreshTokenFromDB = await userDao.getRefreshToken(userIdx);
+
+  if (refreshToken == refreshTokenFromDB) {
+    const authorization = sign(userIdx);
+    const newRefreshToken = getRefreshToken(userIdx);
+
+    await userDao.updateRefreshToken(userIdx, newRefreshToken);
+
+    return {
+      authorization,
+      refreshToken,
+    };
+  }
+
+  throw errorResponseObject.refreshTokenError;
+}
+
 module.exports = {
   getGoodsScrap,
   getUserScrapOption,
+  getNewToken,
 };
