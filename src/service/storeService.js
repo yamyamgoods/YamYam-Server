@@ -12,9 +12,16 @@ function parseObj(dataArr, attr) {
   return res;
 }
 
-async function getStoreRank(userIdx, lastIndex) {
+async function getStoreRank(userIdx, lastIndex, storeCategoryIdx) {
   // idx, name, img, url, rating, review_cnt
-  const store = await storeDao.selectStoreRank(lastIndex);
+  let store;
+
+  if (storeCategoryIdx) {
+    store = await storeDao.selectStoreRankWithCategoryIdx(lastIndex, storeCategoryIdx);
+  } else {
+    store = await storeDao.selectStoreRank(lastIndex);
+  }
+
 
   const storeLength = store.length;
   let scrapStoreIdx;
@@ -35,9 +42,15 @@ async function getStoreRank(userIdx, lastIndex) {
   return store;
 }
 
-async function getStoreScrap(userIdx, lastIndex) {
+async function getStoreScrap(userIdx, lastIndex, storeCategoryIdx) {
   // idx, name, img, url, rating, review_cnt
-  const store = await storeDao.selectStoreScrap(userIdx, lastIndex);
+  let store;
+
+  if (storeCategoryIdx) {
+    store = storeDao.selectStoreScrapWithCategoryIdx(userIdx, lastIndex, storeCategoryIdx);
+  } else {
+    store = await storeDao.selectStoreScrap(userIdx, lastIndex);
+  }
 
   const storeLength = store.length;
   for (let i = 0; i < storeLength; i++) {
@@ -59,9 +72,25 @@ async function removeStoreScrap(storeIdx, userIdx) {
   await storeDao.deleteStoreScrap(storeIdx, userIdx);
 }
 
+async function getStoreGoodsCategory(storeIdx) {
+  // [{'goods_category_idx':1, 'goods_category_name':'asd'}, ...]
+  const category = await storeDao.selectStoreGoodsCategory(storeIdx);
+
+  return category;
+}
+
+async function getStoreCategory() {
+  // [{'store_category_idx':1, 'store_category_name':'asd'}, ...]
+  const category = await storeDao.selectStoreCategory();
+
+  return category;
+}
+
 module.exports = {
   getStoreRank,
   getStoreScrap,
   addStoreScrap,
   removeStoreScrap,
+  getStoreGoodsCategory,
+  getStoreCategory,
 };

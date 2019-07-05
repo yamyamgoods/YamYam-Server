@@ -37,6 +37,36 @@ async function selectStoreRank(lastIndex) {
   return result;
 }
 
+// Store rank N개 가져오기 [storeCategoey 옵션 적용]
+async function selectStoreRankWithCategoryIdx(lastIndex, storeCategoryIdx) {
+  const sql = `
+  SELECT 
+  store_idx,
+  store_name,
+  store_img,
+  store_url,
+  store_ratingsum / store_review_cnt as store_rating,
+  store_review_cnt
+
+  FROM STORE
+
+  WHERE store_idx > ? AND EXISTS (
+    SELECT 1
+    FROM STORE_CATEGORY_STORE
+    WHERE STORE_CATEGORY_STORE.store_category_idx = ?
+    AND STORE.store_idx = STORE_CATEGORY_STORE.store_idx
+  )
+
+  ORDER BY store_rank_score DESC, store_name
+
+  LIMIT ${mysqlConfig.paginationCnt}
+  `;
+
+  const result = await mysql.query(sql, [lastIndex, storeCategoryIdx]);
+
+  return result;
+}
+
 // Store의 hashtag 가져오기
 async function selectStoreHashtag(storeIdx) {
   const sql = `
@@ -99,6 +129,40 @@ async function selectStoreScrap(userIdx, lastIndex) {
   return result;
 }
 
+// userIdx가 스크랩한 Store N개 가져오기 [storeCategoey 옵션 적용]
+async function selectStoreScrapWithCategoryIdx(userIdx, lastIndex, storeCategoryIdx) {
+  const sql = `
+  SELECT 
+  S.store_idx,
+  store_name,
+  store_img,
+  store_url,
+  store_ratingsum / store_review_cnt as store_rating,
+  store_review_cnt
+
+  FROM STORE S, STORE_SCRAP C
+
+  WHERE
+  S.store_idx = C.store_idx
+  AND C.user_idx = ?
+  AND S.store_idx > ? 
+  AND EXISTS (
+    SELECT 1
+    FROM STORE_CATEGORY_STORE
+    WHERE STORE_CATEGORY_STORE.store_category_idx = ?
+    AND S.store_idx = STORE_CATEGORY_STORE.store_idx
+  )
+
+  ORDER BY store_rank_score DESC, store_name
+
+  LIMIT ${mysqlConfig.paginationCnt}
+  `;
+
+  const result = await mysql.query(sql, [userIdx, lastIndex, storeCategoryIdx]);
+
+  return result;
+}
+
 // userIdx가 storeIdx를 스크랩했는지
 async function selectUserScrapWithStoreIdx(storeIdx, userIdx) {
   const sql = `
@@ -132,13 +196,44 @@ async function deleteStoreScrap(storeIdx, userIdx) {
   await mysql.query(sql, [storeIdx, userIdx]);
 }
 
+async function selectStoreGoodsCategory(storeIdx) {
+  const sql = `
+  SELECT goods_category_idx, goods_category_name
+  FROM GOODS_CATEGORY
+  WHERE goods_category_idx IN (
+    SELECT DISTINCT goods_category_idx
+    FROM GOODS
+    WHERE store_idx = ?
+  )
+  `;
+
+  const result = await mysql.query(sql, [storeIdx]);
+
+  return result;
+}
+
+async function selectStoreCategory() {
+  const sql = `
+  SELECT store_category_idx, store_category_name
+  FROM STORE_CATEGORY
+  `;
+
+  const result = await mysql.query(sql);
+
+  return result;
+}
+
 module.exports = {
   selectStoreName,
   selectStoreRank,
+  selectStoreRankWithCategoryIdx,
   selectStoreHashtag,
   getUserScrapStoreIdx,
   selectStoreScrap,
+  selectStoreScrapWithCategoryIdx,
   selectUserScrapWithStoreIdx,
   insertStoreScrap,
   deleteStoreScrap,
+  selectStoreGoodsCategory,
+  selectStoreCategory,
 };
