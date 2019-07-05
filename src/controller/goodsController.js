@@ -135,8 +135,9 @@ async function getExhibitionGoodsAll(req, res) {
   try {
     const exhibitionIdx = req.params.exhibitionIdx;
     const goodsIdx = req.params.lastIndex;
+    const userIdx = getUserIdxFromJwt(req.headers.authorization);
 
-    const result = await goodsService.getExhibitionGoodsAll(exhibitionIdx, goodsIdx);
+    const result = await goodsService.getExhibitionGoodsAll(userIdx, exhibitionIdx, goodsIdx);
     response('Success', result, res, 200);
 
   } catch (error) {

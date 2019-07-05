@@ -273,21 +273,17 @@ async function selectExhibitionGoodsAll(exhibitionIdx, lastIndex) {
   g.goods_name,
   g.goods_rating,
   g.goods_price,
-  g.goods_delivery_charge,
-  g.goods_delivery_period,
   g.goods_minimum_amount,
-  g.goods_detail,
-  g.goods_review_cnt
-  FROM GOODS g, EXHIBITION ex, EXHIBITION_GOODS exg
-  WHERE ex.exhibition_idx = ?
-  AND ex.exhibition_idx = exg.exhibition_idx
+  g.store_idx
+  FROM GOODS g,EXHIBITION_GOODS exg
+  WHERE exg.exhibition_idx = ?
   AND g.goods_idx = exg.goods_idx
-  AND g.goods_idx < ?
+  AND exg.goods_idx < ?
   ORDER BY g.goods_idx DESC
   LIMIT ${mysqlConfig.paginationCnt}
   `;
   const result = await mysql.query(sql, [exhibitionIdx, lastIndex]);
-
+  console.log(result);
   return result;
 }
 
