@@ -1,9 +1,11 @@
+const moment = require('moment');
 const goodsDao = require('../dao/goodsDao');
 const userDao = require('../dao/userDao');
 const stroeDao = require('../dao/storeDao');
 const goodsTransaction = require('../dao/goodsTransaction');
 const errorResponseObject = require('../../config/errorResponseObject');
 const { makeReviewTimeString } = require('../library/changeTimeString');
+
 
 async function getBestGoods(userIdx, lastIndex) {
   const result = [];
@@ -375,6 +377,17 @@ async function getGoodsOptionsName(goodsIdx) {
 }
 
 async function getGoodsDetail(userIdx, goodsIdx) {
+  // 최근 본 굿즈 추가
+  if (userIdx != undefined) {
+    const userRecentGoodsArr = await goodsDao.selectUserRecentGoods(userIdx, goodsIdx);
+
+    if (userRecentGoodsArr.length == 0) {
+      await goodsDao.insertUserRecentGoods(userIdx, goodsIdx);
+    } else {
+      await goodsDao.updateUserRecentGoods(userIdx, goodsIdx, moment().format('YYYY-MM-DD HH:mm:ss'));
+    }
+  }
+
   const goodsArr = await goodsDao.selectGoods(goodsIdx);
 
   // 굿즈 데이터

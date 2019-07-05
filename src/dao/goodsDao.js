@@ -509,6 +509,42 @@ async function selectGoodsOptionsName(goodsIdx) {
   return result;
 }
 
+async function insertUserRecentGoods(userIdx, goodsIdx) {
+  const sql = `
+  INSERT INTO USER_RECENT_GOODS
+  (user_idx, goods_idx)
+  VALUES
+  (?, ?)
+  `;
+
+  await mysql.query(sql, [userIdx, goodsIdx]);
+}
+
+async function selectUserRecentGoods(userIdx, goodsIdx) {
+  const sql = `
+  SELECT 
+  user_idx,
+  goods_idx,
+  user_recent_goods_date_time
+  FROM USER_RECENT_GOODS
+  WHERE user_idx = ? AND goods_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [userIdx, goodsIdx]);
+
+  return result;
+}
+
+async function updateUserRecentGoods(userIdx, goodsIdx, currentTime) {
+  const sql = `
+  UPDATE USER_RECENT_GOODS
+  SET user_recent_goods_date_time = ?
+  WHERE user_idx = ? AND goods_idx = ?
+  `;
+
+  await mysql.query(sql, [currentTime, userIdx, goodsIdx]);
+}
+
 module.exports = {
   selectFirstBestGoods,
   selectNextBestGoods,
@@ -542,4 +578,7 @@ module.exports = {
   updateReviewComment,
   deleteReviewComment,
   selectGoodsOptionsName,
+  insertUserRecentGoods,
+  selectUserRecentGoods,
+  updateUserRecentGoods,
 };
