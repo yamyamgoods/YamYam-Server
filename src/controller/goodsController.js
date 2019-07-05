@@ -236,6 +236,19 @@ async function removeReviewComment(req, res) {
   }
 }
 
+async function getGoodsOptionsName(req, res) {
+  try {
+    const goodsIdx = req.params.goodsIdx;
+
+    const result = await goodsService.getGoodsOptionsName(goodsIdx);
+
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -253,4 +266,5 @@ module.exports = {
   getGoodsReviews,
   modifyReviewComment,
   removeReviewComment,
+  getGoodsOptionsName,
 };

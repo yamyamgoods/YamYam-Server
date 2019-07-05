@@ -497,6 +497,18 @@ async function deleteReviewComment(commentIdx) {
   await mysql.query(sql, [commentIdx]);
 }
 
+async function selectGoodsOptionsName(goodsIdx) {
+  const sql = `
+  SELECT goods_option_name
+  FROM GOODS_OPTION
+  WHERE goods_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [goodsIdx]);
+
+  return result;
+}
+
 module.exports = {
   selectFirstBestGoods,
   selectNextBestGoods,
@@ -529,4 +541,5 @@ module.exports = {
   selectNextGoodsReviewsAll,
   updateReviewComment,
   deleteReviewComment,
+  selectGoodsOptionsName,
 };
