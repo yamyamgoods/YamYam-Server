@@ -57,7 +57,8 @@ async function getUserScrapOption(goodsScrapIdx) {
 }
 
 async function getNewToken(refreshToken, userIdx) {
-  const refreshTokenFromDB = await userDao.getRefreshToken(userIdx);
+  let refreshTokenFromDB = await userDao.getRefreshToken(userIdx);
+  refreshTokenFromDB = refreshTokenFromDB[0].refresh_token;
 
   if (refreshToken == refreshTokenFromDB) {
     const authorization = sign(userIdx);
@@ -67,7 +68,7 @@ async function getNewToken(refreshToken, userIdx) {
 
     return {
       authorization,
-      refreshToken,
+      refreshToken: newRefreshToken,
     };
   }
 

@@ -89,6 +89,18 @@ async function selectUser(userIdx) {
   return result;
 }
 
+async function getRefreshToken(userIdx) {
+  const sql = `
+  SELECT refresh_token
+  FROM USER 
+  WHERE user_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [userIdx]);
+
+  return result;
+}
+
 async function updateRefreshToken(userIdx, newRefreshToken) {
   const sql = `
   UPDATE USER 
@@ -106,4 +118,5 @@ module.exports = {
   selectUserScrapOption,
   selectUser,
   updateRefreshToken,
+  getRefreshToken,
 };
