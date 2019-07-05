@@ -59,7 +59,7 @@ async function selectNextGoodsScrap(userIdx, lastIndex) {
 
 async function selectUserScrapOption(goodsScrapIdx) {
   const sql = `
-  SELECT goods_scrap_options
+  SELECT goods_scrap_option
   FROM USER_SCRAP_OPTION
   WHERE goods_scrap_idx = ?
   `;
@@ -89,10 +89,21 @@ async function selectUser(userIdx) {
   return result;
 }
 
+async function updateRefreshToken(userIdx, newRefreshToken) {
+  const sql = `
+  UPDATE USER 
+  SET refresh_token = ?
+  WHERE user_idx = ?
+  `;
+
+  await mysql.query(sql, [newRefreshToken, userIdx]);
+}
+
 module.exports = {
   selectUserWithGoods,
   selectFirstGoodsScrap,
   selectNextGoodsScrap,
   selectUserScrapOption,
   selectUser,
+  updateRefreshToken,
 };

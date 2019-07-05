@@ -32,6 +32,10 @@ router.get('/exhibition/:exhibitionIdx/:lastIndex', goodsController.getExhibitio
 // 리뷰 상세보기 뷰
 router.get('/review/:reviewIdx/detail', goodsController.getReviewDetail);
 // 리뷰의 댓글 더보기
+router.get('/review/:reviewIdx/comment/:lastIndex', goodsController.getReviewComment)
+// 댓글 작성하기
+router.post('/review/comment', jwtCheck, goodsController.addReviewComment);
+
 router.get('/review/:reviewIdx/comment/:lastIndex', goodsController.getReviewComment);
 // 리뷰 보기
 router.get('/:goodsIdx/reviews/:photoFlag/:lastIndex', goodsController.getGoodsReviews);

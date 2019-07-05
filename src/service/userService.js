@@ -1,6 +1,8 @@
 const userDao = require('../dao/userDao');
 const goodsDao = require('../dao/goodsDao');
 const storeDao = require('../dao/storeDao');
+const errorResponseObject = require('../../config/errorResponseObject');
+const { sign, getRefreshToken } = require('../library/jwtCheck');
 
 async function getGoodsScrap(userIdx, lastIndex) {
   let goodsScrap;
@@ -34,16 +36,46 @@ async function getGoodsScrap(userIdx, lastIndex) {
 }
 
 async function getUserScrapOption(goodsScrapIdx) {
-  const result = await userDao.selectUserScrapOption(goodsScrapIdx);
+  const result = [];
+  const optionArr = await userDao.selectUserScrapOption(goodsScrapIdx);
 
-  if (result.length != 0) {
-    result[0].goods_scrap_options = JSON.parse(result[0].goods_scrap_options);
+  if (optionArr.length != 0) {
+    optionArr[0].goods_scrap_option = JSON.parse(optionArr[0].goods_scrap_option);
+  }
+
+  const optionNameArr = Object.keys(optionArr[0].goods_scrap_option);
+  const optionValueArr = Object.values(optionArr[0].goods_scrap_option);
+  const optionLength = optionNameArr.length;
+  for (let i = 0; i < optionLength; i++) {
+    result.push({
+      optionName: optionNameArr[i],
+      optionValue: optionValueArr[i],
+    });
   }
 
   return result;
 }
 
+async function getNewToken(refreshToken, userIdx) {
+  const refreshTokenFromDB = await userDao.getRefreshToken(userIdx);
+
+  if (refreshToken == refreshTokenFromDB) {
+    const authorization = sign(userIdx);
+    const newRefreshToken = getRefreshToken(userIdx);
+
+    await userDao.updateRefreshToken(userIdx, newRefreshToken);
+
+    return {
+      authorization,
+      refreshToken,
+    };
+  }
+
+  throw errorResponseObject.refreshTokenError;
+}
+
 module.exports = {
   getGoodsScrap,
   getUserScrapOption,
+  getNewToken,
 };

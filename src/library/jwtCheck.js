@@ -43,10 +43,20 @@ function verify(authorization) {
 }
 
 // refresh
+function getRefreshToken(userIdx) {
+  const payload = {
+    userIdx,
+  };
+
+  const token = jwt.sign(payload, jwtKey, refreshOptions);
+
+  return token;
+}
 
 module.exports = {
   jwtCheck,
   sign,
   verify,
   getUserIdxFromJwt,
+  getRefreshToken,
 };

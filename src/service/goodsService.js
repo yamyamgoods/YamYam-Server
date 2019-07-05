@@ -292,6 +292,13 @@ async function getReviewComment(reviewIdx, lastIndex) {
   return reviewComment;
 }
 
+async function addReviewComment(userIdx, reviewIdx, content, recommentFlag) {
+  if (!recommentFlag) {
+    await goodsDao.insertReviewComment(userIdx, reviewIdx, content);
+  } else {
+    await goodsDao.insertReviewRecomment(userIdx, reviewIdx, content, 1);
+  }
+}
 // 해당 굿즈의 리뷰 모두 가져오기
 
 async function getGoodsReviews(goodsIdx, photoFlag, lastIndex) {
@@ -352,5 +359,6 @@ module.exports = {
   getExhibitionGoodsAll,
   getReviewDetail,
   getReviewComment,
+  addReviewComment,
   getGoodsReviews,
 };

@@ -364,6 +364,30 @@ async function selectNextReviewComments(reviewIdx, lastIndex) {
   return result;
 }
 
+// 굿즈 리뷰 댓글 달기
+async function insertReviewComment(userIdx, reviewIdx, content) {
+  const sql = `
+  INSERT INTO GOODS_REVIEW_COMMENT
+  (goods_review_idx, user_idx, goods_review_cmt_content)
+  VALUES
+  (?, ?, ?)
+  `;
+
+  await mysql.query(sql, [reviewIdx, userIdx, content]);
+}
+
+// 굿즈 리뷰 댓글 달기(대댓글)
+async function insertReviewRecomment(userIdx, reviewIdx, content, recommentFlag) {
+  const sql = `
+  INSERT INTO GOODS_REVIEW_COMMENT
+  (goods_review_idx, user_idx, goods_review_cmt_content, goods_review_recmt_flag)
+  VALUES
+  (?, ?, ?, ?)
+  `;
+
+  await mysql.query(sql, [reviewIdx, userIdx, content, recommentFlag]);
+}
+
 // 해당 굿즈의 리뷰 모두 가져오기
 
 async function selectFirstGoodsReviews(goodsIdx, photoFlag) {
@@ -429,7 +453,7 @@ async function selectFirstGoodsReviewsAll(goodsIdx) {
   `;
 
   const result = await mysql.query(sql, [goodsIdx]);
- 
+
   return result;
 }
 
@@ -453,7 +477,6 @@ async function selectNextGoodsReviewsAll(goodsIdx, lastIndex) {
   const result = await mysql.query(sql, [goodsIdx, lastIndex]);
   return result;
 }
-
 
 module.exports = {
   selectFirstBestGoods,
@@ -479,9 +502,10 @@ module.exports = {
   selectGoods,
   selectFirstReviewComments,
   selectNextReviewComments,
+  insertReviewComment,
+  insertReviewRecomment,
   selectFirstGoodsReviews,
   selectNextGoodsReviews,
   selectFirstGoodsReviewsAll,
   selectNextGoodsReviewsAll,
-
 };
