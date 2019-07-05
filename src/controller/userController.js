@@ -31,7 +31,7 @@ async function getUserScrapOption(req, res) {
 
 async function getNewJwtToken(req, res) {
   try {
-    const refreshToken = req.headers.refreshToken;
+    const refreshToken = req.headers.refreshtoken;
     const userIdx = getUserIdxFromJwt(refreshToken);
 
     const result = await userService.getNewToken(refreshToken, userIdx);
