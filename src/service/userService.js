@@ -34,10 +34,21 @@ async function getGoodsScrap(userIdx, lastIndex) {
 }
 
 async function getUserScrapOption(goodsScrapIdx) {
-  const result = await userDao.selectUserScrapOption(goodsScrapIdx);
+  const result = [];
+  const optionArr = await userDao.selectUserScrapOption(goodsScrapIdx);
 
-  if (result.length != 0) {
-    result[0].goods_scrap_options = JSON.parse(result[0].goods_scrap_options);
+  if (optionArr.length != 0) {
+    optionArr[0].goods_scrap_option = JSON.parse(optionArr[0].goods_scrap_option);
+  }
+
+  const optionNameArr = Object.keys(optionArr[0].goods_scrap_option);
+  const optionValueArr = Object.values(optionArr[0].goods_scrap_option);
+  const optionLength = optionNameArr.length;
+  for (let i = 0; i < optionLength; i++) {
+    result.push({
+      optionName: optionNameArr[i],
+      optionValue: optionValueArr[i],
+    });
   }
 
   return result;

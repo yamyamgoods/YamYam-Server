@@ -19,8 +19,6 @@ async function getUserScrapOption(req, res) {
   try {
     const goodsScrapIdx = req.params.goodsScrapIdx;
 
-    console.log(goodsScrapIdx);
-
     const result = await userService.getUserScrapOption(goodsScrapIdx);
 
     response('Success', result, res, 200);

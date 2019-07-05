@@ -59,7 +59,7 @@ async function selectNextGoodsScrap(userIdx, lastIndex) {
 
 async function selectUserScrapOption(goodsScrapIdx) {
   const sql = `
-  SELECT goods_scrap_options
+  SELECT goods_scrap_option
   FROM USER_SCRAP_OPTION
   WHERE goods_scrap_idx = ?
   `;
