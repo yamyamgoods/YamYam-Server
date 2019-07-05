@@ -266,6 +266,32 @@ async function getReviewDetail(reviewIdx) {
   return result;
 }
 
+async function getReviewComment(reviewIdx, lastIndex) {
+  let reviewComment;
+
+  if (lastIndex == -1) {
+    reviewComment = await goodsDao.selectFirstReviewComments(reviewIdx);
+  } else {
+    reviewComment = await goodsDao.selectNextReviewComments(reviewIdx, lastIndex);
+  }
+
+  const reviewCommentLength = reviewComment.length;
+  for (let i = 0; i < reviewCommentLength; i++) {
+    // 유저 정보 가져오기
+    const userArr = await userDao.selectUser(reviewComment[i].user_idx);
+    const user = userArr[0];
+
+    reviewComment[i].user_name = user.user_name;
+    reviewComment[i].user_img = user.user_img;
+
+    // 시간 String 생성
+    reviewComment[i]
+      .goods_review_cmt_date = makeReviewTimeString(reviewComment[i].goods_review_cmt_date);
+  }
+
+  return reviewComment;
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -278,4 +304,5 @@ module.exports = {
   getExhibitionPagination,
   getExhibitionGoodsAll,
   getReviewDetail,
+  getReviewComment,
 };

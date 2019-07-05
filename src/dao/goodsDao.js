@@ -351,8 +351,8 @@ async function selectNextReviewComments(reviewIdx, lastIndex) {
   SELECT 
   goods_review_cmt_idx,
   user_idx,
-  goods_review_cmt_content
-  goods_review_cmt_date,
+  goods_review_cmt_content,
+  goods_review_cmt_date
   FROM GOODS_REVIEW_COMMENT
   WHERE goods_review_idx = ? AND goods_review_cmt_idx < ?
   ORDER BY goods_review_cmt_idx DESC

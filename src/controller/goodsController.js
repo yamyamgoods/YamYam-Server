@@ -163,6 +163,20 @@ async function getReviewDetail(req, res) {
   }
 }
 
+async function getReviewComment(req, res) {
+  try {
+    const reviewIdx = req.params.reviewIdx;
+    const lastIndex = req.params.lastIndex;
+
+    const result = await goodsService.getReviewComment(reviewIdx, lastIndex);
+
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -175,4 +189,5 @@ module.exports = {
   getExhibitionPagination,
   getExhibitionGoodsAll,
   getReviewDetail,
+  getReviewComment,
 };
