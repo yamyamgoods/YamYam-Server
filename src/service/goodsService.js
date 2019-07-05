@@ -354,7 +354,18 @@ async function modifyReviewComment(userIdx, commentIdx, contents) {
     throw errorResponseObject.accessDinedError;
   }
 
-  await userDao.updateReviewComment(commentIdx, contents);
+  await goodsDao.updateReviewComment(commentIdx, contents);
+}
+
+async function removeReviewComment(userIdx, commentIdx) {
+  let commentUserIdx = await userDao.selectUserIdxByCommentIdx(commentIdx);
+  commentUserIdx = commentUserIdx[0].user_idx;
+
+  if (userIdx != commentUserIdx) {
+    throw errorResponseObject.accessDinedError;
+  }
+
+  await goodsDao.deleteReviewComment(commentIdx);
 }
 
 module.exports = {
@@ -373,4 +384,5 @@ module.exports = {
   addReviewComment,
   getGoodsReviews,
   modifyReviewComment,
+  removeReviewComment,
 };

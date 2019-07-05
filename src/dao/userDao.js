@@ -123,16 +123,6 @@ async function selectUserIdxByCommentIdx(commentIdx) {
   return result;
 }
 
-async function updateReviewComment(commentIdx, contents) {
-  const sql = `
-  UPDATE GOODS_REVIEW_COMMENT
-  SET goods_review_cmt_content = ?
-  WHERE goods_review_cmt_idx = ?
-  `;
-
-  await mysql.query(sql, [contents, commentIdx]);
-}
-
 module.exports = {
   selectUserWithGoods,
   selectFirstGoodsScrap,
@@ -142,5 +132,4 @@ module.exports = {
   updateRefreshToken,
   getRefreshToken,
   selectUserIdxByCommentIdx,
-  updateReviewComment,
 };

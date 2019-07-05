@@ -222,6 +222,20 @@ async function modifyReviewComment(req, res) {
   }
 }
 
+async function removeReviewComment(req, res) {
+  try {
+    const userIdx = req.user.userIdx;
+    const commentIdx = req.body.commentIdx;
+
+    await goodsService.removeReviewComment(userIdx, commentIdx);
+
+    response('Success', [], res, 204);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -238,4 +252,5 @@ module.exports = {
   addReviewComment,
   getGoodsReviews,
   modifyReviewComment,
+  removeReviewComment,
 };

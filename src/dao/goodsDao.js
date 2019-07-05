@@ -478,6 +478,25 @@ async function selectNextGoodsReviewsAll(goodsIdx, lastIndex) {
   return result;
 }
 
+async function updateReviewComment(commentIdx, contents) {
+  const sql = `
+  UPDATE GOODS_REVIEW_COMMENT
+  SET goods_review_cmt_content = ?
+  WHERE goods_review_cmt_idx = ?
+  `;
+
+  await mysql.query(sql, [contents, commentIdx]);
+}
+
+async function deleteReviewComment(commentIdx) {
+  const sql = `
+  DELETE FROM GOODS_REVIEW_COMMENT
+  WHERE goods_review_cmt_idx = ?
+  `;
+
+  await mysql.query(sql, [commentIdx]);
+}
+
 module.exports = {
   selectFirstBestGoods,
   selectNextBestGoods,
@@ -508,4 +527,6 @@ module.exports = {
   selectNextGoodsReviews,
   selectFirstGoodsReviewsAll,
   selectNextGoodsReviewsAll,
+  updateReviewComment,
+  deleteReviewComment,
 };
