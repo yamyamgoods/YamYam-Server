@@ -25,4 +25,7 @@ router.get('/:storeIdx/category', storeController.getStoreGoodsCategory);
 // store 카테고리 보기
 router.get('/category', storeController.getStoreCategory);
 
+// store 굿즈 보기
+router.get('/:storeIdx/goods/:order/:lastIndex', storeController.getStoreGoods);
+
 module.exports = router;

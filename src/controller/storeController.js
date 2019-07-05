@@ -49,7 +49,7 @@ async function addStoreScrap(req, res) {
 
     await storeService.addStoreScrap(storeIdx, userIdx);
 
-    response('Success', null, res, 200);
+    response('Success', [], res, 201);
   } catch (error) {
     console.log(error);
     errorResponse(error.message, res, error.statusCode);
@@ -64,7 +64,7 @@ async function removeStoreScrap(req, res) {
 
     await storeService.removeStoreScrap(storeIdx, userIdx);
 
-    response('Success', null, res, 200);
+    response('Success', [], res, 203);
   } catch (error) {
     console.log(error);
     errorResponse(error.message, res, error.statusCode);
@@ -97,6 +97,29 @@ async function getStoreCategory(req, res) {
   }
 }
 
+// store 굿즈 보기
+async function getStoreGoods(req, res) {
+  try {
+    const storeIdx = req.params.storeIdx;
+    const order = req.params.order;
+    const lastIndex = req.params.lastIndex;
+
+    const goodsCategoryIdx = req.query.goodsCategoryIdx;
+
+    let userIdx;
+    if (req.headers.authorization) {
+      userIdx = getUserIdxFromJwt(req.headers.authorization);
+    }
+
+    const result = await storeService.getStoreGoods(userIdx, storeIdx, order, lastIndex, goodsCategoryIdx);
+
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getStoreRank,
   getStoreScrap,
@@ -104,4 +127,5 @@ module.exports = {
   removeStoreScrap,
   getStoreGoodsCategory,
   getStoreCategory,
+  getStoreGoods,
 };
