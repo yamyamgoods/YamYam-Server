@@ -364,6 +364,97 @@ async function selectNextReviewComments(reviewIdx, lastIndex) {
   return result;
 }
 
+// 해당 굿즈의 리뷰 모두 가져오기
+
+async function selectFirstGoodsReviews(goodsIdx, photoFlag) {
+  const sql = `
+  SELECT 
+  gr.goods_review_idx,
+  gr.goods_review_photo_flag,
+  gr.goods_review_date,
+  gr.goods_review_rating,
+  gr.goods_review_content,
+  gr.goods_review_like_count,
+  gr.goods_review_cmt_count,
+  gr.user_idx
+  FROM GOODS_REVIEW gr
+  WHERE gr.goods_idx = ?
+  AND gr.goods_review_photo_flag = ?
+  ORDER BY gr.goods_review_idx DESC
+  LIMIT ${mysqlConfig.paginationCnt}
+  `;
+
+  const result = await mysql.query(sql, [goodsIdx, photoFlag]);
+
+  return result;
+}
+
+async function selectNextGoodsReviews(goodsIdx, photoFlag, lastIndex) {
+  const sql = `
+  SELECT 
+  gr.goods_review_idx,
+  gr.goods_review_date,
+  gr.goods_review_rating,
+  gr.goods_review_content,
+  gr.goods_review_like_count,
+  gr.goods_review_cmt_count,
+  gr.user_idx
+  FROM GOODS_REVIEW gr
+  WHERE gr.goods_idx = ?
+  AND gr.goods_review_photo_flag = ?
+  AND gr.goods_review_idx < ?
+  ORDER BY gr.goods_review_idx DESC
+  LIMIT ${mysqlConfig.paginationCnt}
+  `;
+
+  const result = await mysql.query(sql, [goodsIdx, photoFlag, lastIndex]);
+
+  return result;
+}
+
+async function selectFirstGoodsReviewsAll(goodsIdx) {
+  const sql = `
+  SELECT 
+  gr.goods_review_idx,
+  gr.goods_review_date,
+  gr.goods_review_rating,
+  gr.goods_review_content,
+  gr.goods_review_like_count,
+  gr.goods_review_cmt_count,
+  gr.user_idx
+  FROM GOODS_REVIEW gr
+  WHERE gr.goods_idx = ?
+  ORDER BY gr.goods_review_idx DESC
+  LIMIT ${mysqlConfig.paginationCnt}
+  `;
+
+  const result = await mysql.query(sql, [goodsIdx]);
+ 
+  return result;
+}
+
+async function selectNextGoodsReviewsAll(goodsIdx, lastIndex) {
+  const sql = `
+  SELECT 
+  gr.goods_review_idx,
+  gr.goods_review_date,
+  gr.goods_review_rating,
+  gr.goods_review_content,
+  gr.goods_review_like_count,
+  gr.goods_review_cmt_count,
+  gr.user_idx
+  FROM GOODS_REVIEW gr
+  WHERE gr.goods_idx = ?
+  AND gr.goods_review_idx < ?
+  ORDER BY gr.goods_review_idx DESC
+  LIMIT ${mysqlConfig.paginationCnt}
+  `;
+
+  const result = await mysql.query(sql, [goodsIdx, lastIndex]);
+  return result;
+}
+
+
 module.exports = {
   selectFirstBestGoods,
   selectNextBestGoods,
@@ -388,4 +479,9 @@ module.exports = {
   selectGoods,
   selectFirstReviewComments,
   selectNextReviewComments,
+  selectFirstGoodsReviews,
+  selectNextGoodsReviews,
+  selectFirstGoodsReviewsAll,
+  selectNextGoodsReviewsAll,
+
 };
