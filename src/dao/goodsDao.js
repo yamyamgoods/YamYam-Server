@@ -312,7 +312,8 @@ async function selectGoods(goodsIdx) {
   goods_minimum_amount,
   goods_detail,
   goods_review_cnt,
-  store_name
+  store_name,
+  store_url
   FROM GOODS
   JOIN
   STORE
