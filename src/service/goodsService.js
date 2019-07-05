@@ -1,5 +1,6 @@
 const goodsDao = require('../dao/goodsDao');
 const userDao = require('../dao/userDao');
+const stroeDao = require('../dao/storeDao');
 const goodsTransaction = require('../dao/goodsTransaction');
 const errorResponseObject = require('../../config/errorResponseObject');
 const { makeReviewTimeString } = require('../library/changeTimeString');
@@ -134,7 +135,7 @@ async function getGoodsTab() {
 
   const goodsCategory = await goodsDao.selectGoodsCategory();
   const goodsCategoryLength = goodsCategory.length;
-  for (let i = 0;i<goodsCategoryLength; i++) {
+  for (let i = 0; i < goodsCategoryLength; i++) {
     categoryData.push(goodsCategory[i]);
   }
 
@@ -143,30 +144,32 @@ async function getGoodsTab() {
   const exhibition = await goodsDao.selectExhibition(); 
   const exhibitionGoods = await goodsDao.selectExhibitionGoods();
 
-  const exhibitLength = exhibition.length; //exhibition_idx 를 위해 
+  const exhibitLength = exhibition.length; // exhibition_idx 를 위함
   const exhibitGoodsLength = exhibitionGoods.length;
 
 
   for (let i = 0; i < exhibitLength; i++) {
-    const exhibitionIdx = exhibition[i].exhibition_idx;
-    exhibition[i].goods_data = [];
-    for (let k = 0; k < exhibitGoodsLength; k++) {
-      if (exhibitionIdx == exhibitionGoods[k].exhibition_idx) {
-        exhibition[i].goods_data.push(exhibitionGoods[k]);
-      }    
-    }
+    // 첫화면에서 해당 기획전의 굿즈를 안보여주길래 우선 뺌
+
+    // const exhibitionIdx = exhibition[i].exhibition_idx;
+    // exhibition[i].goods_data = [];
+    // for (let k = 0; k < exhibitGoodsLength; k++) {
+    //   if (exhibitionIdx == exhibitionGoods[k].exhibition_idx) {
+    //     exhibition[i].goods_data.push(exhibitionGoods[k]);
+    //   }    
+    // }  
     exhibitionData.push(exhibition[i]);
   }
 
-  subResult.exhibition_goods_data = exhibitionData;
+  subResult.exhibition_data = exhibitionData;
 
   result.push(subResult);
 
   return result;
 }
 
-//굿즈카테고리 페이지네이션
-async function getGoodsCategoryPagination(lastIndex) { //굿즈카테고리 인덱스가 라스트 인덱스로
+// 굿즈카테고리 페이지네이션
+async function getGoodsCategoryPagination(lastIndex) { // 굿즈카테고리 인덱스가 라스트 인덱스로
   const result = [];
   const goodsCategoryData = await goodsDao.selectGoodsCategoryPaging(lastIndex);
   const goodsCategoryLength = goodsCategoryData.length;
@@ -191,16 +194,34 @@ async function getExhibitionPagination(lastIndex) {
 }
 
 // 기획전 굿즈 모두보기
-async function getExhibitionGoodsAll(exhibitionIdx,lastIndex) {
+async function getExhibitionGoodsAll(userIdx, exhibitionIdx, lastIndex) {
   const result = [];
   const exhibitionGoodsAll = await goodsDao.selectExhibitionGoodsAll(exhibitionIdx, lastIndex);
   const exhibitionGoodsAllLength = exhibitionGoodsAll.length;
 
   for (let i = 0; i < exhibitionGoodsAllLength; i++) {
+    const goodsIdx = exhibitionGoodsAll[i].goods_idx;
+    const goodsStoreIdx = exhibitionGoodsAll[i].store_idx;
+    const user = await userDao.selectUserWithGoods(userIdx, goodsIdx);
+
+    // 해당 굿즈의 스토어 이름 추가
+    const storeName = await stroeDao.selectStoreName(goodsStoreIdx);
+    exhibitionGoodsAll[i].store_name = storeName[0].store_name;
+
+    // 유저 즐겨찾기 flag 추가
+    if (user.length === 0) {
+      exhibitionGoodsAll[i].scrap_flag = 0;
+    } else {
+      exhibitionGoodsAll[i].scrap_flag = 1;
+    }
+
+    // 굿즈이미지 한개 골라서 추가 
+    const goodsImg = await goodsDao.selectGoodsImg(goodsIdx);
+    exhibitionGoodsAll[i].goods_img = goodsImg[0].goods_img;
+
     result.push(exhibitionGoodsAll[i]);
   }
   return result;
-  
 }
 module.exports = {
   getBestGoods,
