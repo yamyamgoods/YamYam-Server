@@ -29,6 +29,9 @@ router.get('/category/:lastIndex', goodsController.getGoodsCategoryPagination);
 router.get('/exhibition/:lastIndex', goodsController.getExhibitionPagination);
 // 기획전 굿즈 모두보기
 router.get('/exhibition/:exhibitionIdx/:lastIndex', goodsController.getExhibitionGoodsAll);
-
+// 리뷰 상세보기 뷰
+router.get('/review/:reviewIdx/detail', goodsController.getReviewDetail);
+// 리뷰의 댓글 더보기
+router.get('/review/:reviewIdx/comment/:lastIndex', goodsController.getReviewComment)
 
 module.exports = router;

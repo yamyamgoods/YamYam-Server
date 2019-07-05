@@ -98,8 +98,8 @@ async function removeGoodsScrap(req, res) {
 async function getGoodsTab(req, res) {
   try {
     const result = await goodsService.getGoodsTab();
-    response('Success', result, res, 200);
 
+    response('Success', result, res, 200);
   } catch (error) {
     console.log(error);
     errorResponse(error.message, res, error.statusCode);
@@ -110,7 +110,9 @@ async function getGoodsTab(req, res) {
 async function getGoodsCategoryPagination(req, res) {
   try {
     const goodsCategoryIdx = req.params.lastIndex;
+
     const result = await goodsService.getGoodsCategoryPagination(goodsCategoryIdx);
+
     response('Success', result, res, 200);
   } catch (error) {
     console.log(error);
@@ -122,11 +124,13 @@ async function getGoodsCategoryPagination(req, res) {
 async function getExhibitionPagination(req, res) {
   try {
     const exhibitionIdx = req.params.lastIndex;
+
     const result = await goodsService.getExhibitionPagination(exhibitionIdx);
+
     response('Success', result, res, 200);
   } catch (error) {
     console.log(error);
-    errorResponse(error.message, res, error.statusCode); 
+    errorResponse(error.message, res, error.statusCode);
   }
 }
 
@@ -138,8 +142,35 @@ async function getExhibitionGoodsAll(req, res) {
     const userIdx = getUserIdxFromJwt(req.headers.authorization);
 
     const result = await goodsService.getExhibitionGoodsAll(userIdx, exhibitionIdx, goodsIdx);
-    response('Success', result, res, 200);
 
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
+async function getReviewDetail(req, res) {
+  try {
+    const reviewIdx = req.params.reviewIdx;
+
+    const result = await goodsService.getReviewDetail(reviewIdx);
+
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
+async function getReviewComment(req, res) {
+  try {
+    const reviewIdx = req.params.reviewIdx;
+    const lastIndex = req.params.lastIndex;
+
+    const result = await goodsService.getReviewComment(reviewIdx, lastIndex);
+
+    response('Success', result, res, 200);
   } catch (error) {
     console.log(error);
     errorResponse(error.message, res, error.statusCode);
@@ -157,4 +188,6 @@ module.exports = {
   getGoodsCategoryPagination,
   getExhibitionPagination,
   getExhibitionGoodsAll,
+  getReviewDetail,
+  getReviewComment,
 };

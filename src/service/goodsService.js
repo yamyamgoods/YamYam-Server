@@ -125,10 +125,9 @@ async function removeGoodsScrap(userIdx, goodsIdx, scrapIdx) {
 
 // 굿즈탭 보기 (위에 카테고리랑 아래 기획전 및 관련 굿즈들)
 async function getGoodsTab() {
-
   const result = [];
 
-  const subResult = {}; 
+  const subResult = {};
 
   const categoryData = [];
   const exhibitionData = [];
@@ -141,7 +140,7 @@ async function getGoodsTab() {
 
   subResult.goods_category_data = categoryData;
 
-  const exhibition = await goodsDao.selectExhibition(); 
+  const exhibition = await goodsDao.selectExhibition();
   const exhibitionGoods = await goodsDao.selectExhibitionGoods();
 
   const exhibitLength = exhibition.length; // exhibition_idx 를 위함
@@ -156,8 +155,8 @@ async function getGoodsTab() {
     // for (let k = 0; k < exhibitGoodsLength; k++) {
     //   if (exhibitionIdx == exhibitionGoods[k].exhibition_idx) {
     //     exhibition[i].goods_data.push(exhibitionGoods[k]);
-    //   }    
-    // }  
+    //   }
+    // }
     exhibitionData.push(exhibition[i]);
   }
 
@@ -215,7 +214,7 @@ async function getExhibitionGoodsAll(userIdx, exhibitionIdx, lastIndex) {
       exhibitionGoodsAll[i].scrap_flag = 1;
     }
 
-    // 굿즈이미지 한개 골라서 추가 
+    // 굿즈이미지 한개 골라서 추가
     const goodsImg = await goodsDao.selectGoodsImg(goodsIdx);
     exhibitionGoodsAll[i].goods_img = goodsImg[0].goods_img;
 
@@ -223,6 +222,76 @@ async function getExhibitionGoodsAll(userIdx, exhibitionIdx, lastIndex) {
   }
   return result;
 }
+
+async function getReviewDetail(reviewIdx) {
+  const result = [];
+  const returnObj = {};
+
+  const goodsIdxArr = await goodsDao.selectGoodsIdxByReviewIdx(reviewIdx);
+  const goodsIdx = goodsIdxArr[0].goods_idx;
+  const goods = await goodsDao.selectGoods(goodsIdx);
+  const goodsImg = await goodsDao.selectGoodsImg(goodsIdx);
+
+  // 굿즈 데이터
+  returnObj.goods = {
+    goods_idx: goods[0].goods_idx,
+    goods_img: goodsImg[0].goods_img,
+    goods_name: goods[0].goods_name,
+    goods_price: goods[0].goods_price,
+    goods_rating: goods[0].goods_rating,
+    store_name: goods[0].store_name,
+  };
+
+  const reviewComment = await goodsDao.selectFirstReviewComments(reviewIdx);
+
+  const reviewCommentLength = reviewComment.length;
+  for (let i = 0; i < reviewCommentLength; i++) {
+    // 유저 정보 가져오기
+    const userArr = await userDao.selectUser(reviewComment[i].user_idx);
+    const user = userArr[0];
+
+    reviewComment[i].user_name = user.user_name;
+    reviewComment[i].user_img = user.user_img;
+
+    // 시간 String 생성
+    reviewComment[i]
+      .goods_review_cmt_date = makeReviewTimeString(reviewComment[i].goods_review_cmt_date);
+  }
+
+  // 리뷰 댓글
+  returnObj.review_comment = reviewComment;
+
+  result.push(returnObj);
+
+  return result;
+}
+
+async function getReviewComment(reviewIdx, lastIndex) {
+  let reviewComment;
+
+  if (lastIndex == -1) {
+    reviewComment = await goodsDao.selectFirstReviewComments(reviewIdx);
+  } else {
+    reviewComment = await goodsDao.selectNextReviewComments(reviewIdx, lastIndex);
+  }
+
+  const reviewCommentLength = reviewComment.length;
+  for (let i = 0; i < reviewCommentLength; i++) {
+    // 유저 정보 가져오기
+    const userArr = await userDao.selectUser(reviewComment[i].user_idx);
+    const user = userArr[0];
+
+    reviewComment[i].user_name = user.user_name;
+    reviewComment[i].user_img = user.user_img;
+
+    // 시간 String 생성
+    reviewComment[i]
+      .goods_review_cmt_date = makeReviewTimeString(reviewComment[i].goods_review_cmt_date);
+  }
+
+  return reviewComment;
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -234,5 +303,6 @@ module.exports = {
   getGoodsCategoryPagination,
   getExhibitionPagination,
   getExhibitionGoodsAll,
-
+  getReviewDetail,
+  getReviewComment,
 };
