@@ -59,7 +59,7 @@ async function selectNextGoodsScrap(userIdx, lastIndex) {
 
 async function selectUserScrapOption(goodsScrapIdx) {
   const sql = `
-  SELECT goods_scrap_options
+  SELECT goods_scrap_option
   FROM USER_SCRAP_OPTION
   WHERE goods_scrap_idx = ?
   `;
@@ -89,10 +89,47 @@ async function selectUser(userIdx) {
   return result;
 }
 
+async function getRefreshToken(userIdx) {
+  const sql = `
+  SELECT refresh_token
+  FROM USER 
+  WHERE user_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [userIdx]);
+
+  return result;
+}
+
+async function updateRefreshToken(userIdx, newRefreshToken) {
+  const sql = `
+  UPDATE USER 
+  SET refresh_token = ?
+  WHERE user_idx = ?
+  `;
+
+  await mysql.query(sql, [newRefreshToken, userIdx]);
+}
+
+async function selectUserIdxByCommentIdx(commentIdx) {
+  const sql = `
+  SELECT user_idx
+  FROM GOODS_REVIEW_COMMENT
+  WHERE goods_review_cmt_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [commentIdx]);
+
+  return result;
+}
+
 module.exports = {
   selectUserWithGoods,
   selectFirstGoodsScrap,
   selectNextGoodsScrap,
   selectUserScrapOption,
   selectUser,
+  updateRefreshToken,
+  getRefreshToken,
+  selectUserIdxByCommentIdx,
 };

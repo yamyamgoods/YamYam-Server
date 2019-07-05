@@ -1,4 +1,5 @@
 const userService = require('../service/userService');
+const { getUserIdxFromJwt } = require('../library/jwtCheck');
 const { response, errorResponse } = require('../library/response');
 
 async function getGoodsScrap(req, res) {
@@ -19,9 +20,21 @@ async function getUserScrapOption(req, res) {
   try {
     const goodsScrapIdx = req.params.goodsScrapIdx;
 
-    console.log(goodsScrapIdx);
-
     const result = await userService.getUserScrapOption(goodsScrapIdx);
+
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
+async function getNewJwtToken(req, res) {
+  try {
+    const refreshToken = req.headers.refreshtoken;
+    const userIdx = getUserIdxFromJwt(refreshToken);
+
+    const result = await userService.getNewToken(refreshToken, userIdx);
 
     response('Success', result, res, 200);
   } catch (error) {
@@ -33,4 +46,5 @@ async function getUserScrapOption(req, res) {
 module.exports = {
   getGoodsScrap,
   getUserScrapOption,
+  getNewJwtToken,
 };

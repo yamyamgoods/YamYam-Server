@@ -292,6 +292,88 @@ async function getReviewComment(reviewIdx, lastIndex) {
   return reviewComment;
 }
 
+async function addReviewComment(userIdx, reviewIdx, content, recommentFlag) {
+  if (!recommentFlag) {
+    await goodsDao.insertReviewComment(userIdx, reviewIdx, content);
+  } else {
+    await goodsDao.insertReviewRecomment(userIdx, reviewIdx, content, 1);
+  }
+}
+// 해당 굿즈의 리뷰 모두 가져오기
+
+async function getGoodsReviews(goodsIdx, photoFlag, lastIndex) {
+  let goodsReview;
+
+  if (photoFlag == 1) {
+    if (lastIndex == -1) {
+      goodsReview = await goodsDao.selectFirstGoodsReviews(goodsIdx, photoFlag);
+    } else {
+      goodsReview = await goodsDao.selectNextGoodsReviews(goodsIdx, photoFlag, lastIndex);
+    }
+  } else if (photoFlag == -1) {
+    if (lastIndex == -1) {
+      goodsReview = await goodsDao.selectFirstGoodsReviewsAll(goodsIdx);
+    } else {
+      goodsReview = await goodsDao.selectNextGoodsReviewsAll(goodsIdx, lastIndex);
+    }
+  }
+
+  const goodsReviewLength = goodsReview.length;
+
+  for (let i = 0; i < goodsReviewLength; i++) {
+    // 유저 정보 가져오기
+    const userArr = await userDao.selectUser(goodsReview[i].user_idx);
+    const user = userArr[0];
+    const goodsReviewIdx = goodsReview[i].goods_review_idx;
+    const goodsReviewImg = await goodsDao.selectReviewImg(goodsReviewIdx);
+
+    // Mysql로부터 얻은 이미지 데이터 배열로 변경
+    const imgObjArrLength = goodsReviewImg.length;
+    const imgResultArray = [];
+    for (let j = 0; j < imgObjArrLength; j++) {
+      imgResultArray.push(goodsReviewImg[j].goods_review_img);
+    }
+    goodsReview[i].user_name = user.user_name;
+    goodsReview[i].user_img = user.user_img;
+
+    // 시간 String 생성
+    goodsReview[i]
+      .goods_review_date = makeReviewTimeString(goodsReview[i].goods_review_date);
+
+    goodsReview[i].goods_review_img = imgResultArray;
+  }
+
+  return goodsReview;
+}
+
+async function modifyReviewComment(userIdx, commentIdx, contents) {
+  const commentUserIdxArr = await userDao.selectUserIdxByCommentIdx(commentIdx);
+  const commentUserIdx = commentUserIdxArr[0].user_idx;
+
+  if (userIdx != commentUserIdx) {
+    throw errorResponseObject.accessDinedError;
+  }
+
+  await goodsDao.updateReviewComment(commentIdx, contents);
+}
+
+async function removeReviewComment(userIdx, commentIdx) {
+  const commentUserIdxArr = await userDao.selectUserIdxByCommentIdx(commentIdx);
+  const commentUserIdx = commentUserIdxArr[0].user_idx;
+
+  if (userIdx != commentUserIdx) {
+    throw errorResponseObject.accessDinedError;
+  }
+
+  await goodsDao.deleteReviewComment(commentIdx);
+}
+
+async function getGoodsOptionsName(goodsIdx) {
+  const result = await goodsDao.selectGoodsOptionsName(goodsIdx);
+
+  return result;
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -305,4 +387,9 @@ module.exports = {
   getExhibitionGoodsAll,
   getReviewDetail,
   getReviewComment,
+  addReviewComment,
+  getGoodsReviews,
+  modifyReviewComment,
+  removeReviewComment,
+  getGoodsOptionsName,
 };

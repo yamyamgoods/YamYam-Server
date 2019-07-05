@@ -311,7 +311,6 @@ async function selectGoods(goodsIdx) {
   goods_delivery_period,
   goods_minimum_amount,
   goods_detail,
-  goods_stock,
   goods_review_cnt,
   store_name
   FROM GOODS
@@ -364,6 +363,151 @@ async function selectNextReviewComments(reviewIdx, lastIndex) {
   return result;
 }
 
+// 굿즈 리뷰 댓글 달기
+async function insertReviewComment(userIdx, reviewIdx, content) {
+  const sql = `
+  INSERT INTO GOODS_REVIEW_COMMENT
+  (goods_review_idx, user_idx, goods_review_cmt_content)
+  VALUES
+  (?, ?, ?)
+  `;
+
+  await mysql.query(sql, [reviewIdx, userIdx, content]);
+}
+
+// 굿즈 리뷰 댓글 달기(대댓글)
+async function insertReviewRecomment(userIdx, reviewIdx, content, recommentFlag) {
+  const sql = `
+  INSERT INTO GOODS_REVIEW_COMMENT
+  (goods_review_idx, user_idx, goods_review_cmt_content, goods_review_recmt_flag)
+  VALUES
+  (?, ?, ?, ?)
+  `;
+
+  await mysql.query(sql, [reviewIdx, userIdx, content, recommentFlag]);
+}
+
+// 해당 굿즈의 리뷰 모두 가져오기
+
+async function selectFirstGoodsReviews(goodsIdx, photoFlag) {
+  const sql = `
+  SELECT 
+  gr.goods_review_idx,
+  gr.goods_review_photo_flag,
+  gr.goods_review_date,
+  gr.goods_review_rating,
+  gr.goods_review_content,
+  gr.goods_review_like_count,
+  gr.goods_review_cmt_count,
+  gr.user_idx
+  FROM GOODS_REVIEW gr
+  WHERE gr.goods_idx = ?
+  AND gr.goods_review_photo_flag = ?
+  ORDER BY gr.goods_review_idx DESC
+  LIMIT ${mysqlConfig.paginationCnt}
+  `;
+
+  const result = await mysql.query(sql, [goodsIdx, photoFlag]);
+
+  return result;
+}
+
+async function selectNextGoodsReviews(goodsIdx, photoFlag, lastIndex) {
+  const sql = `
+  SELECT 
+  gr.goods_review_idx,
+  gr.goods_review_date,
+  gr.goods_review_rating,
+  gr.goods_review_content,
+  gr.goods_review_like_count,
+  gr.goods_review_cmt_count,
+  gr.user_idx
+  FROM GOODS_REVIEW gr
+  WHERE gr.goods_idx = ?
+  AND gr.goods_review_photo_flag = ?
+  AND gr.goods_review_idx < ?
+  ORDER BY gr.goods_review_idx DESC
+  LIMIT ${mysqlConfig.paginationCnt}
+  `;
+
+  const result = await mysql.query(sql, [goodsIdx, photoFlag, lastIndex]);
+
+  return result;
+}
+
+async function selectFirstGoodsReviewsAll(goodsIdx) {
+  const sql = `
+  SELECT 
+  gr.goods_review_idx,
+  gr.goods_review_date,
+  gr.goods_review_rating,
+  gr.goods_review_content,
+  gr.goods_review_like_count,
+  gr.goods_review_cmt_count,
+  gr.user_idx
+  FROM GOODS_REVIEW gr
+  WHERE gr.goods_idx = ?
+  ORDER BY gr.goods_review_idx DESC
+  LIMIT ${mysqlConfig.paginationCnt}
+  `;
+
+  const result = await mysql.query(sql, [goodsIdx]);
+
+  return result;
+}
+
+async function selectNextGoodsReviewsAll(goodsIdx, lastIndex) {
+  const sql = `
+  SELECT 
+  gr.goods_review_idx,
+  gr.goods_review_date,
+  gr.goods_review_rating,
+  gr.goods_review_content,
+  gr.goods_review_like_count,
+  gr.goods_review_cmt_count,
+  gr.user_idx
+  FROM GOODS_REVIEW gr
+  WHERE gr.goods_idx = ?
+  AND gr.goods_review_idx < ?
+  ORDER BY gr.goods_review_idx DESC
+  LIMIT ${mysqlConfig.paginationCnt}
+  `;
+
+  const result = await mysql.query(sql, [goodsIdx, lastIndex]);
+  return result;
+}
+
+async function updateReviewComment(commentIdx, contents) {
+  const sql = `
+  UPDATE GOODS_REVIEW_COMMENT
+  SET goods_review_cmt_content = ?
+  WHERE goods_review_cmt_idx = ?
+  `;
+
+  await mysql.query(sql, [contents, commentIdx]);
+}
+
+async function deleteReviewComment(commentIdx) {
+  const sql = `
+  DELETE FROM GOODS_REVIEW_COMMENT
+  WHERE goods_review_cmt_idx = ?
+  `;
+
+  await mysql.query(sql, [commentIdx]);
+}
+
+async function selectGoodsOptionsName(goodsIdx) {
+  const sql = `
+  SELECT goods_option_name
+  FROM GOODS_OPTION
+  WHERE goods_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [goodsIdx]);
+
+  return result;
+}
+
 module.exports = {
   selectFirstBestGoods,
   selectNextBestGoods,
@@ -388,4 +532,13 @@ module.exports = {
   selectGoods,
   selectFirstReviewComments,
   selectNextReviewComments,
+  insertReviewComment,
+  insertReviewRecomment,
+  selectFirstGoodsReviews,
+  selectNextGoodsReviews,
+  selectFirstGoodsReviewsAll,
+  selectNextGoodsReviewsAll,
+  updateReviewComment,
+  deleteReviewComment,
+  selectGoodsOptionsName,
 };

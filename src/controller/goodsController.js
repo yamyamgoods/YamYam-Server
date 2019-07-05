@@ -177,6 +177,78 @@ async function getReviewComment(req, res) {
   }
 }
 
+async function addReviewComment(req, res) {
+  try {
+    const userIdx = req.user.userIdx;
+    const reviewIdx = req.body.reviewIdx;
+    const contents = req.body.contents;
+    const recommentFlag = req.body.recommentFlag;
+
+    await goodsService.addReviewComment(userIdx, reviewIdx, contents, recommentFlag);
+
+    response('Success', [], res, 201);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+async function getGoodsReviews(req, res) {
+  try {
+    const goodsIdx = req.params.goodsIdx;
+    const lastIndex = req.params.lastIndex;
+    const photoFlag = req.params.photoFlag;
+
+    const result = await goodsService.getGoodsReviews(goodsIdx, photoFlag, lastIndex);
+
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
+async function modifyReviewComment(req, res) {
+  try {
+    const userIdx = req.user.userIdx;
+    const commentIdx = req.body.commentIdx;
+    const contents = req.body.contents;
+
+    await goodsService.modifyReviewComment(userIdx, commentIdx, contents);
+
+    response('Success', [], res, 201);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
+async function removeReviewComment(req, res) {
+  try {
+    const userIdx = req.user.userIdx;
+    const commentIdx = req.body.commentIdx;
+
+    await goodsService.removeReviewComment(userIdx, commentIdx);
+
+    response('Success', [], res, 204);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
+async function getGoodsOptionsName(req, res) {
+  try {
+    const goodsIdx = req.params.goodsIdx;
+
+    const result = await goodsService.getGoodsOptionsName(goodsIdx);
+
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -190,4 +262,9 @@ module.exports = {
   getExhibitionGoodsAll,
   getReviewDetail,
   getReviewComment,
+  addReviewComment,
+  getGoodsReviews,
+  modifyReviewComment,
+  removeReviewComment,
+  getGoodsOptionsName,
 };
