@@ -223,6 +223,56 @@ async function selectStoreCategory() {
   return result;
 }
 
+async function selectStoreGoods(storeIdx, order, lastIndex, goodsCategoryIdx) {
+  let sql = `
+  SELECT goods_idx, goods_name, goods_price, goods_rating, goods_minimum_amount, goods_review_cnt
+  FROM GOODS
+  WHERE store_idx = ? AND goods_idx > ?
+  `;
+
+  if (goodsCategoryIdx) {
+    sql += `AND goods_category_idx = ${goodsCategoryIdx}`;
+  }
+
+  if (order == 0) {
+    sql += ' ORDER BY goods_score DESC';
+  } else if (order == 1) { // 저가순
+    sql += ' ORDER BY goods_price';
+  } else if (order == 2) { // 고가순
+    sql += ' ORDER BY goods_price DESC';
+  }
+
+  sql += ` LIMIT ${mysqlConfig.paginationCnt}`;
+
+  const result = await mysql.query(sql, [storeIdx, lastIndex]);
+
+  return result;
+}
+
+async function selectFirstGoodsImg(goodsIdx) {
+  const sql = `
+  SELECT goods_img
+  FROM GOODS_IMG
+  WHERE goods_idx = ?
+  LIMIT 1
+  `;
+
+  const result = await mysql.query(sql, [goodsIdx]);
+
+  return result;
+}
+
+async function selectGoodsScrapWithUserIdx(userIdx) {
+  const sql = `
+  SELECT goods_idx
+  FROM GOODS_SCRAP
+  WHERE user_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [userIdx]);
+
+  return result;
+}
 module.exports = {
   selectStoreName,
   selectStoreRank,
@@ -236,4 +286,7 @@ module.exports = {
   deleteStoreScrap,
   selectStoreGoodsCategory,
   selectStoreCategory,
+  selectStoreGoods,
+  selectFirstGoodsImg,
+  selectGoodsScrapWithUserIdx,
 };

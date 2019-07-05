@@ -1,5 +1,4 @@
 const storeDao = require('../dao/storeDao');
-// const errorResponseObject = require('../../config/errorResponseObject');
 
 // 단일 키 객체 => 값 배열
 function parseObj(dataArr, attr) {
@@ -86,6 +85,29 @@ async function getStoreCategory() {
   return category;
 }
 
+async function getStoreGoods(userIdx, storeIdx, order, lastIndex, goodsCategoryIdx) {
+  // [{'goods_idx': 1, 'goods_img': 'http://~~', 'goods_name':'asd', 'goods_price': 32900, 'goods_rating':3.2, 'goods_minimum_amount':10, 'goods_review_cnt': 300 [goods_like_flag: true]}, ...]
+  let goods = await storeDao.selectStoreGoods(storeIdx, order, lastIndex, goodsCategoryIdx);
+
+  let scrapGoods;
+  if (userIdx) scrapGoods = await storeDao.selectGoodsScrapWithUserIdx(userIdx);
+
+  const goodsLength = goods.length;
+
+  for (let i = 0; i < goodsLength; i++) {
+    // add first img url (thumnail)
+    goods[i].goods_img = await storeDao.selectFirstGoodsImg(goods[i].goods_idx) || '';
+    [goods[i].goods_img] = parseObj(goods[i].goods_img, 'goods_img');
+
+    // add like flag
+    if (userIdx) {
+      goods[i].goods_like_flag = scrapGoods.includes(goods[i].goods_idx);
+    }
+  }
+
+  return goods;
+}
+
 module.exports = {
   getStoreRank,
   getStoreScrap,
@@ -93,4 +115,5 @@ module.exports = {
   removeStoreScrap,
   getStoreGoodsCategory,
   getStoreCategory,
+  getStoreGoods,
 };
