@@ -311,7 +311,6 @@ async function selectGoods(goodsIdx) {
   goods_delivery_period,
   goods_minimum_amount,
   goods_detail,
-  goods_stock,
   goods_review_cnt,
   store_name
   FROM GOODS
