@@ -148,6 +148,17 @@ async function selectStoreGoodsCategory(storeIdx) {
   return result;
 }
 
+async function selectStoreCategory() {
+  const sql = `
+  SELECT store_category_idx, store_category_name
+  FROM STORE_CATEGORY
+  `;
+
+  const result = await mysql.query(sql);
+
+  return result;
+}
+
 module.exports = {
   selectStoreName,
   selectStoreRank,
@@ -158,4 +169,5 @@ module.exports = {
   insertStoreScrap,
   deleteStoreScrap,
   selectStoreGoodsCategory,
+  selectStoreCategory,
 };

@@ -22,4 +22,7 @@ router.delete('/scrap/:storeIdx', jwtCheck, storeController.removeStoreScrap);
 // store 굿즈 카테고리 보기
 router.get('/:storeIdx/category', storeController.getStoreGoodsCategory);
 
+// store 카테고리 보기
+router.get('/category', storeController.getStoreCategory);
+
 module.exports = router;

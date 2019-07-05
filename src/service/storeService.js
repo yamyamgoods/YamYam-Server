@@ -66,10 +66,18 @@ async function getStoreGoodsCategory(storeIdx) {
   return category;
 }
 
+async function getStoreCategory() {
+  // [{'store_category_idx':1, 'store_category_name':'asd'}, ...]
+  const category = await storeDao.selectStoreCategory();
+
+  return category;
+}
+
 module.exports = {
   getStoreRank,
   getStoreScrap,
   addStoreScrap,
   removeStoreScrap,
   getStoreGoodsCategory,
+  getStoreCategory,
 };

@@ -83,10 +83,23 @@ async function getStoreGoodsCategory(req, res) {
   }
 }
 
+// store 카테고리 보기
+async function getStoreCategory(req, res) {
+  try {
+    const result = await storeService.getStoreCategory();
+
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getStoreRank,
   getStoreScrap,
   addStoreScrap,
   removeStoreScrap,
   getStoreGoodsCategory,
+  getStoreCategory,
 };
