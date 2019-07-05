@@ -111,6 +111,18 @@ async function updateRefreshToken(userIdx, newRefreshToken) {
   await mysql.query(sql, [newRefreshToken, userIdx]);
 }
 
+async function selectUserIdxByCommentIdx(commentIdx) {
+  const sql = `
+  SELECT user_idx
+  FROM GOODS_REVIEW_COMMENT
+  WHERE goods_review_cmt_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [commentIdx]);
+
+  return result;
+}
+
 module.exports = {
   selectUserWithGoods,
   selectFirstGoodsScrap,
@@ -119,4 +131,5 @@ module.exports = {
   selectUser,
   updateRefreshToken,
   getRefreshToken,
+  selectUserIdxByCommentIdx,
 };

@@ -207,6 +207,35 @@ async function getGoodsReviews(req, res) {
   }
 }
 
+async function modifyReviewComment(req, res) {
+  try {
+    const userIdx = req.user.userIdx;
+    const commentIdx = req.body.commentIdx;
+    const contents = req.body.contents;
+
+    await goodsService.modifyReviewComment(userIdx, commentIdx, contents);
+
+    response('Success', [], res, 201);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
+async function removeReviewComment(req, res) {
+  try {
+    const userIdx = req.user.userIdx;
+    const commentIdx = req.body.commentIdx;
+
+    await goodsService.removeReviewComment(userIdx, commentIdx);
+
+    response('Success', [], res, 204);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -222,4 +251,6 @@ module.exports = {
   getReviewComment,
   addReviewComment,
   getGoodsReviews,
+  modifyReviewComment,
+  removeReviewComment,
 };

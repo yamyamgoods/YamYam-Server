@@ -346,6 +346,28 @@ async function getGoodsReviews(goodsIdx, photoFlag, lastIndex) {
   return goodsReview;
 }
 
+async function modifyReviewComment(userIdx, commentIdx, contents) {
+  let commentUserIdx = await userDao.selectUserIdxByCommentIdx(commentIdx);
+  commentUserIdx = commentUserIdx[0].user_idx;
+
+  if (userIdx != commentUserIdx) {
+    throw errorResponseObject.accessDinedError;
+  }
+
+  await goodsDao.updateReviewComment(commentIdx, contents);
+}
+
+async function removeReviewComment(userIdx, commentIdx) {
+  let commentUserIdx = await userDao.selectUserIdxByCommentIdx(commentIdx);
+  commentUserIdx = commentUserIdx[0].user_idx;
+
+  if (userIdx != commentUserIdx) {
+    throw errorResponseObject.accessDinedError;
+  }
+
+  await goodsDao.deleteReviewComment(commentIdx);
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -361,4 +383,6 @@ module.exports = {
   getReviewComment,
   addReviewComment,
   getGoodsReviews,
+  modifyReviewComment,
+  removeReviewComment,
 };
