@@ -249,6 +249,20 @@ async function getGoodsOptionsName(req, res) {
   }
 }
 
+async function getGoodsDetail(req, res) {
+  try {
+    const goodsIdx = req.params.goodsIdx;
+    const userIdx = getUserIdxFromJwt(req.headers.authorization);
+
+    const result = await goodsService.getGoodsDetail(userIdx, goodsIdx);
+
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -267,4 +281,5 @@ module.exports = {
   modifyReviewComment,
   removeReviewComment,
   getGoodsOptionsName,
+  getGoodsDetail,
 };

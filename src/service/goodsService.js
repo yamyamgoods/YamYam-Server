@@ -374,6 +374,81 @@ async function getGoodsOptionsName(goodsIdx) {
   return result;
 }
 
+async function getGoodsDetail(userIdx, goodsIdx) {
+  const goodsArr = await goodsDao.selectGoods(goodsIdx);
+
+  // 굿즈 데이터
+  const goods = {
+    goods_name: goodsArr[0].goods_name,
+    store_name: goodsArr[0].store_name,
+    store_rating: goodsArr[0].store_rating,
+    goods_price: goodsArr[0].goods_price,
+    goods_delivery_charge: goodsArr[0].goods_delivery_charge,
+    goods_delivery_period: goodsArr[0].goods_delivery_period,
+    goods_minimum_amount: goodsArr[0].goods_minimum_amount,
+    goods_detail: goodsArr[0].goods_detail,
+  };
+
+  // 유저 즐겨찾기 flag 추가
+  const user = await userDao.selectUserWithGoods(userIdx, goodsIdx);
+
+  if (user.length === 0) {
+    goods.scrap_flag = 0;
+  } else {
+    goods.scrap_flag = 1;
+  }
+
+  // 굿즈 이미지 추가
+  const goodsImgArr = await goodsDao.selectGoodsImg(goodsIdx);
+  const goodsImgArrLength = goodsImgArr.length;
+  for (let i = 0; i < goodsImgArrLength; i++) {
+    goodsImgArr[i] = goodsImgArr[i].goods_img;
+  }
+  goods.goods_img = goodsImgArr;
+
+  // 스토어 데이터
+  const store = {
+    store_url: goodsArr[0].store_url,
+  };
+
+  const reviewsArr = await goodsDao.selectFirstGoodsReviewsAll(goodsIdx);
+  // 리뷰 데이터
+  const reviews = [];
+
+  const goodsReviewLength = reviewsArr.length;
+
+  for (let i = 0; i < goodsReviewLength; i++) {
+    // 유저 정보 가져오기
+    const userArr = await userDao.selectUser(reviewsArr[i].user_idx);
+    const user = userArr[0];
+    const goodsReviewIdx = reviewsArr[i].goods_review_idx;
+    const goodsReviewImg = await goodsDao.selectReviewImg(goodsReviewIdx);
+
+    // Mysql로부터 얻은 이미지 데이터 배열로 변경
+    const imgObjArrLength = goodsReviewImg.length;
+    const imgResultArray = [];
+    for (let j = 0; j < imgObjArrLength; j++) {
+      imgResultArray.push(goodsReviewImg[j].goods_review_img);
+    }
+    reviewsArr[i].user_name = user.user_name;
+    reviewsArr[i].user_img = user.user_img;
+
+    // 시간 String 생성
+    reviewsArr[i]
+      .goods_review_date = makeReviewTimeString(reviewsArr[i].goods_review_date);
+
+    reviewsArr[i].goods_review_img = imgResultArray;
+
+    reviews.push(reviewsArr[i]);
+  }
+
+  return {
+    goods,
+    store,
+    reviews,
+  };
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -392,4 +467,5 @@ module.exports = {
   modifyReviewComment,
   removeReviewComment,
   getGoodsOptionsName,
+  getGoodsDetail,
 };

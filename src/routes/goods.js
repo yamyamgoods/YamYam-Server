@@ -43,5 +43,7 @@ router.put('/review/comment', jwtCheck, goodsController.modifyReviewComment);
 router.delete('/review/comment/:commentIdx', jwtCheck, goodsController.removeReviewComment);
 // 리뷰 작성 페이지
 router.get('/:goodsIdx/options/name', goodsController.getGoodsOptionsName);
+// 굿즈 상세보기
+router.get('/:goodsIdx/detail', goodsController.getGoodsDetail);
 
 module.exports = router;
