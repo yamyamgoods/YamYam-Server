@@ -177,6 +177,22 @@ async function getReviewComment(req, res) {
   }
 }
 
+async function addReviewComment(req, res) {
+  try {
+    const userIdx = req.user.userIdx;
+    const reviewIdx = req.body.reviewIdx;
+    const contents = req.body.contents;
+    const recommentFlag = req.body.recommentFlag;
+
+    await goodsService.addReviewComment(userIdx, reviewIdx, contents, recommentFlag);
+
+    response('Success', [], res, 201);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -190,4 +206,5 @@ module.exports = {
   getExhibitionGoodsAll,
   getReviewDetail,
   getReviewComment,
+  addReviewComment,
 };

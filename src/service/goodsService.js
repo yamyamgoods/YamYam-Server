@@ -292,6 +292,14 @@ async function getReviewComment(reviewIdx, lastIndex) {
   return reviewComment;
 }
 
+async function addReviewComment(userIdx, reviewIdx, content, recommentFlag) {
+  if (!recommentFlag) {
+    await goodsDao.insertReviewComment(userIdx, reviewIdx, content);
+  } else {
+    await goodsDao.insertReviewRecomment(userIdx, reviewIdx, content, 1);
+  }
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -305,4 +313,5 @@ module.exports = {
   getExhibitionGoodsAll,
   getReviewDetail,
   getReviewComment,
+  addReviewComment,
 };
