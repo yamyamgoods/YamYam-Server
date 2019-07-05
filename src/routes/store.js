@@ -19,4 +19,7 @@ router.post('/scrap', jwtCheck, storeController.addStoreScrap);
 // store 즐겨찾기 삭제
 router.delete('/scrap/:storeIdx', jwtCheck, storeController.removeStoreScrap);
 
+// store 굿즈 카테고리 보기
+router.get('/:storeIdx/category', storeController.getStoreGoodsCategory);
+
 module.exports = router;

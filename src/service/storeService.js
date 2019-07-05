@@ -59,9 +59,17 @@ async function removeStoreScrap(storeIdx, userIdx) {
   await storeDao.deleteStoreScrap(storeIdx, userIdx);
 }
 
+async function getStoreGoodsCategory(storeIdx) {
+  // [{'goods_category_idx':1, 'goods_category_name':'asd'}, ...]
+  const category = await storeDao.selectStoreGoodsCategory(storeIdx);
+
+  return category;
+}
+
 module.exports = {
   getStoreRank,
   getStoreScrap,
   addStoreScrap,
   removeStoreScrap,
+  getStoreGoodsCategory,
 };

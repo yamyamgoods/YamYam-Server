@@ -69,9 +69,24 @@ async function removeStoreScrap(req, res) {
   }
 }
 
+// store의 굿즈 카테고리 보기
+async function getStoreGoodsCategory(req, res) {
+  try {
+    const storeIdx = req.params.storeIdx;
+
+    const result = await storeService.getStoreGoodsCategory(storeIdx);
+
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getStoreRank,
   getStoreScrap,
   addStoreScrap,
   removeStoreScrap,
+  getStoreGoodsCategory,
 };
