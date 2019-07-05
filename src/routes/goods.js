@@ -35,9 +35,9 @@ router.get('/review/:reviewIdx/detail', goodsController.getReviewDetail);
 router.get('/review/:reviewIdx/comment/:lastIndex', goodsController.getReviewComment)
 // 댓글 작성하기
 router.post('/review/comment', jwtCheck, goodsController.addReviewComment);
-
-router.get('/review/:reviewIdx/comment/:lastIndex', goodsController.getReviewComment);
 // 리뷰 보기
 router.get('/:goodsIdx/reviews/:photoFlag/:lastIndex', goodsController.getGoodsReviews);
+// 댓글 수정하기
+router.put('/review/comment', jwtCheck, goodsController.modifyReviewComment);
 
 module.exports = router;
