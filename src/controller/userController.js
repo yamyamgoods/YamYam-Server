@@ -44,7 +44,7 @@ async function getNewJwtToken(req, res) {
 }
 
 async function getUserInfo(req, res) {
-  try{ 
+  try { 
     const userIdx = req.user.userIdx;
     const result = await userService.getUserInfo(userIdx);
 
@@ -57,7 +57,7 @@ async function getUserInfo(req, res) {
 }
 
 async function getUserRecentGoods(req, res) {
-  try{ 
+  try { 
     const userIdx = req.user.userIdx;
     const lastIndex = req.params.lastIndex;
 
@@ -72,10 +72,35 @@ async function getUserRecentGoods(req, res) {
 }
 
 
+async function getUserAlarmList(req, res) {
+  try {
+    const userIdx = req.user.userIdx;
+    const lastIndex = req.params.lastIndex;
+    const result = await userService.getUserAlarmList(userIdx, lastIndex);
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
+async function getUserAlarmFlag(req, res) {
+  try {
+    const userIdx = req.user.userIdx;
+    const result = await userService.getUserAlarmFlag(userIdx);
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getGoodsScrap,
   getUserScrapOption,
   getNewJwtToken,
   getUserInfo,
   getUserRecentGoods,
+  getUserAlarmList,
+  getUserAlarmFlag,
 };

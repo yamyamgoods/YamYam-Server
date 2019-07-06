@@ -84,7 +84,12 @@ async function getUserInfo(userIdx) {
   userInfoObject.user_email = user[0].user_email;
   userInfoObject.user_img = user[0].user_img;
   userInfoObject.user_point = user[0].user_point;
-  userInfoObject.user_alarm_cnt = user[0].user_alarm_cnt;
+
+  if (user[0].user_alarm_cnt > 0) {
+    userInfoObject.alarm_flag = 1;
+  }else {
+    userInfoObject.alarm_flag = 0;
+  }
 
   result.push(userInfoObject);
   return result;
@@ -121,10 +126,43 @@ async function getUserRecentGoods(userIdx, lastIndex) {
   return result;
 }
 
+async function getUserAlarmList(userIdx, lastIndex) { //알람카운트 0으로 
+  const result = [];
+  const userAlarmList = await userDao.selectUserAlarm(userIdx, lastIndex);
+  const userAlarmListLength = userAlarmList.length;
+  
+
+  for (let i = 0; i < userAlarmListLength ; i++) {
+    const alarmTargetIdx = userAlarmList[i].alarm_target_idx;
+    const reviewComments = await userDao.selectReviewIdx(alarmTargetIdx);
+    userAlarmList[i].goods_review_idx = reviewComments[0].goods_review_idx;  
+    result.push(userAlarmList[i]);
+  }
+  await userDao.updateUserAlarmFlag(userIdx);
+  return result;
+}
+
+async function getUserAlarmFlag(userIdx) {
+  const result = [];
+  const subResult = {};
+  const user = await userDao.selectUser(userIdx);
+  if (user[0].user_alarm_cnt > 0) {
+    subResult.alarm_flag = 1;
+  }else {
+    subResult.alarm_flag = 0;
+  }
+  result.push(subResult);
+  return result;
+}
+
+
 module.exports = {
   getGoodsScrap,
   getUserScrapOption,
   getNewToken,
   getUserInfo,
   getUserRecentGoods,
+  getUserAlarmList,
+  getUserAlarmFlag,
+
 };

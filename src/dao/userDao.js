@@ -141,6 +141,53 @@ async function selectUserRecentGoods(userIdx, lastIndex) {
   return result;
 }
 
+async function selectUserAlarm(userIdx, lastIndex) {
+  const sql = `
+  SELECT 
+  a.alarm_target_idx,
+  a.alarm_date_time,
+  a.alarm_message
+  FROM ALARM a
+  WHERE a.user_idx = ?
+  AND a.alarm_idx < ?
+  ORDER BY a.alarm_date_time DESC
+  LIMIT ${mysqlConfig.paginationCnt} 
+  `;
+  const result = await mysql.query(sql, [userIdx, lastIndex]);
+  return result;
+}
+async function selectAlarmFlag(userIdx) {
+  const sql = `
+  SELECT *
+  FROM ALARM a
+  WHERE a.user_idx = ?
+  `;
+  const result = await mysql.query(sql, [userIdx]);
+  return result;
+}
+
+async function updateUserAlarmFlag(userIdx) {
+  const sql = `
+  UPDATE USER
+  SET user_alarm_cnt = 0
+  WHERE user_idx = ?
+  `;
+  const result = await mysql.query(sql, [userIdx]);
+  return result;
+}
+
+async function selectReviewIdx(reviewCommentIdx) {
+  const sql = `
+  SELECT goods_review_idx
+  FROM GOODS_REVIEW_COMMENT
+  WHERE goods_review_cmt_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [reviewCommentIdx]);
+  return result;
+}
+
+
 module.exports = {
   selectUserWithGoods,
   selectFirstGoodsScrap,
@@ -151,4 +198,8 @@ module.exports = {
   getRefreshToken,
   selectUserIdxByCommentIdx,
   selectUserRecentGoods,
+  selectUserAlarm,
+  selectAlarmFlag,
+  updateUserAlarmFlag,
+  selectReviewIdx,
 };
