@@ -4,11 +4,11 @@ const aws = require('aws-sdk');
 const moment = require('moment');
 const s3Config = require('../../config/s3Config');
 
-aws.config.loadFromPath('../../config/s3Location.json');
+aws.config.loadFromPath('./config/s3Location.json');
 
 const s3 = new aws.S3();
 
-async function upload(folder) {
+function getMulter(folder) {
   const date = {
     YYYY: moment().format('YYYY'),
     MM: moment().format('MM'),
@@ -29,5 +29,5 @@ async function upload(folder) {
 }
 
 module.exports = {
-  upload,
+  getMulter,
 };

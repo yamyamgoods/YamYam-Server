@@ -37,6 +37,7 @@ async function transaction(...args) {
     await args[0](connection);
     await connection.commit();
   } catch (error) {
+    console.log(error);
     await connection.rollback();
 
     throw errorResponseObject.transactionError;

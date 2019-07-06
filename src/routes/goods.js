@@ -2,7 +2,9 @@ const express = require('express');
 
 const router = express.Router();
 
-const { jwtCheck } = require('../library/jwtCheck');
+const { jwtCheck, adminCheck } = require('../library/jwtCheck');
+
+const upload = require('../library/s3Bucket').getMulter('goods');
 
 // goodsController
 const goodsController = require('../controller/goodsController');
@@ -43,5 +45,13 @@ router.put('/review/comment', jwtCheck, goodsController.modifyReviewComment);
 router.delete('/review/comment/:commentIdx', jwtCheck, goodsController.removeReviewComment);
 // 리뷰 작성 페이지
 router.get('/:goodsIdx/options/name', goodsController.getGoodsOptionsName);
+// 굿즈 상세보기
+router.get('/:goodsIdx/detail', goodsController.getGoodsDetail);
+// 굿즈 등록
+router.post('/', adminCheck, upload.array('img'), goodsController.addGoods);
+// 가격 범위 보기
+router.get('/category/:goodsCategoryIdx/priceRange', goodsController.getGoodsPriceRange);
+// 카테고리에 따른 굿즈 모두보기
+router.get('/category/:goodsCategoryIdx/:order/:lastIndex', goodsController.getAllGoods);
 
 module.exports = router;
