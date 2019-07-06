@@ -263,6 +263,7 @@ async function getReviewDetail(reviewIdx) {
     const userArr = await userDao.selectUser(reviewComment[i].user_idx);
     const user = userArr[0];
 
+    reviewComment[i].user_name = user.user_idx;
     reviewComment[i].user_name = user.user_name;
     reviewComment[i].user_img = s3Location + user.user_img;
 
@@ -294,6 +295,7 @@ async function getReviewComment(reviewIdx, lastIndex) {
     const userArr = await userDao.selectUser(reviewComment[i].user_idx);
     const user = userArr[0];
 
+    reviewComment[i].user_name = user.user_idx;
     reviewComment[i].user_name = user.user_name;
     reviewComment[i].user_img = s3Location + user.user_img;
 
@@ -305,8 +307,8 @@ async function getReviewComment(reviewIdx, lastIndex) {
   return reviewComment;
 }
 
-async function addReviewComment(userIdx, reviewIdx, contents, recommentFlag) {
-  await goodsTransaction.insertReviewCommentTransaction(userIdx, reviewIdx, contents, recommentFlag);
+async function addReviewComment(userIdx, userIdxForAlarm, reviewIdx, contents, recommentFlag) {
+  await goodsTransaction.insertReviewCommentTransaction(userIdx, userIdxForAlarm, reviewIdx, contents, recommentFlag);
 }
 // 해당 굿즈의 리뷰 모두 가져오기
 

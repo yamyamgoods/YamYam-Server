@@ -179,8 +179,9 @@ async function addReviewComment(req, res) {
     const reviewIdx = req.body.reviewIdx;
     const contents = req.body.contents;
     const recommentFlag = req.body.recommentFlag;
+    const userIdxForAlarm = req.body.userIdxForAlarm;
 
-    await goodsService.addReviewComment(userIdx, reviewIdx, contents, recommentFlag);
+    await goodsService.addReviewComment(userIdx, userIdxForAlarm, reviewIdx, contents, recommentFlag);
 
     response('Success', [], res, 201);
   } catch (error) {
