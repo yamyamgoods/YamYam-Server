@@ -483,6 +483,15 @@ async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeri
   await goodsTransaction.insertGoodsTransaction(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, optionArr);
 }
 
+// 카테고리에 따른 굿즈 최소 최대 금액 (옵션 - 최소 수량)
+async function getGoodsPriceRange(goodsCategoryIdx, minAmount) {
+  // {'price_start':100, 'price_end':40000 }
+  let priceRange = await goodsDao.selectPriceRange(goodsCategoryIdx, minAmount);
+  [priceRange] = priceRange;
+
+  return priceRange;
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -502,5 +511,6 @@ module.exports = {
   removeReviewComment,
   getGoodsOptionsName,
   getGoodsDetail,
-  addGoods,
+  addGoods,  
+  getGoodsPriceRange,
 };

@@ -560,6 +560,24 @@ async function goodsCategoryByCategoryIdx(categoryIdx) {
   return result;
 }
 
+async function selectPriceRange(goodsCategoryIdx, minAmount) {
+  let sql = `
+  SELECT 
+  MIN(goods_price) as price_start,
+  MAX(goods_price) as price_end
+  FROM GOODS
+  WHERE goods_category_idx = ?
+  `;
+
+  if (minAmount) {
+    sql += `AND goods_minimum_amount <= ${minAmount}`;
+  }
+
+  const result = await mysql.query(sql, [goodsCategoryIdx]);
+  
+  return result;
+}
+
 module.exports = {
   selectFirstBestGoods,
   selectNextBestGoods,
@@ -597,4 +615,5 @@ module.exports = {
   selectUserRecentGoods,
   updateUserRecentGoods,
   goodsCategoryByCategoryIdx,
+  selectPriceRange,
 };

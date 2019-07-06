@@ -4,7 +4,7 @@ const { response, errorResponse } = require('../library/response');
 
 async function getBestGoods(req, res) {
   try {
-    const lastIndex = req.params.lastIndex;
+    const { lastIndex } = req.params;
 
     const userIdx = getUserIdxFromJwt(req.headers.authorization);
 
@@ -19,7 +19,7 @@ async function getBestGoods(req, res) {
 
 async function getBestReviews(req, res) {
   try {
-    const lastIndex = req.params.lastIndex;
+    const { lastIndex } = req.params;
 
     const userIdx = getUserIdxFromJwt(req.headers.authorization);
 
@@ -34,8 +34,8 @@ async function getBestReviews(req, res) {
 
 async function addReviewLike(req, res) {
   try {
-    const userIdx = req.user.userIdx;
-    const reviewIdx = req.body.reviewIdx;
+    const { userIdx } = req.user;
+    const { reviewIdx } = req.body;
 
     await goodsService.addReviewLike(userIdx, reviewIdx);
 
@@ -48,8 +48,8 @@ async function addReviewLike(req, res) {
 
 async function removeReviewLike(req, res) {
   try {
-    const userIdx = req.user.userIdx;
-    const reviewIdx = req.params.reviewIdx;
+    const { userIdx } = req.user;
+    const { reviewIdx } = req.params;
 
     await goodsService.removeReviewLike(userIdx, reviewIdx);
 
@@ -62,10 +62,8 @@ async function removeReviewLike(req, res) {
 
 async function addGoodsScrap(req, res) {
   try {
-    const userIdx = req.user.userIdx;
-    const goodsIdx = req.body.goodsIdx;
-    const goodsScrapLabel = req.body.goodsScrapLabel;
-    const goodsScrapPrice = req.body.goodsScrapPrice;
+    const { userIdx } = req.user;
+    const { goodsIdx, goodsScrapLabel, goodsScrapPrice } = req.body;
 
     // JSON -> String 변환 후 저장
     const options = JSON.stringify(req.body.options);
@@ -81,9 +79,8 @@ async function addGoodsScrap(req, res) {
 
 async function removeGoodsScrap(req, res) {
   try {
-    const userIdx = req.user.userIdx;
-    const goodsIdx = req.params.goodsIdx;
-    const scrapIdx = req.params.scrapIdx;
+    const { userIdx } = req.user;
+    const { goodsIdx, scrapIdx } = req.params;
 
     await goodsService.removeGoodsScrap(userIdx, goodsIdx, scrapIdx);
 
@@ -137,7 +134,7 @@ async function getExhibitionPagination(req, res) {
 
 async function getExhibitionGoodsAll(req, res) {
   try {
-    const exhibitionIdx = req.params.exhibitionIdx;
+    const { exhibitionIdx } = req.params;
     const goodsIdx = req.params.lastIndex;
     const userIdx = getUserIdxFromJwt(req.headers.authorization);
 
@@ -152,7 +149,7 @@ async function getExhibitionGoodsAll(req, res) {
 
 async function getReviewDetail(req, res) {
   try {
-    const reviewIdx = req.params.reviewIdx;
+    const { reviewIdx } = req.params;
 
     const result = await goodsService.getReviewDetail(reviewIdx);
 
@@ -165,8 +162,7 @@ async function getReviewDetail(req, res) {
 
 async function getReviewComment(req, res) {
   try {
-    const reviewIdx = req.params.reviewIdx;
-    const lastIndex = req.params.lastIndex;
+    const { reviewIdx, lastIndex } = req.params;
 
     const result = await goodsService.getReviewComment(reviewIdx, lastIndex);
 
@@ -194,9 +190,7 @@ async function addReviewComment(req, res) {
 }
 async function getGoodsReviews(req, res) {
   try {
-    const goodsIdx = req.params.goodsIdx;
-    const lastIndex = req.params.lastIndex;
-    const photoFlag = req.params.photoFlag;
+    const { goodsIdx, lastIndex, photoFlag } = req.params;
 
     const result = await goodsService.getGoodsReviews(goodsIdx, photoFlag, lastIndex);
 
@@ -319,6 +313,20 @@ async function addGoods(req, res) {
   }
 }
 
+async function getGoodsPriceRange(req, res) {
+  try {
+    const { goodsCategoryIdx } = req.params;
+    const { minAmount } = req.query;
+
+    const result = await goodsService.getGoodsPriceRange(goodsCategoryIdx, minAmount);
+
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -339,4 +347,5 @@ module.exports = {
   getGoodsOptionsName,
   getGoodsDetail,
   addGoods,
+  getGoodsPriceRange,
 };

@@ -49,5 +49,7 @@ router.get('/:goodsIdx/options/name', goodsController.getGoodsOptionsName);
 router.get('/:goodsIdx/detail', goodsController.getGoodsDetail);
 // 굿즈 등록
 router.post('/', adminCheck, upload.array('img'), goodsController.addGoods);
+// 가격 범위 보기
+router.get('/category/:goodsCategoryIdx/priceRange', goodsController.getGoodsPriceRange);
 
 module.exports = router;
