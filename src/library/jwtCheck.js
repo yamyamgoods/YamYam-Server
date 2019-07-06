@@ -2,6 +2,9 @@ const jwt = require('jsonwebtoken');
 
 const { errorResponse } = require('../library/response');
 const { jwtKey, jwtOptions, refreshOptions } = require('../../config/jwtConfig');
+const errorResponseObject = require('../../config/errorResponseObject');
+
+const userDao = require('../dao/userDao');
 
 function getUserIdxFromJwt(authorization) {
   if (!authorization) return undefined;
@@ -53,10 +56,29 @@ function getRefreshToken(userIdx) {
   return token;
 }
 
+async function adminCheck(req, res, next) {
+  const { authorization } = req.headers;
+
+  try {
+    req.user = jwt.verify(authorization, jwtKey);
+
+    const userArr = await userDao.selectUser(req.user.userIdx);
+
+    if (userArr[0].admin == 0) {
+      throw errorResponseObject.authenticationError;
+    }
+
+    next();
+  } catch (error) {
+    errorResponse(error.message, res, 401);
+  }
+}
+
 module.exports = {
   jwtCheck,
   sign,
   verify,
   getUserIdxFromJwt,
   getRefreshToken,
+  adminCheck,
 };

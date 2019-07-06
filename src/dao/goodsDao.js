@@ -214,6 +214,7 @@ async function selectGoodsCategory() {
   const result = await mysql.query(sql);
   return result;
 }
+
 async function selectExhibition() {
   const sql = `
   SELECT *
@@ -224,6 +225,7 @@ async function selectExhibition() {
   const result = await mysql.query(sql);
   return result;
 }
+
 async function selectExhibitionGoods() {
   const sql = `
   SELECT ex.exhibition_idx,g.*
@@ -545,6 +547,19 @@ async function updateUserRecentGoods(userIdx, goodsIdx, currentTime) {
   await mysql.query(sql, [currentTime, userIdx, goodsIdx]);
 }
 
+async function goodsCategoryByCategoryIdx(categoryIdx) {
+  const sql = `
+  SELECT
+  goods_category_name
+  FROM GOODS_CATEGORY
+  WHERE goods_category_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [categoryIdx]);
+
+  return result;
+}
+
 module.exports = {
   selectFirstBestGoods,
   selectNextBestGoods,
@@ -581,4 +596,5 @@ module.exports = {
   insertUserRecentGoods,
   selectUserRecentGoods,
   updateUserRecentGoods,
+  goodsCategoryByCategoryIdx,
 };
