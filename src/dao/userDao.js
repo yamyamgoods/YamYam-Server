@@ -79,7 +79,8 @@ async function selectUser(userIdx) {
   user_point,
   user_alarm_cnt,
   refresh_token,
-  device_token
+  device_token,
+  admin
   FROM USER 
   WHERE user_idx = ?
   `;

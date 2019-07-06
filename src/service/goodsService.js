@@ -1,11 +1,11 @@
 const moment = require('moment');
 const goodsDao = require('../dao/goodsDao');
 const userDao = require('../dao/userDao');
-const stroeDao = require('../dao/storeDao');
+const storeDao = require('../dao/storeDao');
 const goodsTransaction = require('../dao/goodsTransaction');
 const errorResponseObject = require('../../config/errorResponseObject');
 const { makeReviewTimeString } = require('../library/changeTimeString');
-
+const { s3Location } = require('../../config/s3Config');
 
 async function getBestGoods(userIdx, lastIndex) {
   const result = [];
@@ -32,7 +32,7 @@ async function getBestGoods(userIdx, lastIndex) {
     // 굿즈 이미지 추가
     const goodsImg = await goodsDao.selectGoodsImg(goodsIdx);
     // 굿즈 이미지 중 가장 첫 번째 이미지 사용
-    goods[i].goods_img = goodsImg[0].goods_img;
+    goods[i].goods_img = s3Location + goodsImg[0].goods_img;
 
     result.push(goods[i]);
   }
@@ -64,7 +64,7 @@ async function getBestReviews(userIdx, lastIndex) {
       const imgObjArrLength = imgObjArr.length;
       const imgResultArray = [];
       for (let j = 0; j < imgObjArrLength; j++) {
-        imgResultArray.push(imgObjArr[j].goods_review_img);
+        imgResultArray.push(s3Location + imgObjArr[j].goods_review_img);
       }
 
       reviews[i].goods_review_img = imgResultArray;
@@ -218,7 +218,7 @@ async function getExhibitionGoodsAll(userIdx, exhibitionIdx, lastIndex) {
 
     // 굿즈이미지 한개 골라서 추가
     const goodsImg = await goodsDao.selectGoodsImg(goodsIdx);
-    exhibitionGoodsAll[i].goods_img = goodsImg[0].goods_img;
+    exhibitionGoodsAll[i].goods_img = s3Location + goodsImg[0].goods_img;
 
     result.push(exhibitionGoodsAll[i]);
   }
@@ -237,7 +237,7 @@ async function getReviewDetail(reviewIdx) {
   // 굿즈 데이터
   returnObj.goods = {
     goods_idx: goods[0].goods_idx,
-    goods_img: goodsImg[0].goods_img,
+    goods_img: s3Location + goodsImg[0].goods_img,
     goods_name: goods[0].goods_name,
     goods_price: goods[0].goods_price,
     goods_rating: goods[0].goods_rating,
@@ -253,7 +253,7 @@ async function getReviewDetail(reviewIdx) {
     const user = userArr[0];
 
     reviewComment[i].user_name = user.user_name;
-    reviewComment[i].user_img = user.user_img;
+    reviewComment[i].user_img = s3Location + user.user_img;
 
     // 시간 String 생성
     reviewComment[i]
@@ -284,7 +284,7 @@ async function getReviewComment(reviewIdx, lastIndex) {
     const user = userArr[0];
 
     reviewComment[i].user_name = user.user_name;
-    reviewComment[i].user_img = user.user_img;
+    reviewComment[i].user_img = s3Location + user.user_img;
 
     // 시간 String 생성
     reviewComment[i]
@@ -333,10 +333,10 @@ async function getGoodsReviews(goodsIdx, photoFlag, lastIndex) {
     const imgObjArrLength = goodsReviewImg.length;
     const imgResultArray = [];
     for (let j = 0; j < imgObjArrLength; j++) {
-      imgResultArray.push(goodsReviewImg[j].goods_review_img);
+      imgResultArray.push(s3Location + goodsReviewImg[j].goods_review_img);
     }
     goodsReview[i].user_name = user.user_name;
-    goodsReview[i].user_img = user.user_img;
+    goodsReview[i].user_img = s3Location + user.user_img;
 
     // 시간 String 생성
     goodsReview[i]
@@ -415,7 +415,7 @@ async function getGoodsDetail(userIdx, goodsIdx) {
   const goodsImgArr = await goodsDao.selectGoodsImg(goodsIdx);
   const goodsImgArrLength = goodsImgArr.length;
   for (let i = 0; i < goodsImgArrLength; i++) {
-    goodsImgArr[i] = goodsImgArr[i].goods_img;
+    goodsImgArr[i] = s3Location + goodsImgArr[i].goods_img;
   }
   goods.goods_img = goodsImgArr;
 
@@ -441,10 +441,10 @@ async function getGoodsDetail(userIdx, goodsIdx) {
     const imgObjArrLength = goodsReviewImg.length;
     const imgResultArray = [];
     for (let j = 0; j < imgObjArrLength; j++) {
-      imgResultArray.push(goodsReviewImg[j].goods_review_img);
+      imgResultArray.push(s3Location + goodsReviewImg[j].goods_review_img);
     }
     reviewsArr[i].user_name = user.user_name;
-    reviewsArr[i].user_img = user.user_img;
+    reviewsArr[i].user_img = s3Location + user.user_img;
 
     // 시간 String 생성
     reviewsArr[i]
@@ -460,6 +460,27 @@ async function getGoodsDetail(userIdx, goodsIdx) {
     store,
     reviews,
   };
+}
+
+async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, files, options) {
+  // store, category가 없는 경우
+  const storeArr = await storeDao.selectStoreName(storeIdx);
+  const categoryArr = await goodsDao.goodsCategoryByCategoryIdx(categoryIdx);
+
+  if (storeArr.length == 0) throw errorResponseObject.noStoreDataError;
+  if (categoryArr.length == 0) throw errorResponseObject.noCategoryDataError;
+
+  // options parse
+  const optionArr = JSON.parse(options).optionArr;
+
+  // img
+  const imgArr = [];
+  const filesLength = files.length;
+  for (let i = 0; i < filesLength; i++) {
+    imgArr.push(files[i].location.split(s3Location)[1]);
+  }
+
+  await goodsTransaction.insertGoodsTransaction(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, optionArr);
 }
 
 module.exports = {
@@ -481,4 +502,5 @@ module.exports = {
   removeReviewComment,
   getGoodsOptionsName,
   getGoodsDetail,
+  addGoods,
 };
