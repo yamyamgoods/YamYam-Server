@@ -120,6 +120,24 @@ async function getStoreGoods(req, res) {
   }
 }
 
+// store 등록
+async function addStore(req, res) {
+  try {
+    const file = req.file;
+    const name = req.body.name;
+    const url = req.body.url;
+    const hashTag = req.body.hashTag; // 배열
+    const categoryName = req.body.categoryName;
+
+    const result = await storeService.addStore(file, name, url, hashTag, categoryName);
+
+    response('Success', result, res, 201);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getStoreRank,
   getStoreScrap,
@@ -128,4 +146,5 @@ module.exports = {
   getStoreGoodsCategory,
   getStoreCategory,
   getStoreGoods,
+  addStore,
 };

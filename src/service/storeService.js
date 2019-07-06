@@ -1,4 +1,5 @@
 const storeDao = require('../dao/storeDao');
+const storeTransaction = require('../dao/storeTransaction');
 const { s3Location } = require('../../config/s3Config');
 
 // 단일 키 객체 => 값 배열
@@ -81,7 +82,7 @@ async function getStoreCategory() {
 
 async function getStoreGoods(userIdx, storeIdx, order, lastIndex, goodsCategoryIdx) {
   // [{'goods_idx': 1, 'goods_img': 'http://~~', 'goods_name':'asd', 'goods_price': 32900, 'goods_rating':3.2, 'goods_minimum_amount':10, 'goods_review_cnt': 300 [goods_like_flag: true]}, ...]
-  let goods = await storeDao.selectStoreGoods(storeIdx, order, lastIndex, goodsCategoryIdx);
+  const goods = await storeDao.selectStoreGoods(storeIdx, order, lastIndex, goodsCategoryIdx);
 
   let scrapGoods;
   if (userIdx) scrapGoods = await storeDao.selectGoodsScrapWithUserIdx(userIdx);
@@ -103,6 +104,12 @@ async function getStoreGoods(userIdx, storeIdx, order, lastIndex, goodsCategoryI
   return goods;
 }
 
+async function addStore(file, name, url, hashTag, categoryName) {
+  const img = file.location.split(s3Location)[1];
+
+  await storeTransaction.insertStoreTransaction(img, name, url, hashTag, categoryName);
+}
+
 module.exports = {
   getStoreRank,
   getStoreScrap,
@@ -111,4 +118,5 @@ module.exports = {
   getStoreGoodsCategory,
   getStoreCategory,
   getStoreGoods,
+  addStore,
 };
