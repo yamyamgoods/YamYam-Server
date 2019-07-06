@@ -325,6 +325,27 @@ async function getGoodsPriceRange(req, res) {
   }
 }
 
+async function getAllGoods(req, res) {
+  try {
+    const { goodsCategoryIdx, order, lastIndex } = req.params;
+    const {
+      priceStart, priceEnd, minAmount, options,
+    } = req.query;
+
+    let userIdx;
+    if (req.headers.authorization) {
+      userIdx = getUserIdxFromJwt(req.headers.authorization);
+    }
+
+    const result = await goodsService.getAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, priceEnd, minAmount, options, userIdx);
+
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -346,4 +367,5 @@ module.exports = {
   getGoodsDetail,
   addGoods,
   getGoodsPriceRange,
+  getAllGoods,
 };

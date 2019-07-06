@@ -578,6 +578,99 @@ async function selectPriceRange(goodsCategoryIdx, minAmount) {
   return result;
 }
 
+async function selectStoreGoods(storeIdx, order, lastIndex, goodsCategoryIdx) {
+  let sql = `
+  SELECT goods_idx, goods_name, goods_price, goods_rating, goods_minimum_amount, goods_review_cnt
+  FROM GOODS
+  WHERE store_idx = ? AND goods_idx > ?
+  `;
+
+  if (goodsCategoryIdx) {
+    sql += `AND goods_category_idx = ${goodsCategoryIdx}`;
+  }
+
+  if (order == 0) {
+    sql += ' ORDER BY goods_score DESC';
+  } else if (order == 1) { // 저가순
+    sql += ' ORDER BY goods_price';
+  } else if (order == 2) { // 고가순
+    sql += ' ORDER BY goods_price DESC';
+  }
+
+  sql += ` LIMIT ${mysqlConfig.paginationCnt}`;
+
+  const result = await mysql.query(sql, [storeIdx, lastIndex]);
+
+  return result;
+}
+
+async function selectFirstGoodsImg(goodsIdx) {
+  const sql = `
+  SELECT goods_img
+  FROM GOODS_IMG
+  WHERE goods_idx = ?
+  LIMIT 1
+  `;
+
+  const result = await mysql.query(sql, [goodsIdx]);
+
+  return result;
+}
+
+async function selectGoodsScrapWithUserIdx(userIdx) {
+  const sql = `
+  SELECT goods_idx
+  FROM GOODS_SCRAP
+  WHERE user_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [userIdx]);
+
+  return result;
+}
+
+async function selectAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, priceEnd, minAmount, options, queryFlag) {
+  let sql = `
+  SELECT goods_idx, goods_name, goods_price, goods_rating, goods_minimum_amount, goods_review_cnt
+  FROM GOODS
+  WHERE goods_category_idx = ? AND goods_idx > ?
+  `;
+
+  if (queryFlag) {
+    if (priceStart) {
+      sql += `
+      AND goods_price >= ${priceStart}`;
+    }
+    if (priceEnd) {
+      sql += `
+      AND goods_price <= ${priceEnd}`;
+    }
+    if (minAmount) {
+      sql += `
+      AND goods_minimum_amount <= ${minAmount}`;
+    }
+    if (options) {
+      sql += `
+      AND goods_idx IN (SELECT goods_idx FROM GOODS_CATEGORY_OPTION_DETAIL_GOODS WHERE goods_category_option_detail_idx IN (${options.slice(1, -1)}))
+      `;
+    }
+  }
+
+  if (order == 0) {
+    sql += ' ORDER BY goods_score DESC';
+  } else if (order == 1) { // 저가순
+    sql += ' ORDER BY goods_price';
+  } else if (order == 2) { // 고가순
+    sql += ' ORDER BY goods_price DESC';
+  }
+
+  sql += ` LIMIT ${mysqlConfig.paginationCnt}`;
+
+  const result = await mysql.query(sql, [goodsCategoryIdx, lastIndex, options]);
+
+  return result;
+}
+
 module.exports = {
   selectFirstBestGoods,
   selectNextBestGoods,
@@ -616,4 +709,8 @@ module.exports = {
   updateUserRecentGoods,
   goodsCategoryByCategoryIdx,
   selectPriceRange,
+  selectStoreGoods,
+  selectFirstGoodsImg,
+  selectGoodsScrapWithUserIdx,
+  selectAllGoods,
 };
