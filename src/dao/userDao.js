@@ -59,7 +59,7 @@ async function selectNextGoodsScrap(userIdx, lastIndex) {
 
 async function selectUserScrapOption(goodsScrapIdx) {
   const sql = `
-  SELECT goods_scrap_options
+  SELECT goods_scrap_option
   FROM USER_SCRAP_OPTION
   WHERE goods_scrap_idx = ?
   `;
@@ -79,7 +79,8 @@ async function selectUser(userIdx) {
   user_point,
   user_alarm_cnt,
   refresh_token,
-  device_token
+  device_token,
+  admin
   FROM USER 
   WHERE user_idx = ?
   `;
@@ -89,10 +90,65 @@ async function selectUser(userIdx) {
   return result;
 }
 
+async function getRefreshToken(userIdx) {
+  const sql = `
+  SELECT refresh_token
+  FROM USER 
+  WHERE user_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [userIdx]);
+
+  return result;
+}
+
+async function updateRefreshToken(userIdx, newRefreshToken) {
+  const sql = `
+  UPDATE USER 
+  SET refresh_token = ?
+  WHERE user_idx = ?
+  `;
+
+  await mysql.query(sql, [newRefreshToken, userIdx]);
+}
+
+async function selectUserIdxByCommentIdx(commentIdx) {
+  const sql = `
+  SELECT user_idx
+  FROM GOODS_REVIEW_COMMENT
+  WHERE goods_review_cmt_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [commentIdx]);
+
+  return result;
+}
+
+async function selectUserRecentGoods(userIdx, lastIndex) {
+  const sql = `
+  SELECT g.goods_idx,
+  g.goods_name,
+  g.goods_price,
+  g.store_idx
+  FROM USER_RECENT_GOODS urg, GOODS g
+  WHERE urg.user_idx = ?
+  AND urg.goods_idx = g.goods_idx
+  AND urg.user_recent_goods_idx < ?
+  ORDER BY urg.user_recent_goods_date_time DESC
+  LIMIT ${mysqlConfig.paginationCnt} 
+  `;
+  const result = await mysql.query(sql, [userIdx, lastIndex]);
+  return result;
+}
+
 module.exports = {
   selectUserWithGoods,
   selectFirstGoodsScrap,
   selectNextGoodsScrap,
   selectUserScrapOption,
   selectUser,
+  updateRefreshToken,
+  getRefreshToken,
+  selectUserIdxByCommentIdx,
+  selectUserRecentGoods,
 };

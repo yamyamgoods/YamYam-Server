@@ -214,6 +214,7 @@ async function selectGoodsCategory() {
   const result = await mysql.query(sql);
   return result;
 }
+
 async function selectExhibition() {
   const sql = `
   SELECT *
@@ -224,6 +225,7 @@ async function selectExhibition() {
   const result = await mysql.query(sql);
   return result;
 }
+
 async function selectExhibitionGoods() {
   const sql = `
   SELECT ex.exhibition_idx,g.*
@@ -311,9 +313,9 @@ async function selectGoods(goodsIdx) {
   goods_delivery_period,
   goods_minimum_amount,
   goods_detail,
-  goods_stock,
   goods_review_cnt,
-  store_name
+  store_name,
+  store_url
   FROM GOODS
   JOIN
   STORE
@@ -362,6 +364,30 @@ async function selectNextReviewComments(reviewIdx, lastIndex) {
   const result = await mysql.query(sql, [reviewIdx, lastIndex]);
 
   return result;
+}
+
+// 굿즈 리뷰 댓글 달기
+async function insertReviewComment(userIdx, reviewIdx, content) {
+  const sql = `
+  INSERT INTO GOODS_REVIEW_COMMENT
+  (goods_review_idx, user_idx, goods_review_cmt_content)
+  VALUES
+  (?, ?, ?)
+  `;
+
+  await mysql.query(sql, [reviewIdx, userIdx, content]);
+}
+
+// 굿즈 리뷰 댓글 달기(대댓글)
+async function insertReviewRecomment(userIdx, reviewIdx, content, recommentFlag) {
+  const sql = `
+  INSERT INTO GOODS_REVIEW_COMMENT
+  (goods_review_idx, user_idx, goods_review_cmt_content, goods_review_recmt_flag)
+  VALUES
+  (?, ?, ?, ?)
+  `;
+
+  await mysql.query(sql, [reviewIdx, userIdx, content, recommentFlag]);
 }
 
 // 해당 굿즈의 리뷰 모두 가져오기
@@ -454,6 +480,86 @@ async function selectNextGoodsReviewsAll(goodsIdx, lastIndex) {
   return result;
 }
 
+async function updateReviewComment(commentIdx, contents) {
+  const sql = `
+  UPDATE GOODS_REVIEW_COMMENT
+  SET goods_review_cmt_content = ?
+  WHERE goods_review_cmt_idx = ?
+  `;
+
+  await mysql.query(sql, [contents, commentIdx]);
+}
+
+async function deleteReviewComment(commentIdx) {
+  const sql = `
+  DELETE FROM GOODS_REVIEW_COMMENT
+  WHERE goods_review_cmt_idx = ?
+  `;
+
+  await mysql.query(sql, [commentIdx]);
+}
+
+async function selectGoodsOptionsName(goodsIdx) {
+  const sql = `
+  SELECT goods_option_name
+  FROM GOODS_OPTION
+  WHERE goods_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [goodsIdx]);
+
+  return result;
+}
+
+async function insertUserRecentGoods(userIdx, goodsIdx) {
+  const sql = `
+  INSERT INTO USER_RECENT_GOODS
+  (user_idx, goods_idx)
+  VALUES
+  (?, ?)
+  `;
+
+  await mysql.query(sql, [userIdx, goodsIdx]);
+}
+
+async function selectUserRecentGoods(userIdx, goodsIdx) {
+  const sql = `
+  SELECT 
+  user_idx,
+  goods_idx,
+  user_recent_goods_date_time
+  FROM USER_RECENT_GOODS
+  WHERE user_idx = ? AND goods_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [userIdx, goodsIdx]);
+
+  return result;
+}
+
+async function updateUserRecentGoods(userIdx, goodsIdx, currentTime) {
+  const sql = `
+  UPDATE USER_RECENT_GOODS
+  SET user_recent_goods_date_time = ?
+  WHERE user_idx = ? AND goods_idx = ?
+  `;
+
+  await mysql.query(sql, [currentTime, userIdx, goodsIdx]);
+}
+
+async function goodsCategoryByCategoryIdx(categoryIdx) {
+  const sql = `
+  SELECT
+  goods_category_name
+  FROM GOODS_CATEGORY
+  WHERE goods_category_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [categoryIdx]);
+
+  return result;
+}
+
 async function selectPriceRange(goodsCategoryIdx, minAmount) {
   let sql = `
   SELECT 
@@ -468,6 +574,7 @@ async function selectPriceRange(goodsCategoryIdx, minAmount) {
   }
 
   const result = await mysql.query(sql, [goodsCategoryIdx]);
+  
   return result;
 }
 
@@ -495,9 +602,18 @@ module.exports = {
   selectGoods,
   selectFirstReviewComments,
   selectNextReviewComments,
+  insertReviewComment,
+  insertReviewRecomment,
   selectFirstGoodsReviews,
   selectNextGoodsReviews,
   selectFirstGoodsReviewsAll,
   selectNextGoodsReviewsAll,
+  updateReviewComment,
+  deleteReviewComment,
+  selectGoodsOptionsName,
+  insertUserRecentGoods,
+  selectUserRecentGoods,
+  updateUserRecentGoods,
+  goodsCategoryByCategoryIdx,
   selectPriceRange,
 };

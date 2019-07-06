@@ -1,5 +1,6 @@
 const storeDao = require('../dao/storeDao');
-// const errorResponseObject = require('../../config/errorResponseObject');
+const storeTransaction = require('../dao/storeTransaction');
+const { s3Location } = require('../../config/s3Config');
 
 // 단일 키 객체 => 값 배열
 function parseObj(dataArr, attr) {
@@ -14,14 +15,7 @@ function parseObj(dataArr, attr) {
 
 async function getStoreRank(userIdx, lastIndex, storeCategoryIdx) {
   // idx, name, img, url, rating, review_cnt
-  let store;
-
-  if (storeCategoryIdx) {
-    store = await storeDao.selectStoreRankWithCategoryIdx(lastIndex, storeCategoryIdx);
-  } else {
-    store = await storeDao.selectStoreRank(lastIndex);
-  }
-
+  const store = await storeDao.selectStoreRank(lastIndex, storeCategoryIdx);
 
   const storeLength = store.length;
   let scrapStoreIdx;
@@ -31,6 +25,9 @@ async function getStoreRank(userIdx, lastIndex, storeCategoryIdx) {
   }
 
   for (let i = 0; i < storeLength; i++) {
+    // img s3Location concat
+    store[i].store_img = s3Location + store[i].store_img;
+
     // hashtags
     store[i].store_hashtags = await storeDao.selectStoreHashtag(store[i].store_idx) || [];
     store[i].store_hashtags = parseObj(store[i].store_hashtags, 'store_hashtag_name');
@@ -44,16 +41,13 @@ async function getStoreRank(userIdx, lastIndex, storeCategoryIdx) {
 
 async function getStoreScrap(userIdx, lastIndex, storeCategoryIdx) {
   // idx, name, img, url, rating, review_cnt
-  let store;
-
-  if (storeCategoryIdx) {
-    store = storeDao.selectStoreScrapWithCategoryIdx(userIdx, lastIndex, storeCategoryIdx);
-  } else {
-    store = await storeDao.selectStoreScrap(userIdx, lastIndex);
-  }
+  const store = await storeDao.selectStoreScrap(userIdx, lastIndex, storeCategoryIdx);
 
   const storeLength = store.length;
   for (let i = 0; i < storeLength; i++) {
+    // img s3Location concat
+    store[i].store_img = s3Location + store[i].store_img;
+
     // hashtags
     store[i].store_hashtags = await storeDao.selectStoreHashtag(store[i].store_idx) || [];
     store[i].store_hashtags = parseObj(store[i].store_hashtags, 'store_hashtag_name');
@@ -86,6 +80,36 @@ async function getStoreCategory() {
   return category;
 }
 
+async function getStoreGoods(userIdx, storeIdx, order, lastIndex, goodsCategoryIdx) {
+  // [{'goods_idx': 1, 'goods_img': 'http://~~', 'goods_name':'asd', 'goods_price': 32900, 'goods_rating':3.2, 'goods_minimum_amount':10, 'goods_review_cnt': 300 [goods_like_flag: true]}, ...]
+  const goods = await storeDao.selectStoreGoods(storeIdx, order, lastIndex, goodsCategoryIdx);
+
+  let scrapGoods;
+  if (userIdx) scrapGoods = await storeDao.selectGoodsScrapWithUserIdx(userIdx);
+
+  const goodsLength = goods.length;
+
+  for (let i = 0; i < goodsLength; i++) {
+    // add first img url (thumnail)
+    goods[i].goods_img = await storeDao.selectFirstGoodsImg(goods[i].goods_idx) || '';
+    [goods[i].goods_img] = parseObj(goods[i].goods_img, 'goods_img');
+    goods[i].goods_img = s3Location + goods[i].goods_img;
+
+    // add like flag
+    if (userIdx) {
+      goods[i].goods_like_flag = scrapGoods.includes(goods[i].goods_idx);
+    }
+  }
+
+  return goods;
+}
+
+async function addStore(file, name, url, hashTag, categoryName) {
+  const img = file.location.split(s3Location)[1];
+
+  await storeTransaction.insertStoreTransaction(img, name, url, hashTag, categoryName);
+}
+
 module.exports = {
   getStoreRank,
   getStoreScrap,
@@ -93,4 +117,6 @@ module.exports = {
   removeStoreScrap,
   getStoreGoodsCategory,
   getStoreCategory,
+  getStoreGoods,
+  addStore,
 };

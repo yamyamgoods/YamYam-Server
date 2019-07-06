@@ -173,6 +173,21 @@ async function getReviewComment(req, res) {
   }
 }
 
+async function addReviewComment(req, res) {
+  try {
+    const userIdx = req.user.userIdx;
+    const reviewIdx = req.body.reviewIdx;
+    const contents = req.body.contents;
+    const recommentFlag = req.body.recommentFlag;
+
+    await goodsService.addReviewComment(userIdx, reviewIdx, contents, recommentFlag);
+
+    response('Success', [], res, 201);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
 async function getGoodsReviews(req, res) {
   try {
     const { goodsIdx, lastIndex, photoFlag } = req.params;
@@ -180,6 +195,118 @@ async function getGoodsReviews(req, res) {
     const result = await goodsService.getGoodsReviews(goodsIdx, photoFlag, lastIndex);
 
     response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
+async function modifyReviewComment(req, res) {
+  try {
+    const userIdx = req.user.userIdx;
+    const commentIdx = req.body.commentIdx;
+    const contents = req.body.contents;
+
+    await goodsService.modifyReviewComment(userIdx, commentIdx, contents);
+
+    response('Success', [], res, 201);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
+async function removeReviewComment(req, res) {
+  try {
+    const userIdx = req.user.userIdx;
+    const commentIdx = req.body.commentIdx;
+
+    await goodsService.removeReviewComment(userIdx, commentIdx);
+
+    response('Success', [], res, 204);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
+async function getGoodsOptionsName(req, res) {
+  try {
+    const goodsIdx = req.params.goodsIdx;
+
+    const result = await goodsService.getGoodsOptionsName(goodsIdx);
+
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
+async function getGoodsDetail(req, res) {
+  try {
+    const goodsIdx = req.params.goodsIdx;
+    const userIdx = getUserIdxFromJwt(req.headers.authorization);
+
+    const result = await goodsService.getGoodsDetail(userIdx, goodsIdx);
+
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
+async function addGoods(req, res) {
+  try {
+    const goodsName = req.body.goodsName;
+    const storeIdx = req.body.storeIdx;
+    const price = req.body.price;
+    const deliveryCharge = req.body.deliveryCharge;
+    const deliveryPeriod = req.body.deliveryPeriod;
+    const minimumAmount = req.body.minimumAmount;
+    const detail = req.body.detail;
+    const categoryIdx = req.body.categoryIdx;
+
+    const files = req.files;
+
+    /* 옵션 데이터 예시 (JSON.parse 필요)
+    {
+      "optionArr" : [
+          {
+            "optionName" : "색상",
+            "optionDetail" : [
+              {
+                "optionName": "빨강",
+                "optionPrice": 1000
+              },
+              {
+                "optionName": "파랑",
+                "optionPrice": 2000
+              }
+            ]
+          },
+          {
+            "optionName" : "사이즈",
+            "optionDetail" : [
+              {
+                "optionName": "M",
+                "optionPrice": 1000
+              },
+              {
+                "optionName": "L",
+                "optionPrice": 2000
+              }
+            ]
+          }
+      ]
+    }
+     */
+    const options = req.body.options;
+
+    await goodsService.addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, files, options);
+
+    response('Success', [], res, 201);
   } catch (error) {
     console.log(error);
     errorResponse(error.message, res, error.statusCode);
@@ -213,6 +340,12 @@ module.exports = {
   getExhibitionGoodsAll,
   getReviewDetail,
   getReviewComment,
+  addReviewComment,
   getGoodsReviews,
+  modifyReviewComment,
+  removeReviewComment,
+  getGoodsOptionsName,
+  getGoodsDetail,
+  addGoods,
   getGoodsPriceRange,
 };

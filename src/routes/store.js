@@ -2,7 +2,9 @@ const express = require('express');
 
 const router = express.Router();
 
-const { jwtCheck } = require('../library/jwtCheck');
+const { jwtCheck, adminCheck } = require('../library/jwtCheck');
+
+const upload = require('../library/s3Bucket').getMulter('store');
 
 // storeController
 const storeController = require('../controller/storeController');
@@ -24,5 +26,11 @@ router.get('/:storeIdx/category', storeController.getStoreGoodsCategory);
 
 // store 카테고리 보기
 router.get('/category', storeController.getStoreCategory);
+
+// store 굿즈 보기
+router.get('/:storeIdx/goods/:order/:lastIndex', storeController.getStoreGoods);
+
+// store 등록
+router.post('/', adminCheck, upload.single('img'), storeController.addStore);
 
 module.exports = router;

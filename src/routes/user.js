@@ -11,5 +11,12 @@ const userController = require('../controller/userController');
 router.get('/scrap/:lastIndex', jwtCheck, userController.getGoodsScrap);
 // 찜한 굿즈의 견적 정보
 router.get('/scrap/:goodsScrapIdx/option', jwtCheck, userController.getUserScrapOption);
+// JWT Token 만료시 새로운 JWT Token 조회
+router.get('/jwttoken', userController.getNewJwtToken);
+// 마이페이지 보기
+router.get('/mypage', jwtCheck, userController.getUserInfo);
+// 최근 본 상품 보기
+router.get('/goods/recent/:lastIndex', jwtCheck, userController.getUserRecentGoods);
+
 
 module.exports = router;

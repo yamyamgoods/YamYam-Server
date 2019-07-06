@@ -1,9 +1,11 @@
+const moment = require('moment');
 const goodsDao = require('../dao/goodsDao');
 const userDao = require('../dao/userDao');
-const stroeDao = require('../dao/storeDao');
+const storeDao = require('../dao/storeDao');
 const goodsTransaction = require('../dao/goodsTransaction');
 const errorResponseObject = require('../../config/errorResponseObject');
 const { makeReviewTimeString } = require('../library/changeTimeString');
+const { s3Location } = require('../../config/s3Config');
 
 async function getBestGoods(userIdx, lastIndex) {
   const result = [];
@@ -30,7 +32,7 @@ async function getBestGoods(userIdx, lastIndex) {
     // 굿즈 이미지 추가
     const goodsImg = await goodsDao.selectGoodsImg(goodsIdx);
     // 굿즈 이미지 중 가장 첫 번째 이미지 사용
-    goods[i].goods_img = goodsImg[0].goods_img;
+    goods[i].goods_img = s3Location + goodsImg[0].goods_img;
 
     result.push(goods[i]);
   }
@@ -62,7 +64,7 @@ async function getBestReviews(userIdx, lastIndex) {
       const imgObjArrLength = imgObjArr.length;
       const imgResultArray = [];
       for (let j = 0; j < imgObjArrLength; j++) {
-        imgResultArray.push(imgObjArr[j].goods_review_img);
+        imgResultArray.push(s3Location + imgObjArr[j].goods_review_img);
       }
 
       reviews[i].goods_review_img = imgResultArray;
@@ -204,7 +206,7 @@ async function getExhibitionGoodsAll(userIdx, exhibitionIdx, lastIndex) {
     const user = await userDao.selectUserWithGoods(userIdx, goodsIdx);
 
     // 해당 굿즈의 스토어 이름 추가
-    const storeName = await stroeDao.selectStoreName(goodsStoreIdx);
+    const storeName = await storeDao.selectStoreName(goodsStoreIdx);
     exhibitionGoodsAll[i].store_name = storeName[0].store_name;
 
     // 유저 즐겨찾기 flag 추가
@@ -216,7 +218,7 @@ async function getExhibitionGoodsAll(userIdx, exhibitionIdx, lastIndex) {
 
     // 굿즈이미지 한개 골라서 추가
     const goodsImg = await goodsDao.selectGoodsImg(goodsIdx);
-    exhibitionGoodsAll[i].goods_img = goodsImg[0].goods_img;
+    exhibitionGoodsAll[i].goods_img = s3Location + goodsImg[0].goods_img;
 
     result.push(exhibitionGoodsAll[i]);
   }
@@ -235,7 +237,7 @@ async function getReviewDetail(reviewIdx) {
   // 굿즈 데이터
   returnObj.goods = {
     goods_idx: goods[0].goods_idx,
-    goods_img: goodsImg[0].goods_img,
+    goods_img: s3Location + goodsImg[0].goods_img,
     goods_name: goods[0].goods_name,
     goods_price: goods[0].goods_price,
     goods_rating: goods[0].goods_rating,
@@ -251,7 +253,7 @@ async function getReviewDetail(reviewIdx) {
     const user = userArr[0];
 
     reviewComment[i].user_name = user.user_name;
-    reviewComment[i].user_img = user.user_img;
+    reviewComment[i].user_img = s3Location + user.user_img;
 
     // 시간 String 생성
     reviewComment[i]
@@ -282,7 +284,7 @@ async function getReviewComment(reviewIdx, lastIndex) {
     const user = userArr[0];
 
     reviewComment[i].user_name = user.user_name;
-    reviewComment[i].user_img = user.user_img;
+    reviewComment[i].user_img = s3Location + user.user_img;
 
     // 시간 String 생성
     reviewComment[i]
@@ -292,6 +294,13 @@ async function getReviewComment(reviewIdx, lastIndex) {
   return reviewComment;
 }
 
+async function addReviewComment(userIdx, reviewIdx, content, recommentFlag) {
+  if (!recommentFlag) {
+    await goodsDao.insertReviewComment(userIdx, reviewIdx, content);
+  } else {
+    await goodsDao.insertReviewRecomment(userIdx, reviewIdx, content, 1);
+  }
+}
 // 해당 굿즈의 리뷰 모두 가져오기
 
 async function getGoodsReviews(goodsIdx, photoFlag, lastIndex) {
@@ -324,10 +333,10 @@ async function getGoodsReviews(goodsIdx, photoFlag, lastIndex) {
     const imgObjArrLength = goodsReviewImg.length;
     const imgResultArray = [];
     for (let j = 0; j < imgObjArrLength; j++) {
-      imgResultArray.push(goodsReviewImg[j].goods_review_img);
+      imgResultArray.push(s3Location + goodsReviewImg[j].goods_review_img);
     }
     goodsReview[i].user_name = user.user_name;
-    goodsReview[i].user_img = user.user_img;
+    goodsReview[i].user_img = s3Location + user.user_img;
 
     // 시간 String 생성
     goodsReview[i]
@@ -337,6 +346,141 @@ async function getGoodsReviews(goodsIdx, photoFlag, lastIndex) {
   }
 
   return goodsReview;
+}
+
+async function modifyReviewComment(userIdx, commentIdx, contents) {
+  const commentUserIdxArr = await userDao.selectUserIdxByCommentIdx(commentIdx);
+  const commentUserIdx = commentUserIdxArr[0].user_idx;
+
+  if (userIdx != commentUserIdx) {
+    throw errorResponseObject.accessDinedError;
+  }
+
+  await goodsDao.updateReviewComment(commentIdx, contents);
+}
+
+async function removeReviewComment(userIdx, commentIdx) {
+  const commentUserIdxArr = await userDao.selectUserIdxByCommentIdx(commentIdx);
+  const commentUserIdx = commentUserIdxArr[0].user_idx;
+
+  if (userIdx != commentUserIdx) {
+    throw errorResponseObject.accessDinedError;
+  }
+
+  await goodsDao.deleteReviewComment(commentIdx);
+}
+
+async function getGoodsOptionsName(goodsIdx) {
+  const result = await goodsDao.selectGoodsOptionsName(goodsIdx);
+
+  return result;
+}
+
+async function getGoodsDetail(userIdx, goodsIdx) {
+  // 최근 본 굿즈 추가
+  if (userIdx != undefined) {
+    const userRecentGoodsArr = await goodsDao.selectUserRecentGoods(userIdx, goodsIdx);
+
+    if (userRecentGoodsArr.length == 0) {
+      await goodsDao.insertUserRecentGoods(userIdx, goodsIdx);
+    } else {
+      await goodsDao.updateUserRecentGoods(userIdx, goodsIdx, moment().format('YYYY-MM-DD HH:mm:ss'));
+    }
+  }
+
+  const goodsArr = await goodsDao.selectGoods(goodsIdx);
+
+  // 굿즈 데이터
+  const goods = {
+    goods_name: goodsArr[0].goods_name,
+    store_name: goodsArr[0].store_name,
+    store_rating: goodsArr[0].store_rating,
+    goods_price: goodsArr[0].goods_price,
+    goods_delivery_charge: goodsArr[0].goods_delivery_charge,
+    goods_delivery_period: goodsArr[0].goods_delivery_period,
+    goods_minimum_amount: goodsArr[0].goods_minimum_amount,
+    goods_detail: goodsArr[0].goods_detail,
+  };
+
+  // 유저 즐겨찾기 flag 추가
+  const user = await userDao.selectUserWithGoods(userIdx, goodsIdx);
+
+  if (user.length === 0) {
+    goods.scrap_flag = 0;
+  } else {
+    goods.scrap_flag = 1;
+  }
+
+  // 굿즈 이미지 추가
+  const goodsImgArr = await goodsDao.selectGoodsImg(goodsIdx);
+  const goodsImgArrLength = goodsImgArr.length;
+  for (let i = 0; i < goodsImgArrLength; i++) {
+    goodsImgArr[i] = s3Location + goodsImgArr[i].goods_img;
+  }
+  goods.goods_img = goodsImgArr;
+
+  // 스토어 데이터
+  const store = {
+    store_url: goodsArr[0].store_url,
+  };
+
+  const reviewsArr = await goodsDao.selectFirstGoodsReviewsAll(goodsIdx);
+  // 리뷰 데이터
+  const reviews = [];
+
+  const goodsReviewLength = reviewsArr.length;
+
+  for (let i = 0; i < goodsReviewLength; i++) {
+    // 유저 정보 가져오기
+    const userArr = await userDao.selectUser(reviewsArr[i].user_idx);
+    const user = userArr[0];
+    const goodsReviewIdx = reviewsArr[i].goods_review_idx;
+    const goodsReviewImg = await goodsDao.selectReviewImg(goodsReviewIdx);
+
+    // Mysql로부터 얻은 이미지 데이터 배열로 변경
+    const imgObjArrLength = goodsReviewImg.length;
+    const imgResultArray = [];
+    for (let j = 0; j < imgObjArrLength; j++) {
+      imgResultArray.push(s3Location + goodsReviewImg[j].goods_review_img);
+    }
+    reviewsArr[i].user_name = user.user_name;
+    reviewsArr[i].user_img = s3Location + user.user_img;
+
+    // 시간 String 생성
+    reviewsArr[i]
+      .goods_review_date = makeReviewTimeString(reviewsArr[i].goods_review_date);
+
+    reviewsArr[i].goods_review_img = imgResultArray;
+
+    reviews.push(reviewsArr[i]);
+  }
+
+  return {
+    goods,
+    store,
+    reviews,
+  };
+}
+
+async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, files, options) {
+  // store, category가 없는 경우
+  const storeArr = await storeDao.selectStoreName(storeIdx);
+  const categoryArr = await goodsDao.goodsCategoryByCategoryIdx(categoryIdx);
+
+  if (storeArr.length == 0) throw errorResponseObject.noStoreDataError;
+  if (categoryArr.length == 0) throw errorResponseObject.noCategoryDataError;
+
+  // options parse
+  const optionArr = JSON.parse(options).optionArr;
+
+  // img
+  const imgArr = [];
+  const filesLength = files.length;
+  for (let i = 0; i < filesLength; i++) {
+    imgArr.push(files[i].location.split(s3Location)[1]);
+  }
+
+  await goodsTransaction.insertGoodsTransaction(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, optionArr);
 }
 
 // 카테고리에 따른 굿즈 최소 최대 금액 (옵션 - 최소 수량)
@@ -361,6 +505,12 @@ module.exports = {
   getExhibitionGoodsAll,
   getReviewDetail,
   getReviewComment,
+  addReviewComment,
   getGoodsReviews,
+  modifyReviewComment,
+  removeReviewComment,
+  getGoodsOptionsName,
+  getGoodsDetail,
+  addGoods,  
   getGoodsPriceRange,
 };

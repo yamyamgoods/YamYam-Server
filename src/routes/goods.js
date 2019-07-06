@@ -2,7 +2,9 @@ const express = require('express');
 
 const router = express.Router();
 
-const { jwtCheck } = require('../library/jwtCheck');
+const { jwtCheck, adminCheck } = require('../library/jwtCheck');
+
+const upload = require('../library/s3Bucket').getMulter('goods');
 
 // goodsController
 const goodsController = require('../controller/goodsController');
@@ -32,9 +34,21 @@ router.get('/exhibition/:exhibitionIdx/:lastIndex', goodsController.getExhibitio
 // 리뷰 상세보기 뷰
 router.get('/review/:reviewIdx/detail', goodsController.getReviewDetail);
 // 리뷰의 댓글 더보기
-router.get('/review/:reviewIdx/comment/:lastIndex', goodsController.getReviewComment);
+router.get('/review/:reviewIdx/comment/:lastIndex', goodsController.getReviewComment)
+// 댓글 작성하기
+router.post('/review/comment', jwtCheck, goodsController.addReviewComment);
 // 리뷰 보기
 router.get('/:goodsIdx/reviews/:photoFlag/:lastIndex', goodsController.getGoodsReviews);
+// 댓글 수정하기
+router.put('/review/comment', jwtCheck, goodsController.modifyReviewComment);
+// 댓글 삭제하기
+router.delete('/review/comment/:commentIdx', jwtCheck, goodsController.removeReviewComment);
+// 리뷰 작성 페이지
+router.get('/:goodsIdx/options/name', goodsController.getGoodsOptionsName);
+// 굿즈 상세보기
+router.get('/:goodsIdx/detail', goodsController.getGoodsDetail);
+// 굿즈 등록
+router.post('/', adminCheck, upload.array('img'), goodsController.addGoods);
 // 가격 범위 보기
 router.get('/category/:goodsCategoryIdx/priceRange', goodsController.getGoodsPriceRange);
 
