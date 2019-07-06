@@ -157,12 +157,22 @@ async function insertAlarm(connection, userIdx, target, targetIdx, alarmMessage)
   await connection.query(sql, [userIdx, target, targetIdx, alarmMessage]);
 }
 
-async function insertReviewCommentTransaction(userIdx, reviewIdx, contents, recommentFlag) {
+async function updateUserAlarmCnt(connection, userIdx) {
+  const sql = `
+  UPDATE USER
+  SET user_alarm_cnt = user_alarm_cnt + 1
+  WHERE user_idx = ?
+  `;
+
+  await connection.query(sql, [userIdx]);
+}
+
+async function insertReviewCommentTransaction(userIdx, userIdxForAlarm, reviewIdx, contents, recommentFlag) {
   await mysql.transaction(async (connection) => {
     let alarmMessage;
     let commentIdx;
 
-    if (!recommentFlag) {
+    if (recommentFlag) {
       const reviewComment = await insertReviewComment(connection, userIdx, reviewIdx, contents);
       commentIdx = reviewComment.insertId;
 
@@ -174,7 +184,8 @@ async function insertReviewCommentTransaction(userIdx, reviewIdx, contents, reco
       alarmMessage = `댓글에 답글이 달렸습니다. : ${contents}`;
     }
 
-    await insertAlarm(connection, userIdx, 'GOODS_REVIEW_COMMENT', commentIdx, alarmMessage);
+    await insertAlarm(connection, userIdxForAlarm, 'GOODS_REVIEW_COMMENT', commentIdx, alarmMessage);
+    await updateUserAlarmCnt(connection, userIdxForAlarm);
   });
 }
 
