@@ -294,12 +294,8 @@ async function getReviewComment(reviewIdx, lastIndex) {
   return reviewComment;
 }
 
-async function addReviewComment(userIdx, reviewIdx, content, recommentFlag) {
-  if (!recommentFlag) {
-    await goodsDao.insertReviewComment(userIdx, reviewIdx, content);
-  } else {
-    await goodsDao.insertReviewRecomment(userIdx, reviewIdx, content, 1);
-  }
+async function addReviewComment(userIdx, reviewIdx, contents, recommentFlag) {
+  await goodsTransaction.insertReviewCommentTransaction(userIdx, reviewIdx, contents, recommentFlag);
 }
 // 해당 굿즈의 리뷰 모두 가져오기
 
@@ -471,7 +467,7 @@ async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeri
   if (categoryArr.length == 0) throw errorResponseObject.noCategoryDataError;
 
   // options parse
-  const optionArr = JSON.parse(options).optionArr;
+  // const optionArr = JSON.parse(options).optionArr;
 
   // img
   const imgArr = [];
@@ -480,7 +476,7 @@ async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeri
     imgArr.push(files[i].location.split(s3Location)[1]);
   }
 
-  await goodsTransaction.insertGoodsTransaction(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, optionArr);
+  await goodsTransaction.insertGoodsTransaction(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, options);
 }
 
 // 카테고리에 따른 굿즈 최소 최대 금액 (옵션 - 최소 수량)
@@ -511,6 +507,6 @@ module.exports = {
   removeReviewComment,
   getGoodsOptionsName,
   getGoodsDetail,
-  addGoods,  
+  addGoods,
   getGoodsPriceRange,
 };

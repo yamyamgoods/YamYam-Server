@@ -271,8 +271,7 @@ async function addGoods(req, res) {
     const files = req.files;
 
     /* 옵션 데이터 예시 (JSON.parse 필요)
-    {
-      "optionArr" : [
+    [
           {
             "optionName" : "색상",
             "optionDetail" : [
@@ -300,7 +299,6 @@ async function addGoods(req, res) {
             ]
           }
       ]
-    }
      */
     const options = req.body.options;
 

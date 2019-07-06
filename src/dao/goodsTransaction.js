@@ -118,7 +118,68 @@ async function insertGoodsTransaction(goodsName, storeIdx, price, deliveryCharge
   });
 }
 
+// 굿즈 리뷰 댓글 달기
+async function insertReviewComment(connection, userIdx, reviewIdx, contents) {
+  const sql = `
+  INSERT INTO GOODS_REVIEW_COMMENT
+  (goods_review_idx, user_idx, goods_review_cmt_content)
+  VALUES
+  (?, ?, ?)
+  `;
+
+  const result = await connection.query(sql, [reviewIdx, userIdx, contents]);
+
+  return result;
+}
+
+// 굿즈 리뷰 댓글 달기(대댓글)
+async function insertReviewRecomment(connection, userIdx, reviewIdx, contents, recommentFlag) {
+  const sql = `
+  INSERT INTO GOODS_REVIEW_COMMENT
+  (goods_review_idx, user_idx, goods_review_cmt_content, goods_review_recmt_flag)
+  VALUES
+  (?, ?, ?, ?)
+  `;
+
+  const result = await connection.query(sql, [reviewIdx, userIdx, contents, recommentFlag]);
+
+  return result;
+}
+
+async function insertAlarm(connection, userIdx, target, targetIdx, alarmMessage) {
+  const sql = `
+  INSERT INTO ALARM
+  (user_idx, alarm_target, alarm_target_idx, alarm_message)
+  VALUES
+  (?, ?, ?, ?)
+  `;
+
+  await connection.query(sql, [userIdx, target, targetIdx, alarmMessage]);
+}
+
+async function insertReviewCommentTransaction(userIdx, reviewIdx, contents, recommentFlag) {
+  await mysql.transaction(async (connection) => {
+    let alarmMessage;
+    let commentIdx;
+
+    if (!recommentFlag) {
+      const reviewComment = await insertReviewComment(connection, userIdx, reviewIdx, contents);
+      commentIdx = reviewComment.insertId;
+
+      alarmMessage = `리뷰에 댓글이 달렸습니다. : ${contents}`;
+    } else {
+      const reviewRecomment = await insertReviewRecomment(connection, userIdx, reviewIdx, contents, 1);
+      commentIdx = reviewRecomment.insertId;
+
+      alarmMessage = `댓글에 답글이 달렸습니다. : ${contents}`;
+    }
+
+    await insertAlarm(connection, userIdx, 'GOODS_REVIEW_COMMENT', commentIdx, alarmMessage);
+  });
+}
+
 module.exports = {
   insertGoodsScrapTransaction,
   insertGoodsTransaction,
+  insertReviewCommentTransaction,
 };
