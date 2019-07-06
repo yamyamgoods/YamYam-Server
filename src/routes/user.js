@@ -17,6 +17,9 @@ router.get('/jwttoken', userController.getNewJwtToken);
 router.get('/mypage', jwtCheck, userController.getUserInfo);
 // 최근 본 상품 보기
 router.get('/goods/recent/:lastIndex', jwtCheck, userController.getUserRecentGoods);
-
+// 알람 목록
+router.get('/alarm/list/:lastIndex', jwtCheck, userController.getUserAlarmList);
+// 알람 플래그 주기
+router.get('/alarm/flag', jwtCheck, userController.getUserAlarmFlag);
 
 module.exports = router;
