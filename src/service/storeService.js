@@ -1,4 +1,5 @@
 const storeDao = require('../dao/storeDao');
+const goodsDao = require('../dao/goodsDao');
 const storeTransaction = require('../dao/storeTransaction');
 const { s3Location } = require('../../config/s3Config');
 
@@ -68,7 +69,7 @@ async function removeStoreScrap(storeIdx, userIdx) {
 
 async function getStoreGoodsCategory(storeIdx) {
   // [{'goods_category_idx':1, 'goods_category_name':'asd'}, ...]
-  const category = await storeDao.selectStoreGoodsCategory(storeIdx);
+  const category = await goodsDao.selectStoreGoodsCategory(storeIdx);
 
   return category;
 }
@@ -82,18 +83,17 @@ async function getStoreCategory() {
 
 async function getStoreGoods(userIdx, storeIdx, order, lastIndex, goodsCategoryIdx) {
   // [{'goods_idx': 1, 'goods_img': 'http://~~', 'goods_name':'asd', 'goods_price': 32900, 'goods_rating':3.2, 'goods_minimum_amount':10, 'goods_review_cnt': 300 [goods_like_flag: true]}, ...]
-  const goods = await storeDao.selectStoreGoods(storeIdx, order, lastIndex, goodsCategoryIdx);
+  const goods = await goodsDao.selectStoreGoods(storeIdx, order, lastIndex, goodsCategoryIdx);
 
   let scrapGoods;
-  if (userIdx) scrapGoods = await storeDao.selectGoodsScrapWithUserIdx(userIdx);
+  if (userIdx) scrapGoods = await goodsDao.selectGoodsScrapWithUserIdx(userIdx);
 
   const goodsLength = goods.length;
 
   for (let i = 0; i < goodsLength; i++) {
     // add first img url (thumnail)
-    goods[i].goods_img = await storeDao.selectFirstGoodsImg(goods[i].goods_idx) || '';
-    [goods[i].goods_img] = parseObj(goods[i].goods_img, 'goods_img');
-    goods[i].goods_img = s3Location + goods[i].goods_img;
+    goods[i].goods_img = await goodsDao.selectFirstGoodsImg(goods[i].goods_idx) || '';
+    goods[i].goods_img = s3Location + parseObj(goods[i].goods_img, 'goods_img')[0];
 
     // add like flag
     if (userIdx) {

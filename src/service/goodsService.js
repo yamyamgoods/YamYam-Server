@@ -7,6 +7,17 @@ const errorResponseObject = require('../../config/errorResponseObject');
 const { makeReviewTimeString } = require('../library/changeTimeString');
 const { s3Location } = require('../../config/s3Config');
 
+// 단일 키 객체 => 값 배열
+function parseObj(dataArr, attr) {
+  const res = [];
+
+  for (let i = 0; i < dataArr.length; i++) {
+    res.push(dataArr[i][attr]);
+  }
+
+  return res;
+}
+
 async function getBestGoods(userIdx, lastIndex) {
   const result = [];
   let goods;
@@ -488,6 +499,38 @@ async function getGoodsPriceRange(goodsCategoryIdx, minAmount) {
   return priceRange;
 }
 
+// 카테고리에 따른 굿즈 모두 보기 (옵션 - 가격, 최소 수량, 옵션)
+async function getAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, priceEnd, minAmount, options, userIdx) {
+  // {'goods_idx':1, 'goods_name':'asd', 'store_name':'zxc', 'goods_price':'32,000', 'goods_rating':4.2, 'minimum_amount': 10, 'review_cnt': 30, 'goods_img':'/3asd.jpg'}
+  let queryFlag;
+  if (priceStart || priceEnd || minAmount || options) {
+    queryFlag = true;
+  } else {
+    queryFlag = false;
+  }
+
+  const goods = await goodsDao.selectAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, priceEnd, minAmount, options, queryFlag);
+
+  let scrapGoods;
+  if (userIdx) scrapGoods = await goodsDao.selectGoodsScrapWithUserIdx(userIdx);
+
+
+  const goodsLength = goods.length;
+
+  for (let i = 0; i < goodsLength; i++) {
+    // add first img url (thumnail)
+    goods[i].goods_img = await goodsDao.selectFirstGoodsImg(goods[i].goods_idx) || '';
+    goods[i].goods_img = s3Location + parseObj(goods[i].goods_img, 'goods_img')[0];
+
+    // add like flag
+    if (userIdx) {
+      goods[i].goods_like_flag = scrapGoods.includes(goods[i].goods_idx);
+    }
+  }
+
+  return goods;
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -509,4 +552,5 @@ module.exports = {
   getGoodsDetail,
   addGoods,
   getGoodsPriceRange,
+  getAllGoods,
 };
