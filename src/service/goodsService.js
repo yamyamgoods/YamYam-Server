@@ -1,11 +1,11 @@
 const moment = require('moment');
 const goodsDao = require('../dao/goodsDao');
 const userDao = require('../dao/userDao');
-const stroeDao = require('../dao/storeDao');
+const storeDao = require('../dao/storeDao');
 const goodsTransaction = require('../dao/goodsTransaction');
 const errorResponseObject = require('../../config/errorResponseObject');
 const { makeReviewTimeString } = require('../library/changeTimeString');
-
+const { s3Location } = require('../../config/s3Config');
 
 async function getBestGoods(userIdx, lastIndex) {
   const result = [];
@@ -462,6 +462,27 @@ async function getGoodsDetail(userIdx, goodsIdx) {
   };
 }
 
+async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, files, options) {
+  // store, category가 없는 경우
+  const storeArr = await storeDao.selectStoreName(storeIdx);
+  const categoryArr = await goodsDao.goodsCategoryByCategoryIdx(categoryIdx);
+
+  if (storeArr.length == 0) throw errorResponseObject.noStoreDataError;
+  if (categoryArr.length == 0) throw errorResponseObject.noCategoryDataError;
+
+  // options parse
+  const optionArr = JSON.parse(options).optionArr;
+
+  // img
+  const imgArr = [];
+  const filesLength = files.length;
+  for (let i = 0; i < filesLength; i++) {
+    imgArr.push(files[i].location.split(s3Location)[1]);
+  }
+
+  await goodsTransaction.insertGoodsTransaction(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, optionArr);
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -481,4 +502,5 @@ module.exports = {
   removeReviewComment,
   getGoodsOptionsName,
   getGoodsDetail,
+  addGoods,
 };

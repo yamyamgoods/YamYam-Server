@@ -2,7 +2,9 @@ const express = require('express');
 
 const router = express.Router();
 
-const { jwtCheck } = require('../library/jwtCheck');
+const { jwtCheck, adminCheck } = require('../library/jwtCheck');
+
+const upload = require('../library/s3Bucket').getMulter('goods');
 
 // goodsController
 const goodsController = require('../controller/goodsController');
@@ -45,5 +47,7 @@ router.delete('/review/comment/:commentIdx', jwtCheck, goodsController.removeRev
 router.get('/:goodsIdx/options/name', goodsController.getGoodsOptionsName);
 // 굿즈 상세보기
 router.get('/:goodsIdx/detail', goodsController.getGoodsDetail);
+// 굿즈 등록
+router.post('/', adminCheck, upload.array('img'), goodsController.addGoods);
 
 module.exports = router;

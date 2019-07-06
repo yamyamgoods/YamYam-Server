@@ -263,6 +263,62 @@ async function getGoodsDetail(req, res) {
   }
 }
 
+async function addGoods(req, res) {
+  try {
+    const goodsName = req.body.goodsName;
+    const storeIdx = req.body.storeIdx;
+    const price = req.body.price;
+    const deliveryCharge = req.body.deliveryCharge;
+    const deliveryPeriod = req.body.deliveryPeriod;
+    const minimumAmount = req.body.minimumAmount;
+    const detail = req.body.detail;
+    const categoryIdx = req.body.categoryIdx;
+
+    const files = req.files;
+
+    /* 옵션 데이터 예시 (JSON.parse 필요)
+    {
+      "optionArr" : [
+          {
+            "optionName" : "색상",
+            "optionDetail" : [
+              {
+                "optionName": "빨강",
+                "optionPrice": 1000
+              },
+              {
+                "optionName": "파랑",
+                "optionPrice": 2000
+              }
+            ]
+          },
+          {
+            "optionName" : "사이즈",
+            "optionDetail" : [
+              {
+                "optionName": "M",
+                "optionPrice": 1000
+              },
+              {
+                "optionName": "L",
+                "optionPrice": 2000
+              }
+            ]
+          }
+      ]
+    }
+     */
+    const options = req.body.options;
+
+    await goodsService.addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, files, options);
+
+    response('Success', [], res, 201);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -282,4 +338,5 @@ module.exports = {
   removeReviewComment,
   getGoodsOptionsName,
   getGoodsDetail,
+  addGoods,
 };
