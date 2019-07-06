@@ -339,6 +339,15 @@ async function getGoodsReviews(goodsIdx, photoFlag, lastIndex) {
   return goodsReview;
 }
 
+// 카테고리에 따른 굿즈 최소 최대 금액 (옵션 - 최소 수량)
+async function getGoodsPriceRange(goodsCategoryIdx, minAmount) {
+  // {'price_start':100, 'price_end':40000 }
+  let priceRange = await goodsDao.selectPriceRange(goodsCategoryIdx, minAmount);
+  [priceRange] = priceRange;
+
+  return priceRange;
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -353,4 +362,5 @@ module.exports = {
   getReviewDetail,
   getReviewComment,
   getGoodsReviews,
+  getGoodsPriceRange,
 };

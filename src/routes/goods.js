@@ -35,5 +35,7 @@ router.get('/review/:reviewIdx/detail', goodsController.getReviewDetail);
 router.get('/review/:reviewIdx/comment/:lastIndex', goodsController.getReviewComment);
 // 리뷰 보기
 router.get('/:goodsIdx/reviews/:photoFlag/:lastIndex', goodsController.getGoodsReviews);
+// 가격 범위 보기
+router.get('/category/:goodsCategoryIdx/priceRange', goodsController.getGoodsPriceRange);
 
 module.exports = router;
