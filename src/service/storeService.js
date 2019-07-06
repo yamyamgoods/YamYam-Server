@@ -1,4 +1,5 @@
 const storeDao = require('../dao/storeDao');
+const { s3Location } = require('../../config/s3Config');
 
 // 단일 키 객체 => 값 배열
 function parseObj(dataArr, attr) {
@@ -23,6 +24,9 @@ async function getStoreRank(userIdx, lastIndex, storeCategoryIdx) {
   }
 
   for (let i = 0; i < storeLength; i++) {
+    // img s3Location concat
+    store[i].store_img = s3Location + store[i].store_img;
+
     // hashtags
     store[i].store_hashtags = await storeDao.selectStoreHashtag(store[i].store_idx) || [];
     store[i].store_hashtags = parseObj(store[i].store_hashtags, 'store_hashtag_name');
@@ -40,6 +44,9 @@ async function getStoreScrap(userIdx, lastIndex, storeCategoryIdx) {
 
   const storeLength = store.length;
   for (let i = 0; i < storeLength; i++) {
+    // img s3Location concat
+    store[i].store_img = s3Location + store[i].store_img;
+
     // hashtags
     store[i].store_hashtags = await storeDao.selectStoreHashtag(store[i].store_idx) || [];
     store[i].store_hashtags = parseObj(store[i].store_hashtags, 'store_hashtag_name');
@@ -85,6 +92,7 @@ async function getStoreGoods(userIdx, storeIdx, order, lastIndex, goodsCategoryI
     // add first img url (thumnail)
     goods[i].goods_img = await storeDao.selectFirstGoodsImg(goods[i].goods_idx) || '';
     [goods[i].goods_img] = parseObj(goods[i].goods_img, 'goods_img');
+    goods[i].goods_img = s3Location + goods[i].goods_img;
 
     // add like flag
     if (userIdx) {
