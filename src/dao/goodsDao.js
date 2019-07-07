@@ -574,7 +574,7 @@ async function selectPriceRange(goodsCategoryIdx, minAmount) {
   }
 
   const result = await mysql.query(sql, [goodsCategoryIdx]);
-  
+
   return result;
 }
 
@@ -713,6 +713,30 @@ async function selectCategoryOptionDetail(categoryOptionIdx) {
   return result;
 }
 
+async function updateAllGoodsHit(value) {
+  const sql = `
+  UPDATE GOODS SET goods_hit = ?
+  `;
+
+  await mysql.query(sql, [value]);
+}
+
+async function updateAllGoodsReviewWeekCnt(value) {
+  const sql = `
+  UPDATE GOODS SET goods_review_week_cnt = ?
+  `;
+
+  await mysql.query(sql, [value]);
+}
+
+async function updateAllGoodsRank() {
+  const sql = `
+  UPDATE GOODS SET goods_score = goods_review_week_cnt + goods_hit;
+  `;
+
+  await mysql.query(sql);
+}
+
 module.exports = {
   selectFirstBestGoods,
   selectNextBestGoods,
@@ -759,4 +783,7 @@ module.exports = {
   selectGoodsOptionDetail,
   selectCategoryOption,
   selectCategoryOptionDetail,
+  updateAllGoodsHit,
+  updateAllGoodsReviewWeekCnt,
+  updateAllGoodsRank,
 };

@@ -51,7 +51,7 @@ async function getStoreByStoreName(searchAfter, storeName, order) {
   }
 
   result.totalCnt = response.hits.total.value;
-  
+
   return result;
 }
 
