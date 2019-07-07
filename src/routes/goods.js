@@ -53,5 +53,7 @@ router.post('/', adminCheck, upload.array('img'), goodsController.addGoods);
 router.get('/category/:goodsCategoryIdx/priceRange', goodsController.getGoodsPriceRange);
 // 카테고리에 따른 굿즈 모두보기
 router.get('/category/:goodsCategoryIdx/:order/:lastIndex', goodsController.getAllGoods);
+// 견적 옵션
+router.get('/:goodsIdx/options',goodsController.getGoodsOption);
 
 module.exports = router;
