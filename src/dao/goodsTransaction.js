@@ -25,6 +25,14 @@ async function insertUserScrapOption(connection, goodsScrapIdx, options) {
   await connection.query(sql, [goodsScrapIdx, options]);
 }
 
+async function updateGoodsScrapCnt(connection, goodsIdx) {
+  const sql = `
+  UPDATE GOODS SET goods_scrap_cnt = goods_scrap_cnt + 1 WHERE goods_idx = ?
+  `;
+
+  await connection.query(sql, [goodsIdx]);
+}
+
 async function insertGoodsScrapTransaction(userId, goodsIdx, goodsScrapPrice, label, options) {
   await mysql.transaction(async (connection) => {
     const result = await insertGoodsScrap(connection, userId, goodsIdx, goodsScrapPrice, label);
@@ -32,13 +40,8 @@ async function insertGoodsScrapTransaction(userId, goodsIdx, goodsScrapPrice, la
 
     await insertUserScrapOption(connection, goodsScrapIdx, options);
 
-    // const keyArr = Object.keys(options);
-    // const valueArr = Object.values(options);
-    // const keyArrLength = keyArr.length;
-
-    // for (let i = 0; i < keyArrLength; i++) {
-    //
-    // }
+    // GOODS SCRAP CNT+1
+    await updateGoodsScrapCnt(connection, goodsIdx);
   });
 }
 
