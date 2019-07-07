@@ -5,6 +5,7 @@ const schedule = require('node-schedule');
 
 const storeDao = require('../src/dao/storeDao');
 const userDao = require('../src/dao/userDao');
+const goodsDao = require('../src/dao/goodsDao');
 
 async function calculateStoreRank() {
   await storeDao.updateAllStoreHit(0);

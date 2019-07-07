@@ -1,5 +1,6 @@
 const storeDao = require('../dao/storeDao');
 const goodsDao = require('../dao/goodsDao');
+const elasticsearchStore = require('../elasticsearch/store');
 const storeTransaction = require('../dao/storeTransaction');
 const { s3Location } = require('../../config/s3Config');
 
@@ -110,6 +111,25 @@ async function addStore(file, name, url, hashTag, categoryName) {
   await storeTransaction.insertStoreTransaction(img, name, url, hashTag, categoryName);
 }
 
+async function getStoreBySearch(userIdx, searchAfter, goodsName, order) {
+  const store = await elasticsearchStore.getStoreByStoreName(searchAfter, goodsName, order);
+
+  const storeLength = store.length;
+  for (let i = 0; i < storeLength; i++) {
+    const storeIdx = store[i].store_idx;
+    // scrap_flag
+    const user = await storeDao.selectUserScrapWithStoreIdx(storeIdx, userIdx);
+
+    if (user.length === 0) {
+      store[i].store_scrap_flag = 0;
+    } else {
+      store[i].store_scrap_flag = 1;
+    }
+  }
+
+  return store;
+}
+
 module.exports = {
   getStoreRank,
   getStoreScrap,
@@ -119,4 +139,5 @@ module.exports = {
   getStoreCategory,
   getStoreGoods,
   addStore,
+  getStoreBySearch,
 };

@@ -2,6 +2,7 @@ const moment = require('moment');
 const goodsDao = require('../dao/goodsDao');
 const userDao = require('../dao/userDao');
 const storeDao = require('../dao/storeDao');
+const elasticsearchGoods = require('../elasticsearch/goods');
 const goodsTransaction = require('../dao/goodsTransaction');
 const errorResponseObject = require('../../config/errorResponseObject');
 const { makeReviewTimeString } = require('../library/changeTimeString');
@@ -539,18 +540,18 @@ async function getGoodsOption(goodsIdx) {
   const goodsOptionArr = await goodsDao.selectGoodsOption(goodsIdx);
   const goodsOptionLength = goodsOptionArr.length;
 
-  for(let i = 0; i< goodsOptionLength ; i++) {
+  for (let i = 0; i < goodsOptionLength; i++) {
     const goodsOptionIdx = goodsOptionArr[i].goods_option_idx;
     const goodsOptionDetailArr = await goodsDao.selectGoodsOptionDetail(goodsOptionIdx);
     const goodsOptionDetailLength = goodsOptionDetailArr.length;
     goodsOptionArr[i].goods_option_detail_name = [];
-    for(let k = 0; k<goodsOptionDetailLength;k++) {
+    for (let k = 0; k < goodsOptionDetailLength; k++) {
       goodsOptionArr[i].goods_option_detail_name[k] = goodsOptionDetailArr[k].goods_option_detail_name;
     }
 
     result.push(goodsOptionArr[i]);
   }
-  return result; 
+  return result;
 }
 
 async function getCategoryOption(categoryIdx) {
@@ -564,6 +565,25 @@ async function getCategoryOption(categoryIdx) {
   }
 
   return options;
+}
+
+async function getGoodsBySearch(userIdx, searchAfter, goodsName, order) {
+  const goods = await elasticsearchGoods.getGoodsByGoodsName(searchAfter, goodsName, order);
+
+  const goodsLength = goods.length;
+  for (let i = 0; i < goodsLength; i++) {
+    const goodsIdx = goods[i].goods_idx;
+    // 유저 즐겨찾기 flag 추가
+    const user = await userDao.selectUserWithGoods(userIdx, goodsIdx);
+
+    if (user.length === 0) {
+      goods[i].scrap_flag = 0;
+    } else {
+      goods[i].scrap_flag = 1;
+    }
+  }
+
+  return goods;
 }
 
 module.exports = {
@@ -590,4 +610,5 @@ module.exports = {
   getAllGoods,
   getGoodsOption,
   getCategoryOption,
+  getGoodsBySearch,
 };
