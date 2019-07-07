@@ -21,5 +21,7 @@ router.get('/goods/recent/:lastIndex', jwtCheck, userController.getUserRecentGoo
 router.get('/alarm/list/:lastIndex', jwtCheck, userController.getUserAlarmList);
 // 알람 플래그 주기
 router.get('/alarm/flag', jwtCheck, userController.getUserAlarmFlag);
+// 알람 플래그 주기
+router.get('/alarm/:alarmIdx/review/:reviewIdx', jwtCheck, userController.getAlarmReviewDetail);
 
 module.exports = router;
