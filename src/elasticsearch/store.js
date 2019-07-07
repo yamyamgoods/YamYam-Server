@@ -55,6 +55,25 @@ async function getStoreByStoreName(searchAfter, storeName, order) {
   return result;
 }
 
+async function addStore(storeIdx, storeName, imgArr, hashTag) {
+  const body = {
+    store_idx: storeIdx,
+    store_name: storeName,
+    store_img: imgArr,
+    hash_tag: hashTag,
+    store_rating: 0,
+    store_review_cnt: 0,
+    store_rank_score: 0,
+  };
+
+  await esClient.create({
+    id: storeIdx,
+    index: 'store',
+    body,
+  });
+}
+
 module.exports = {
   getStoreByStoreName,
+  addStore,
 };

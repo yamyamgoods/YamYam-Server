@@ -1,4 +1,5 @@
 const mysql = require('../library/mysql');
+const elasticsearchGoods = require('../elasticsearch/goods');
 
 async function insertGoodsScrap(connection, userId, goodsIdx, goodsScrapPrice, goodsScrapLabel) {
   const sql = `
@@ -100,7 +101,17 @@ async function insertGoodsCategoryOptionDetailGoods(connection, goodsIdx, goodsC
   await connection.query(sql, [goodsIdx, goodsCategoryOptionDetailIdx]);
 }
 
-async function insertGoodsTransaction(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, optionArr, goodsCategoryOptionDetailIdx) {
+async function selectGoodsDate(connection, goodsIdx) {
+  const sql = `
+  SELECT goods_date FROM GOODS WHERE goods_idx = ?
+  `;
+
+  const result = await connection.query(sql, [goodsIdx]);
+
+  return result;
+}
+
+async function insertGoodsTransaction(goodsName, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, optionArr, goodsCategoryOptionDetailIdx) {
   await mysql.transaction(async (connection) => {
     // 굿즈 등록
     const goods = await insertGoods(connection, goodsName, storeIdx, price, categoryIdx, deliveryCharge, deliveryPeriod, minimumAmount, detail);
@@ -128,6 +139,13 @@ async function insertGoodsTransaction(goodsName, storeIdx, price, deliveryCharge
     }
 
     await insertGoodsCategoryOptionDetailGoods(connection, goodsIdx, goodsCategoryOptionDetailIdx);
+
+    // 등록한 굿즈 시간 가져오기
+      const goodsDateArr = await selectGoodsDate(connection, goodsIdx);
+      const goodsDate = goodsDateArr[0].goods_date;
+
+    // ElasticSearch Goods 등록
+    await elasticsearchGoods.addGoods(goodsIdx, goodsName, goodsDate, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, imgArr);
   });
 }
 

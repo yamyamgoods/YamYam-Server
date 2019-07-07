@@ -1,3 +1,4 @@
+const moment = require('moment');
 const { paginationCnt } = require('../../config/elasticsearchConfig');
 const { esClient } = require('./elasticsearch');
 
@@ -61,6 +62,33 @@ async function getGoodsByGoodsName(searchAfter, goodsName, order) {
   return result;
 }
 
+async function addGoods(goodsIdx, goodsName, goodsDate, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, imgArr) {
+  const newGoodsDate = moment(goodsDate).format('YYYY-MM-DD HH:mm:ss');
+
+  const body = {
+    goods_idx: goodsIdx,
+    goods_name: goodsName,
+    goods_rating: 0,
+    goods_price: price,
+    goods_delivery_charge: deliveryCharge,
+    goods_delivery_period: deliveryPeriod,
+    goods_minimum_amount: minimumAmount,
+    goods_detail: detail,
+    goods_date: newGoodsDate,
+    goods_review_cnt: 0,
+    goods_img: imgArr,
+    goods_score: 0,
+    store_name: storeName,
+  };
+
+  await esClient.create({
+    id: goodsIdx,
+    index: 'goods',
+    body,
+  });
+}
+
 module.exports = {
   getGoodsByGoodsName,
+  addGoods,
 };

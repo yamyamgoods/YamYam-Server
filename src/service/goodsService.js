@@ -494,7 +494,9 @@ async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeri
     imgArr.push(files[i].location.split(s3Location)[1]);
   }
 
-  await goodsTransaction.insertGoodsTransaction(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, options, goodsCategoryOptionDetailIdx);
+  const storeName = storeArr[0].store_name;
+
+  await goodsTransaction.insertGoodsTransaction(goodsName, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, options, goodsCategoryOptionDetailIdx);
 }
 
 // 카테고리에 따른 굿즈 최소 최대 금액 (옵션 - 최소 수량)
