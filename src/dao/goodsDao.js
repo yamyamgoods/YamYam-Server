@@ -737,6 +737,14 @@ async function updateAllGoodsRank() {
   await mysql.query(sql);
 }
 
+async function updateGoodsHit(value, goodsIdx) {
+  const sql = `
+  UPDATE GOODS SET goods_hit = goods_hit + ? WHERE goods_idx = ?
+  `;
+
+  await mysql.query(sql, [value, goodsIdx]);
+}
+
 module.exports = {
   selectFirstBestGoods,
   selectNextBestGoods,
@@ -786,4 +794,5 @@ module.exports = {
   updateAllGoodsHit,
   updateAllGoodsReviewWeekCnt,
   updateAllGoodsRank,
+  updateGoodsHit,
 };

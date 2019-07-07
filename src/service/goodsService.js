@@ -402,6 +402,7 @@ async function getGoodsDetail(userIdx, goodsIdx) {
 
   // 굿즈 데이터
   const goods = {
+    goods_idx: goodsArr[0].goods_idx,
     goods_name: goodsArr[0].goods_name,
     store_name: goodsArr[0].store_name,
     store_rating: goodsArr[0].store_rating,
@@ -464,6 +465,9 @@ async function getGoodsDetail(userIdx, goodsIdx) {
 
     reviews.push(reviewsArr[i]);
   }
+
+  // 굿즈 조회수 +1
+  await goodsDao.updateGoodsHit(1, goodsIdx);
 
   return {
     goods,
