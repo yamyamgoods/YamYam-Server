@@ -54,6 +54,8 @@ router.get('/category/:goodsCategoryIdx/priceRange', goodsController.getGoodsPri
 // 카테고리에 따른 굿즈 모두보기
 router.get('/category/:goodsCategoryIdx/:order/:lastIndex', goodsController.getAllGoods);
 // 견적 옵션
-router.get('/:goodsIdx/options',goodsController.getGoodsOption);
+router.get('/:goodsIdx/options', goodsController.getGoodsOption);
+// 카테고리의 하위 옵션 보기
+router.get('/category/:categoryIdx/options', goodsController.getCategoryOption);
 
 module.exports = router;

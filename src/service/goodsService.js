@@ -553,6 +553,19 @@ async function getGoodsOption(goodsIdx) {
   return result; 
 }
 
+async function getCategoryOption(categoryIdx) {
+  const options = await goodsDao.selectCategoryOption(categoryIdx);
+
+  const optionsLength = options.length;
+
+  for (let i = 0; i < optionsLength; i++) {
+    // add option detail
+    options[i].category_option_detail = await goodsDao.selectCategoryOptionDetail(options[i].category_option_idx) || [];
+  }
+
+  return options;
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -576,5 +589,5 @@ module.exports = {
   getGoodsPriceRange,
   getAllGoods,
   getGoodsOption,
-
+  getCategoryOption,
 };
