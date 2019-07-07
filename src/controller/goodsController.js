@@ -357,7 +357,17 @@ async function getGoodsOption(req, res) {
     console.log(error);
     errorResponse(error.message, res, error.statusCode);
   }
+}
 
+async function getCategoryOption(req, res) {
+  try {
+    const { categoryIdx } = req.params;
+    const result = await goodsService.getCategoryOption(categoryIdx);
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
 }
 
 module.exports = {
@@ -383,4 +393,5 @@ module.exports = {
   getGoodsPriceRange,
   getAllGoods,
   getGoodsOption,
+  getCategoryOption,
 };
