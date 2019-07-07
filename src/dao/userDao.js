@@ -158,7 +158,7 @@ async function selectUserAlarm(userIdx, lastIndex) {
   return result;
 }
 
-//이거 없애도 되지 않을까,,,고민중,,,
+// 이거 없애도 되지 않을까,,,고민중,,,
 async function selectAlarmFlag(userIdx) {
   const sql = `
   SELECT *
@@ -209,9 +209,17 @@ async function updateAlarmCheckFlag(alarmIdx) {
   `;
 
   const result = await mysql.query(sql, [alarmIdx]);
+
   return result;
 }
 
+async function deleteAlarm() {
+  const sql = `
+  DELETE FROM ALARM
+  `;
+
+  await mysql.query(sql);
+}
 
 module.exports = {
   selectUserWithGoods,
@@ -229,4 +237,5 @@ module.exports = {
   selectReviewIdx,
   selectAlarmCheckFlag,
   updateAlarmCheckFlag,
+  deleteAlarm,
 };
