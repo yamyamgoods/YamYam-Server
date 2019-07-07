@@ -1,4 +1,5 @@
 const mysql = require('../library/mysql');
+const elasticsearchStore = require('../elasticsearch/store');
 
 async function insertStore(connection, img, name, url) {
   const sql = `
@@ -87,6 +88,10 @@ async function insertStoreTransaction(img, name, url, hashTag, categoryName) {
 
       await insertCategoryStore(connection, storeIdx, categoryIdx);
     }
+
+
+    // elasticsearch store 추가
+    await elasticsearchStore.addStore(storeIdx, name, img, hashTag);
   });
 }
 
