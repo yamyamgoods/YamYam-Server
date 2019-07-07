@@ -3,6 +3,8 @@ const goodsDao = require('../dao/goodsDao');
 const storeDao = require('../dao/storeDao');
 const errorResponseObject = require('../../config/errorResponseObject');
 const { sign, getRefreshToken } = require('../library/jwtCheck');
+const { makeReviewTimeString } = require('../library/changeTimeString');
+const { s3Location } = require('../../config/s3Config');
 
 async function getGoodsScrap(userIdx, lastIndex) {
   let goodsScrap;
@@ -126,11 +128,10 @@ async function getUserRecentGoods(userIdx, lastIndex) {
   return result;
 }
 
-async function getUserAlarmList(userIdx, lastIndex) { //알람카운트 0으로 
+async function getUserAlarmList(userIdx, lastIndex) { 
   const result = [];
   const userAlarmList = await userDao.selectUserAlarm(userIdx, lastIndex);
   const userAlarmListLength = userAlarmList.length;
-  
 
   for (let i = 0; i < userAlarmListLength ; i++) {
     const alarmTargetIdx = userAlarmList[i].alarm_target_idx;
@@ -148,10 +149,57 @@ async function getUserAlarmFlag(userIdx) {
   const user = await userDao.selectUser(userIdx);
   if (user[0].user_alarm_cnt > 0) {
     subResult.alarm_flag = 1;
-  }else {
+  } else {
     subResult.alarm_flag = 0;
   }
   result.push(subResult);
+  return result;
+}
+
+async function getAlarmReviewDetail(alarmIdx, reviewIdx) {
+  const result = [];
+  const returnObj = {};
+
+  const goodsIdxArr = await goodsDao.selectGoodsIdxByReviewIdx(reviewIdx);
+  const goodsIdx = goodsIdxArr[0].goods_idx;
+  const goods = await goodsDao.selectGoods(goodsIdx);
+  const goodsImg = await goodsDao.selectGoodsImg(goodsIdx);
+
+  const alarmIdxArr = await userDao.selectAlarmCheckFlag(alarmIdx);
+  if(alarmIdxArr[0].alarm_check_flag == 0) { // 0 이면 읽었다고 1로 업데이트 하기
+    await userDao.updateAlarmCheckFlag(alarmIdx);
+  }
+
+  // 굿즈 데이터
+  returnObj.goods = {
+    goods_idx: goods[0].goods_idx,
+    goods_img: s3Location + goodsImg[0].goods_img,
+    goods_name: goods[0].goods_name,
+    goods_price: goods[0].goods_price,
+    goods_rating: goods[0].goods_rating,
+    store_name: goods[0].store_name,
+  };
+
+  const reviewComment = await goodsDao.selectFirstReviewComments(reviewIdx);
+
+  const reviewCommentLength = reviewComment.length;
+  for (let i = 0; i < reviewCommentLength; i++) {
+    // 유저 정보 가져오기
+    const userArr = await userDao.selectUser(reviewComment[i].user_idx);
+    const user = userArr[0];
+
+    reviewComment[i].user_name = user.user_idx;
+    reviewComment[i].user_name = user.user_name;
+    reviewComment[i].user_img = s3Location + user.user_img;
+
+    // 시간 String 생성
+    reviewComment[i]
+      .goods_review_cmt_date = makeReviewTimeString(reviewComment[i].goods_review_cmt_date);
+  }
+
+  // 리뷰 댓글
+  returnObj.review_comment = reviewComment;
+  result.push(returnObj);
   return result;
 }
 
@@ -164,5 +212,6 @@ module.exports = {
   getUserRecentGoods,
   getUserAlarmList,
   getUserAlarmFlag,
+  getAlarmReviewDetail,
 
 };

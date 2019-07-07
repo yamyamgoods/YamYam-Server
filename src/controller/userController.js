@@ -95,6 +95,21 @@ async function getUserAlarmFlag(req, res) {
   }
 }
 
+async function getAlarmReviewDetail(req, res) {
+  try {
+    const alarmIdx = req.params.alarmIdx;
+    const reviewIdx = req.params.reviewIdx;
+
+    const result = await userService.getAlarmReviewDetail(alarmIdx, reviewIdx);
+
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
+
 module.exports = {
   getGoodsScrap,
   getUserScrapOption,
@@ -103,4 +118,5 @@ module.exports = {
   getUserRecentGoods,
   getUserAlarmList,
   getUserAlarmFlag,
+  getAlarmReviewDetail,
 };

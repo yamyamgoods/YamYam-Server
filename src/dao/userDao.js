@@ -144,6 +144,7 @@ async function selectUserRecentGoods(userIdx, lastIndex) {
 async function selectUserAlarm(userIdx, lastIndex) {
   const sql = `
   SELECT 
+  a.alarm_idx,
   a.alarm_target_idx,
   a.alarm_date_time,
   a.alarm_message
@@ -156,6 +157,8 @@ async function selectUserAlarm(userIdx, lastIndex) {
   const result = await mysql.query(sql, [userIdx, lastIndex]);
   return result;
 }
+
+//이거 없애도 되지 않을까,,,고민중,,,
 async function selectAlarmFlag(userIdx) {
   const sql = `
   SELECT *
@@ -187,6 +190,28 @@ async function selectReviewIdx(reviewCommentIdx) {
   return result;
 }
 
+async function selectAlarmCheckFlag(alarmIdx) {
+  const sql = `
+  SELECT alarm_check_flag
+  FROM ALARM
+  WHERE alarm_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [alarmIdx]);
+  return result;
+}
+
+async function updateAlarmCheckFlag(alarmIdx) {
+  const sql = `
+  UPDATE ALARM
+  SET alarm_check_flag = 1
+  WHERE alarm_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [alarmIdx]);
+  return result;
+}
+
 
 module.exports = {
   selectUserWithGoods,
@@ -202,4 +227,6 @@ module.exports = {
   selectAlarmFlag,
   updateUserAlarmFlag,
   selectReviewIdx,
+  selectAlarmCheckFlag,
+  updateAlarmCheckFlag,
 };
