@@ -2,6 +2,7 @@ const moment = require('moment');
 const goodsDao = require('../dao/goodsDao');
 const userDao = require('../dao/userDao');
 const storeDao = require('../dao/storeDao');
+const elasticsearchGoods = require('../elasticsearch/goods');
 const goodsTransaction = require('../dao/goodsTransaction');
 const errorResponseObject = require('../../config/errorResponseObject');
 const { makeReviewTimeString } = require('../library/changeTimeString');
@@ -401,6 +402,7 @@ async function getGoodsDetail(userIdx, goodsIdx) {
 
   // 굿즈 데이터
   const goods = {
+    goods_idx: goodsArr[0].goods_idx,
     goods_name: goodsArr[0].goods_name,
     store_name: goodsArr[0].store_name,
     store_rating: goodsArr[0].store_rating,
@@ -464,6 +466,9 @@ async function getGoodsDetail(userIdx, goodsIdx) {
     reviews.push(reviewsArr[i]);
   }
 
+  // 굿즈 조회수 +1
+  await goodsDao.updateGoodsHit(1, goodsIdx);
+
   return {
     goods,
     store,
@@ -489,7 +494,9 @@ async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeri
     imgArr.push(files[i].location.split(s3Location)[1]);
   }
 
-  await goodsTransaction.insertGoodsTransaction(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, options, goodsCategoryOptionDetailIdx);
+  const storeName = storeArr[0].store_name;
+
+  await goodsTransaction.insertGoodsTransaction(goodsName, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, options, goodsCategoryOptionDetailIdx);
 }
 
 // 카테고리에 따른 굿즈 최소 최대 금액 (옵션 - 최소 수량)
@@ -555,8 +562,38 @@ async function getGoodsOption(goodsIdx) {
 }
 
 // 찜 수정하기
-async function modifyUserGoodsOption() {
- 
+async function modifyUserGoodsOption() {}
+
+async function getCategoryOption(categoryIdx) {
+  const options = await goodsDao.selectCategoryOption(categoryIdx);
+
+  const optionsLength = options.length;
+
+  for (let i = 0; i < optionsLength; i++) {
+    // add option detail
+    options[i].category_option_detail = await goodsDao.selectCategoryOptionDetail(options[i].category_option_idx) || [];
+  }
+
+  return options;
+}
+
+async function getGoodsBySearch(userIdx, searchAfter, goodsName, order) {
+  const goods = await elasticsearchGoods.getGoodsByGoodsName(searchAfter, goodsName, order);
+
+  const goodsLength = goods.length;
+  for (let i = 0; i < goodsLength; i++) {
+    const goodsIdx = goods[i].goods_idx;
+    // 유저 즐겨찾기 flag 추가
+    const user = await userDao.selectUserWithGoods(userIdx, goodsIdx);
+
+    if (user.length === 0) {
+      goods[i].scrap_flag = 0;
+    } else {
+      goods[i].scrap_flag = 1;
+    }
+  }
+
+  return goods;
 }
 
 module.exports = {
@@ -584,4 +621,6 @@ module.exports = {
   getGoodsOption,
   modifyUserGoodsOption,
 
+  getCategoryOption,
+  getGoodsBySearch,
 };

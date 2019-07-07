@@ -1,4 +1,5 @@
 const mysql = require('../library/mysql');
+const elasticsearchGoods = require('../elasticsearch/goods');
 
 async function insertGoodsScrap(connection, userId, goodsIdx, goodsScrapPrice, goodsScrapLabel) {
   const sql = `
@@ -24,6 +25,14 @@ async function insertUserScrapOption(connection, goodsScrapIdx, options) {
   await connection.query(sql, [goodsScrapIdx, options]);
 }
 
+async function updateGoodsScrapCnt(connection, goodsIdx) {
+  const sql = `
+  UPDATE GOODS SET goods_scrap_cnt = goods_scrap_cnt + 1 WHERE goods_idx = ?
+  `;
+
+  await connection.query(sql, [goodsIdx]);
+}
+
 async function insertGoodsScrapTransaction(userId, goodsIdx, goodsScrapPrice, label, options) {
   await mysql.transaction(async (connection) => {
     const result = await insertGoodsScrap(connection, userId, goodsIdx, goodsScrapPrice, label);
@@ -31,13 +40,8 @@ async function insertGoodsScrapTransaction(userId, goodsIdx, goodsScrapPrice, la
 
     await insertUserScrapOption(connection, goodsScrapIdx, options);
 
-    // const keyArr = Object.keys(options);
-    // const valueArr = Object.values(options);
-    // const keyArrLength = keyArr.length;
-
-    // for (let i = 0; i < keyArrLength; i++) {
-    //
-    // }
+    // GOODS SCRAP CNT+1
+    await updateGoodsScrapCnt(connection, goodsIdx);
   });
 }
 
@@ -100,7 +104,17 @@ async function insertGoodsCategoryOptionDetailGoods(connection, goodsIdx, goodsC
   await connection.query(sql, [goodsIdx, goodsCategoryOptionDetailIdx]);
 }
 
-async function insertGoodsTransaction(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, optionArr, goodsCategoryOptionDetailIdx) {
+async function selectGoodsDate(connection, goodsIdx) {
+  const sql = `
+  SELECT goods_date FROM GOODS WHERE goods_idx = ?
+  `;
+
+  const result = await connection.query(sql, [goodsIdx]);
+
+  return result;
+}
+
+async function insertGoodsTransaction(goodsName, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, optionArr, goodsCategoryOptionDetailIdx) {
   await mysql.transaction(async (connection) => {
     // 굿즈 등록
     const goods = await insertGoods(connection, goodsName, storeIdx, price, categoryIdx, deliveryCharge, deliveryPeriod, minimumAmount, detail);
@@ -128,6 +142,13 @@ async function insertGoodsTransaction(goodsName, storeIdx, price, deliveryCharge
     }
 
     await insertGoodsCategoryOptionDetailGoods(connection, goodsIdx, goodsCategoryOptionDetailIdx);
+
+    // 등록한 굿즈 시간 가져오기
+    const goodsDateArr = await selectGoodsDate(connection, goodsIdx);
+    const goodsDate = goodsDateArr[0].goods_date;
+
+    // ElasticSearch Goods 등록
+    await elasticsearchGoods.addGoods(goodsIdx, goodsName, goodsDate, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, imgArr);
   });
 }
 
@@ -202,8 +223,61 @@ async function insertReviewCommentTransaction(userIdx, userIdxForAlarm, reviewId
   });
 }
 
+async function updateAllGoodsHit(connection, value) {
+  const sql = `
+  UPDATE GOODS SET goods_hit = ?
+  `;
+
+  await connection.query(sql, [value]);
+}
+
+async function updateAllGoodsReviewWeekCnt(connection, value) {
+  const sql = `
+  UPDATE GOODS SET goods_review_week_cnt = ?
+  `;
+
+  await connection.query(sql, [value]);
+}
+
+async function updateAllGoodsRank(connection) {
+  const sql = `
+  UPDATE GOODS SET goods_score = goods_review_week_cnt + goods_hit;
+  `;
+
+  await connection.query(sql);
+}
+
+async function selectGoods(connection) {
+  const sql = `
+  SELECT goods_idx, goods_score FROM GOODS
+  `;
+
+  const result = await connection.query(sql);
+
+  return result;
+}
+
+async function calculateGoodsRankTransaction() {
+  await mysql.transaction(async (connection) => {
+    await updateAllGoodsRank(connection);
+    await updateAllGoodsHit(connection, 0);
+    await updateAllGoodsReviewWeekCnt(connection, 0);
+
+    const goodsArr = await selectGoods(connection);
+    const goodsArrLength = goodsArr.length;
+
+    for (let i = 0; i < goodsArrLength; i++) {
+      const goodsIdx = goodsArr[i].goods_idx;
+      const goodsScore = goodsArr[i].goods_score;
+
+      await elasticsearchGoods.updateGoodsScore(goodsIdx, goodsScore);
+    }
+  });
+}
+
 module.exports = {
   insertGoodsScrapTransaction,
   insertGoodsTransaction,
   insertReviewCommentTransaction,
+  calculateGoodsRankTransaction,
 };

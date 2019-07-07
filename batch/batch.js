@@ -5,11 +5,17 @@ const schedule = require('node-schedule');
 
 const storeDao = require('../src/dao/storeDao');
 const userDao = require('../src/dao/userDao');
+const goodsDao = require('../src/dao/goodsDao');
+
+const goodsTransaction = require('../src/dao/goodsTransaction');
+const storeTransaction = require('../src/dao/storeTransaction');
 
 async function calculateStoreRank() {
-  await storeDao.updateAllStoreHit(0);
-  await storeDao.updateAllStoreScrapCnt(0);
-  await storeDao.updateAllStoreRank();
+  await storeTransaction.calculateStoreRank();
+}
+
+async function calculateGoodsRank() {
+  await goodsTransaction.calculateGoodsRankTransaction();
 }
 
 async function deleteAlarm() {
@@ -23,4 +29,7 @@ schedule.scheduleJob({ hour: 23, minute: 59, dayOfWeek: 0 }, () => {
 
   // 알람 데이터 삭제
   deleteAlarm();
+
+  // 굿즈 랭킹 스토어 계산
+  calculateGoodsRank();
 });

@@ -574,7 +574,7 @@ async function selectPriceRange(goodsCategoryIdx, minAmount) {
   }
 
   const result = await mysql.query(sql, [goodsCategoryIdx]);
-  
+
   return result;
 }
 
@@ -716,6 +716,58 @@ async function updateGoodsScrap(goodsScrapOptionIdx) {
   return result;
 }
 
+async function selectCategoryOption(categoryIdx) {
+  const sql = `
+  SELECT goods_category_option_idx as category_option_idx, goods_category_option_name as category_option_name
+  FROM GOODS_CATEGORY_OPTION
+  WHERE goods_category_idx = ?
+  `;
+  const result = await mysql.query(sql, [categoryIdx]);
+  return result;
+}
+
+async function selectCategoryOptionDetail(categoryOptionIdx) {
+  const sql = `
+  SELECT goods_category_option_detail_idx as category_option_detail_idx, goods_category_option_detail_name as category_option_detail_name
+  FROM GOODS_CATEGORY_OPTION_DETAIL
+  WHERE goods_category_option_idx = ?
+  `;
+  const result = await mysql.query(sql, [categoryOptionIdx]);
+  return result;
+}
+
+async function updateAllGoodsHit(value) {
+  const sql = `
+  UPDATE GOODS SET goods_hit = ?
+  `;
+
+  await mysql.query(sql, [value]);
+}
+
+async function updateAllGoodsReviewWeekCnt(value) {
+  const sql = `
+  UPDATE GOODS SET goods_review_week_cnt = ?
+  `;
+
+  await mysql.query(sql, [value]);
+}
+
+async function updateAllGoodsRank() {
+  const sql = `
+  UPDATE GOODS SET goods_score = goods_review_week_cnt + goods_hit;
+  `;
+
+  await mysql.query(sql);
+}
+
+async function updateGoodsHit(value, goodsIdx) {
+  const sql = `
+  UPDATE GOODS SET goods_hit = goods_hit + ? WHERE goods_idx = ?
+  `;
+
+  await mysql.query(sql, [value, goodsIdx]);
+}
+
 module.exports = {
   selectFirstBestGoods,
   selectNextBestGoods,
@@ -760,6 +812,15 @@ module.exports = {
   selectAllGoods,
   selectGoodsOption,
   selectGoodsOptionDetail,
+<<<<<<< HEAD
   updateGoodsScrap,
 
+=======
+  selectCategoryOption,
+  selectCategoryOptionDetail,
+  updateAllGoodsHit,
+  updateAllGoodsReviewWeekCnt,
+  updateAllGoodsRank,
+  updateGoodsHit,
+>>>>>>> efc44529ac311cd332e5c9cdadf5eb828e240850
 };

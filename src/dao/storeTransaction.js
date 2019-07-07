@@ -1,4 +1,5 @@
 const mysql = require('../library/mysql');
+const elasticsearchStore = require('../elasticsearch/store');
 
 async function insertStore(connection, img, name, url) {
   const sql = `
@@ -87,9 +88,66 @@ async function insertStoreTransaction(img, name, url, hashTag, categoryName) {
 
       await insertCategoryStore(connection, storeIdx, categoryIdx);
     }
+
+
+    // elasticsearch store 추가
+    await elasticsearchStore.addStore(storeIdx, name, img, hashTag);
+  });
+}
+
+async function updateAllStoreRank(connection) {
+  const sql = `
+  UPDATE STORE SET store_rank_score = store_scrap_cnt + store_hit;
+  `;
+
+  await connection.query(sql);
+}
+
+async function updateAllStoreHit(connection, value) {
+  const sql = `
+  UPDATE STORE SET store_hit = ?
+  `;
+
+  await connection.query(sql, [value]);
+}
+
+async function updateAllStoreScrapCnt(connection, value) {
+  const sql = `
+  UPDATE STORE SET store_scrap_cnt = ?
+  `;
+
+  await connection.query(sql, [value]);
+}
+
+async function selectStore(connection) {
+  const sql = `
+  SELECT store_idx, store_rank_score FROM STORE
+  `;
+
+  const result = await connection.query(sql);
+
+  return result;
+}
+
+async function calculateStoreRank() {
+  await mysql.transaction(async (connection) => {
+    await updateAllStoreRank(connection);
+    await updateAllStoreHit(connection, 0);
+    await updateAllStoreScrapCnt(connection, 0);
+
+    const storeArr = await selectStore(connection);
+    const storeArrLength = storeArr.length;
+
+    for (let i = 0; i < storeArrLength; i++) {
+      const storeIdx = storeArr[i].store_idx;
+      const storeRankScore = storeArr[i].store_rank_score;
+
+      await elasticsearchStore.updateStoreRankScore(storeIdx, storeRankScore);
+    }
   });
 }
 
 module.exports = {
   insertStoreTransaction,
+  calculateStoreRank,
 };

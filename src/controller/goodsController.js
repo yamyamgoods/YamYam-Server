@@ -359,6 +359,17 @@ async function getGoodsOption(req, res) {
   }
 }
 
+async function getCategoryOption(req, res) {
+  try {
+    const { categoryIdx } = req.params;
+    const result = await goodsService.getCategoryOption(categoryIdx);
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -382,4 +393,5 @@ module.exports = {
   getGoodsPriceRange,
   getAllGoods,
   getGoodsOption,
+  getCategoryOption,
 };
