@@ -59,7 +59,8 @@ async function selectNextGoodsScrap(userIdx, lastIndex) {
 
 async function selectUserScrapOption(goodsScrapIdx) {
   const sql = `
-  SELECT goods_scrap_option
+  SELECT goods_scrap_option,
+  goods_scrap_option_idx
   FROM USER_SCRAP_OPTION
   WHERE goods_scrap_idx = ?
   `;
@@ -221,6 +222,31 @@ async function deleteAlarm() {
   await mysql.query(sql);
 }
 
+async function updateUserProfile(userIdx,profileImg) {
+  const sql = `
+  UPDATE USER
+  SET alarm_check_flag = 1
+  WHERE user_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [userIdx,profileImg]);
+
+  return result;
+}
+
+async function selectGoodsIdxWithGoodsScrapIdx(goodsScrapIdx) {
+  const sql = `
+  SELECT
+  goods_idx 
+  FROM GOODS_SCRAP  
+  WHERE goods_scrap_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [goodsScrapIdx]);
+
+  return result;
+}
+
 module.exports = {
   selectUserWithGoods,
   selectFirstGoodsScrap,
@@ -238,4 +264,7 @@ module.exports = {
   selectAlarmCheckFlag,
   updateAlarmCheckFlag,
   deleteAlarm,
+  updateUserProfile,
+  selectGoodsIdxWithGoodsScrapIdx,
+
 };

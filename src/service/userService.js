@@ -38,8 +38,31 @@ async function getGoodsScrap(userIdx, lastIndex) {
 }
 
 async function getUserScrapOption(goodsScrapIdx) {
-  const result = [];
+
+  const userScrapOptionData = [];
+  const userScrapOptionDataAll = [];
+
   const optionArr = await userDao.selectUserScrapOption(goodsScrapIdx);
+
+  const goodsIdx = await userDao.selectGoodsIdxWithGoodsScrapIdx(goodsScrapIdx);
+
+  const goodsOptionArr = await goodsDao.selectGoodsOption(goodsIdx[0].goods_idx);
+  const goodsOptionLength = goodsOptionArr.length;
+  for(let i = 0; i < goodsOptionLength; i++) {
+    let tempObj = {};
+    tempObj.goods_option_name = goodsOptionArr[i].goods_option_name;
+
+    const goodsOptionIdx = goodsOptionArr[i].goods_option_idx;
+    const goodsOptionDetailArr = await goodsDao.selectGoodsOptionDetail(goodsOptionIdx);
+    const goodsOptionDetailLength = goodsOptionDetailArr.length;
+
+    tempObj.goods_option_detail_name = [];
+    for (let k = 0; k < goodsOptionDetailLength; k++) {
+      tempObj.goods_option_detail_name.push(goodsOptionDetailArr[k].goods_option_detail_name);
+    }
+
+    userScrapOptionDataAll.push(tempObj);
+  }
 
   if (optionArr.length != 0) {
     optionArr[0].goods_scrap_option = JSON.parse(optionArr[0].goods_scrap_option);
@@ -48,14 +71,18 @@ async function getUserScrapOption(goodsScrapIdx) {
   const optionNameArr = Object.keys(optionArr[0].goods_scrap_option);
   const optionValueArr = Object.values(optionArr[0].goods_scrap_option);
   const optionLength = optionNameArr.length;
-  for (let i = 0; i < optionLength; i++) {
-    result.push({
-      optionName: optionNameArr[i],
-      optionValue: optionValueArr[i],
+  for (let m = 0; m < optionLength; m++) {
+    userScrapOptionData.push({
+      optionName: optionNameArr[m],
+      optionValue: optionValueArr[m],
     });
   }
 
-  return result;
+  return [{
+    goods_scrap_option_idx: optionArr[0].goods_scrap_option_idx,
+    user_scrap_option_data: userScrapOptionData,
+    goods_option_data: userScrapOptionDataAll,
+  }];
 }
 
 async function getNewToken(refreshToken, userIdx) {
@@ -203,6 +230,9 @@ async function getAlarmReviewDetail(alarmIdx, reviewIdx) {
   return result;
 }
 
+async function updateUserProfile(userIdx){
+
+}
 
 module.exports = {
   getGoodsScrap,
@@ -213,5 +243,5 @@ module.exports = {
   getUserAlarmList,
   getUserAlarmFlag,
   getAlarmReviewDetail,
-
+  updateUserProfile,
 };

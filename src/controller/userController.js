@@ -109,7 +109,6 @@ async function getAlarmReviewDetail(req, res) {
   }
 }
 
-
 module.exports = {
   getGoodsScrap,
   getUserScrapOption,

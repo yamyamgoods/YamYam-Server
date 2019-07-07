@@ -554,6 +554,11 @@ async function getGoodsOption(goodsIdx) {
   return result;
 }
 
+// 찜 수정하기
+async function modifyUserGoodsOption() {
+ 
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -577,5 +582,6 @@ module.exports = {
   getGoodsPriceRange,
   getAllGoods,
   getGoodsOption,
+  modifyUserGoodsOption,
 
 };

@@ -682,17 +682,17 @@ async function selectGoodsOption(goodsIdx) {
   return result;
 }
 
-async function selectGoodsOption(goodsIdx) {
-  const sql = `
-  SELECT goods_option_idx,
-  goods_option_name
-  FROM GOODS_OPTION
-  WHERE goods_idx = ?
-  `;
+// async function selectGoodsOption(goodsIdx) {
+//   const sql = `
+//   SELECT goods_option_idx,
+//   goods_option_name
+//   FROM GOODS_OPTION
+//   WHERE goods_idx = ?
+//   `;
 
-  const result = await mysql.query(sql, [goodsIdx]);
-  return result;
-}
+//   const result = await mysql.query(sql, [goodsIdx]);
+//   return result;
+// }
 
 async function selectGoodsOptionDetail(goodsOptionIdx) {
   const sql = `
@@ -702,7 +702,17 @@ async function selectGoodsOptionDetail(goodsOptionIdx) {
   `;
 
   const result = await mysql.query(sql, [goodsOptionIdx]);
-  console.log(result);
+  return result;
+}
+
+async function updateGoodsScrap(goodsScrapOptionIdx) {
+  const sql = `
+  UPDATE goods_option_detail_name
+  FROM GOODS_OPTION_DETAIL
+  WHERE goods_option_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [goodsScrapOptionIdx]);
   return result;
 }
 
@@ -750,5 +760,6 @@ module.exports = {
   selectAllGoods,
   selectGoodsOption,
   selectGoodsOptionDetail,
+  updateGoodsScrap,
 
 };
