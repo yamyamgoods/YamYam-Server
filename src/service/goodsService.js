@@ -533,6 +533,26 @@ async function getAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, price
   return goods;
 }
 
+async function getGoodsOption(goodsIdx) {
+  const result = [];
+
+  const goodsOptionArr = await goodsDao.selectGoodsOption(goodsIdx);
+  const goodsOptionLength = goodsOptionArr.length;
+
+  for(let i = 0; i< goodsOptionLength ; i++) {
+    const goodsOptionIdx = goodsOptionArr[i].goods_option_idx;
+    const goodsOptionDetailArr = await goodsDao.selectGoodsOptionDetail(goodsOptionIdx);
+    const goodsOptionDetailLength = goodsOptionDetailArr.length;
+    goodsOptionArr[i].goods_option_detail_name = [];
+    for(let k = 0; k<goodsOptionDetailLength;k++) {
+      goodsOptionArr[i].goods_option_detail_name[k] = goodsOptionDetailArr[k].goods_option_detail_name;
+    }
+
+    result.push(goodsOptionArr[i]);
+  }
+  return result; 
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -555,4 +575,6 @@ module.exports = {
   addGoods,
   getGoodsPriceRange,
   getAllGoods,
+  getGoodsOption,
+
 };
