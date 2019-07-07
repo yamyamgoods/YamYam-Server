@@ -536,29 +536,33 @@ async function getAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, price
       goods[i].goods_like_flag = scrapGoods.includes(goods[i].goods_idx);
     }
   }
-
   return goods;
 }
 
+// 견적 옵션
 async function getGoodsOption(goodsIdx) {
   const result = [];
-
   const goodsOptionArr = await goodsDao.selectGoodsOption(goodsIdx);
-  const goodsOptionLength = goodsOptionArr.length;
 
-  for (let i = 0; i < goodsOptionLength; i++) {
+  const goodsOptionLength = goodsOptionArr.length;
+  for(let i = 0; i < goodsOptionLength; i++) {
+
     const goodsOptionIdx = goodsOptionArr[i].goods_option_idx;
     const goodsOptionDetailArr = await goodsDao.selectGoodsOptionDetail(goodsOptionIdx);
     const goodsOptionDetailLength = goodsOptionDetailArr.length;
+
     goodsOptionArr[i].goods_option_detail_name = [];
+
     for (let k = 0; k < goodsOptionDetailLength; k++) {
       goodsOptionArr[i].goods_option_detail_name[k] = goodsOptionDetailArr[k].goods_option_detail_name;
     }
-
-    result.push(goodsOptionArr[i]);
+    result.push(goodsOptionArr[i]); 
   }
   return result;
 }
+
+// 찜 수정하기
+async function modifyUserGoodsOption() {}
 
 async function getCategoryOption(categoryIdx) {
   const options = await goodsDao.selectCategoryOption(categoryIdx);
@@ -615,6 +619,8 @@ module.exports = {
   getGoodsPriceRange,
   getAllGoods,
   getGoodsOption,
+  modifyUserGoodsOption,
+
   getCategoryOption,
   getGoodsBySearch,
 };

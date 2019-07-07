@@ -673,15 +673,26 @@ async function selectAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, pr
 
 async function selectGoodsOption(goodsIdx) {
   const sql = `
-  SELECT goods_option_idx,
-  goods_option_name
+  SELECT *
   FROM GOODS_OPTION
   WHERE goods_idx = ?
   `;
-  const result = await mysql.query(sql, [goodsIdx]);
 
+  const result = await mysql.query(sql, [goodsIdx]);
   return result;
 }
+
+// async function selectGoodsOption(goodsIdx) {
+//   const sql = `
+//   SELECT goods_option_idx,
+//   goods_option_name
+//   FROM GOODS_OPTION
+//   WHERE goods_idx = ?
+//   `;
+
+//   const result = await mysql.query(sql, [goodsIdx]);
+//   return result;
+// }
 
 async function selectGoodsOptionDetail(goodsOptionIdx) {
   const sql = `
@@ -689,7 +700,19 @@ async function selectGoodsOptionDetail(goodsOptionIdx) {
   FROM GOODS_OPTION_DETAIL
   WHERE goods_option_idx = ?
   `;
+
   const result = await mysql.query(sql, [goodsOptionIdx]);
+  return result;
+}
+
+async function updateGoodsScrap(goodsScrapOptionIdx) {
+  const sql = `
+  UPDATE goods_option_detail_name
+  FROM GOODS_OPTION_DETAIL
+  WHERE goods_option_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [goodsScrapOptionIdx]);
   return result;
 }
 
@@ -789,10 +812,15 @@ module.exports = {
   selectAllGoods,
   selectGoodsOption,
   selectGoodsOptionDetail,
+<<<<<<< HEAD
+  updateGoodsScrap,
+
+=======
   selectCategoryOption,
   selectCategoryOptionDetail,
   updateAllGoodsHit,
   updateAllGoodsReviewWeekCnt,
   updateAllGoodsRank,
   updateGoodsHit,
+>>>>>>> efc44529ac311cd332e5c9cdadf5eb828e240850
 };

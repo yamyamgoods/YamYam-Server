@@ -55,7 +55,12 @@ router.get('/category/:goodsCategoryIdx/priceRange', goodsController.getGoodsPri
 router.get('/category/:goodsCategoryIdx/:order/:lastIndex', goodsController.getAllGoods);
 // 견적 옵션
 router.get('/:goodsIdx/options', goodsController.getGoodsOption);
+<<<<<<< HEAD
+// 찜수정하기
+router.put('/scrap', jwtCheck, goodsController.addGoodsScrap);
+=======
 // 카테고리의 하위 옵션 보기
 router.get('/category/:categoryIdx/options', goodsController.getCategoryOption);
+>>>>>>> efc44529ac311cd332e5c9cdadf5eb828e240850
 
 module.exports = router;
