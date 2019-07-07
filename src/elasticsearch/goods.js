@@ -88,7 +88,50 @@ async function addGoods(goodsIdx, goodsName, goodsDate, storeIdx, storeName, pri
   });
 }
 
+// ReviewCnt += 1
+async function updateReviewCnt(goodsIdx) {
+  const body = {};
+  body.script = {
+    source: 'ctx._source.goods_review_cnt++',
+  };
+
+  await esClient.update({
+    id: goodsIdx,
+    index: 'goods',
+    body,
+  });
+}
+
+async function updateGoodsRating(goodsIdx, goodsRating) {
+  const body = {};
+  body.script = {
+    source: `ctx._source.goods_rating=${goodsRating}`,
+  };
+
+  await esClient.update({
+    id: goodsIdx,
+    index: 'goods',
+    body,
+  });
+}
+
+async function updateGoodsScore(goodsIdx, goodsScore) {
+  const body = {};
+  body.script = {
+    source: `ctx._source.goods_score=${goodsScore}`,
+  };
+
+  await esClient.update({
+    id: goodsIdx,
+    index: 'goods',
+    body,
+  });
+}
+
 module.exports = {
   getGoodsByGoodsName,
   addGoods,
+  updateReviewCnt,
+  updateGoodsRating,
+  updateGoodsScore,
 };

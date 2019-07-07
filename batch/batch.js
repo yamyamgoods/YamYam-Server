@@ -7,16 +7,15 @@ const storeDao = require('../src/dao/storeDao');
 const userDao = require('../src/dao/userDao');
 const goodsDao = require('../src/dao/goodsDao');
 
+const goodsTransaction = require('../src/dao/goodsTransaction');
+const storeTransaction = require('../src/dao/storeTransaction');
+
 async function calculateStoreRank() {
-  await storeDao.updateAllStoreRank();
-  await storeDao.updateAllStoreHit(0);
-  await storeDao.updateAllStoreScrapCnt(0);
+  await storeTransaction.calculateStoreRank();
 }
 
 async function calculateGoodsRank() {
-  await goodsDao.updateAllGoodsRank();
-  await goodsDao.updateAllGoodsHit(0);
-  await goodsDao.updateAllGoodsReviewWeekCnt(0);
+  await goodsTransaction.calculateGoodsRankTransaction();
 }
 
 async function deleteAlarm() {

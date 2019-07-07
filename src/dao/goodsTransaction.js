@@ -141,8 +141,8 @@ async function insertGoodsTransaction(goodsName, storeIdx, storeName, price, del
     await insertGoodsCategoryOptionDetailGoods(connection, goodsIdx, goodsCategoryOptionDetailIdx);
 
     // 등록한 굿즈 시간 가져오기
-      const goodsDateArr = await selectGoodsDate(connection, goodsIdx);
-      const goodsDate = goodsDateArr[0].goods_date;
+    const goodsDateArr = await selectGoodsDate(connection, goodsIdx);
+    const goodsDate = goodsDateArr[0].goods_date;
 
     // ElasticSearch Goods 등록
     await elasticsearchGoods.addGoods(goodsIdx, goodsName, goodsDate, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, imgArr);
@@ -220,8 +220,61 @@ async function insertReviewCommentTransaction(userIdx, userIdxForAlarm, reviewId
   });
 }
 
+async function updateAllGoodsHit(connection, value) {
+  const sql = `
+  UPDATE GOODS SET goods_hit = ?
+  `;
+
+  await connection.query(sql, [value]);
+}
+
+async function updateAllGoodsReviewWeekCnt(connection, value) {
+  const sql = `
+  UPDATE GOODS SET goods_review_week_cnt = ?
+  `;
+
+  await connection.query(sql, [value]);
+}
+
+async function updateAllGoodsRank(connection) {
+  const sql = `
+  UPDATE GOODS SET goods_score = goods_review_week_cnt + goods_hit;
+  `;
+
+  await connection.query(sql);
+}
+
+async function selectGoods(connection) {
+  const sql = `
+  SELECT goods_idx, goods_score FROM GOODS
+  `;
+
+  const result = await connection.query(sql);
+
+  return result;
+}
+
+async function calculateGoodsRankTransaction() {
+  await mysql.transaction(async (connection) => {
+    await updateAllGoodsRank(connection);
+    await updateAllGoodsHit(connection, 0);
+    await updateAllGoodsReviewWeekCnt(connection, 0);
+
+    const goodsArr = await selectGoods(connection);
+    const goodsArrLength = goodsArr.length;
+
+    for (let i = 0; i < goodsArrLength; i++) {
+      const goodsIdx = goodsArr[i].goods_idx;
+      const goodsScore = goodsArr[i].goods_score;
+
+      await elasticsearchGoods.updateGoodsScore(goodsIdx, goodsScore);
+    }
+  });
+}
+
 module.exports = {
   insertGoodsScrapTransaction,
   insertGoodsTransaction,
   insertReviewCommentTransaction,
+  calculateGoodsRankTransaction,
 };

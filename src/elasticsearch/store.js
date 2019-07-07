@@ -61,8 +61,6 @@ async function addStore(storeIdx, storeName, imgArr, hashTag) {
     store_name: storeName,
     store_img: imgArr,
     hash_tag: hashTag,
-    store_rating: 0,
-    store_review_cnt: 0,
     store_rank_score: 0,
   };
 
@@ -73,7 +71,21 @@ async function addStore(storeIdx, storeName, imgArr, hashTag) {
   });
 }
 
+async function updateStoreRankScore(storeIdx, storeRankScore) {
+  const body = {};
+  body.script = {
+    source: `ctx._source.store_rank_score=${storeRankScore}`,
+  };
+
+  await esClient.update({
+    id: storeIdx,
+    index: 'store',
+    body,
+  });
+}
+
 module.exports = {
   getStoreByStoreName,
   addStore,
+  updateStoreRankScore,
 };
