@@ -178,6 +178,30 @@ async function selectStoreCategory() {
   return result;
 }
 
+async function updateAllStoreRank() {
+  const sql = `
+  UPDATE STORE SET store_rank_score = store_scrap_cnt + store_hit;
+  `;
+
+  await mysql.query(sql);
+}
+
+async function updateAllStoreHit(value) {
+  const sql = `
+  UPDATE STORE SET store_hit = ?
+  `;
+
+  await mysql.query(sql, [value]);
+}
+
+async function updateAllStoreScrapCnt(value) {
+  const sql = `
+  UPDATE STORE SET store_scrap_cnt = ?
+  `;
+
+  await mysql.query(sql, [value]);
+}
+
 module.exports = {
   selectStoreName,
   selectStoreRank,
@@ -189,4 +213,7 @@ module.exports = {
   deleteStoreScrap,
   selectStoreGoodsCategory,
   selectStoreCategory,
+  updateAllStoreRank,
+  updateAllStoreHit,
+  updateAllStoreScrapCnt,
 };

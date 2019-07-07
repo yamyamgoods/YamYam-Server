@@ -89,7 +89,18 @@ async function insertGoodsImg(connection, goodsIdx, goodsImg) {
   await connection.query(sql, [goodsIdx, goodsImg]);
 }
 
-async function insertGoodsTransaction(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, optionArr) {
+async function insertGoodsCategoryOptionDetailGoods(connection, goodsIdx, goodsCategoryOptionDetailIdx) {
+  const sql = `
+  INSERT INTO GOODS_CATEGORY_OPTION_DETAIL_GOODS
+  (goods_idx, goods_category_option_detail_idx)
+  VALUES
+  (?, ?)
+  `;
+
+  await connection.query(sql, [goodsIdx, goodsCategoryOptionDetailIdx]);
+}
+
+async function insertGoodsTransaction(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, optionArr, goodsCategoryOptionDetailIdx) {
   await mysql.transaction(async (connection) => {
     // 굿즈 등록
     const goods = await insertGoods(connection, goodsName, storeIdx, price, categoryIdx, deliveryCharge, deliveryPeriod, minimumAmount, detail);
@@ -115,6 +126,8 @@ async function insertGoodsTransaction(goodsName, storeIdx, price, deliveryCharge
     for (let i = 0; i < imgArrLength; i++) {
       await insertGoodsImg(connection, goodsIdx, imgArr[i]);
     }
+
+    await insertGoodsCategoryOptionDetailGoods(connection, goodsIdx, goodsCategoryOptionDetailIdx);
   });
 }
 
