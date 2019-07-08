@@ -121,6 +121,37 @@ async function kakaoSignin(req, res) {
   }
 }
 
+async function modifyUserProfile(req, res) {
+  try {
+    const profileImg = req.file.location;
+
+    const userIdx = req.user.userIdx;
+
+    await userService.modifyUserProfile(profileImg, userIdx);
+
+    response('Success', [], res, 201);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
+async function modifyUserNickname(req, res) {
+
+  try {
+    const userName = req.body.userName;  
+    const userIdx = req.user.userIdx;
+ 
+    await userService.modifyUserNickname(userName, userIdx);
+
+    response('Success', [], res, 201);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+
+}
+
 module.exports = {
   getGoodsScrap,
   getUserScrapOption,
@@ -131,4 +162,6 @@ module.exports = {
   getUserAlarmFlag,
   getAlarmReviewDetail,
   kakaoSignin,
+  modifyUserProfile,
+  modifyUserNickname,
 };

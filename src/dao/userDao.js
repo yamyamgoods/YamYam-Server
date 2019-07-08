@@ -103,7 +103,7 @@ async function selectUserByUserId(userId) {
   refresh_token,
   device_token,
   admin,
-  user_id,
+  user_id
   FROM USER 
   WHERE user_id = ?
   `;
@@ -244,15 +244,14 @@ async function deleteAlarm() {
   await mysql.query(sql);
 }
 
-async function updateUserProfile(userIdx, profileImg) {
+async function updateUserProfile(profileImg, userIdx) {
   const sql = `
   UPDATE USER
-  SET alarm_check_flag = 1
+  SET user_img = ?
   WHERE user_idx = ?
   `;
 
-  const result = await mysql.query(sql, [userIdx, profileImg]);
-
+  const result = await mysql.query(sql, [profileImg, userIdx]);
   return result;
 }
 
@@ -266,6 +265,17 @@ async function selectGoodsIdxWithGoodsScrapIdx(goodsScrapIdx) {
 
   const result = await mysql.query(sql, [goodsScrapIdx]);
 
+  return result;
+}
+
+async function updateUserNickname(userName, userIdx) {
+  const sql = `
+  UPDATE USER
+  SET user_name = ?
+  WHERE user_idx = ?
+  `;
+  const result = await mysql.query(sql, [userName, userIdx]);
+  
   return result;
 }
 
@@ -289,4 +299,5 @@ module.exports = {
   updateUserProfile,
   selectGoodsIdxWithGoodsScrapIdx,
   selectUserByUserId,
+  updateUserNickname,
 };
