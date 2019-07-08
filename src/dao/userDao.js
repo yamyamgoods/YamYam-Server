@@ -103,7 +103,7 @@ async function selectUserByUserId(userId) {
   refresh_token,
   device_token,
   admin,
-  user_id,
+  user_id
   FROM USER 
   WHERE user_id = ?
   `;
@@ -147,9 +147,11 @@ async function selectUserIdxByCommentIdx(commentIdx) {
   return result;
 }
 
-async function selectUserRecentGoods(userIdx, lastIndex) {
+async function selectNextUserRecentGoods(userIdx, lastIndex) {
   const sql = `
-  SELECT g.goods_idx,
+  SELECT
+  urg.user_recent_goods_idx,
+  g.goods_idx,
   g.goods_name,
   g.goods_price,
   g.store_idx
@@ -161,6 +163,24 @@ async function selectUserRecentGoods(userIdx, lastIndex) {
   LIMIT ${mysqlConfig.paginationCnt} 
   `;
   const result = await mysql.query(sql, [userIdx, lastIndex]);
+  return result;
+}
+
+async function selectFirstUserRecentGoods(userIdx) {
+  const sql = `
+  SELECT
+  urg.user_recent_goods_idx,
+  g.goods_idx,
+  g.goods_name,
+  g.goods_price,
+  g.store_idx
+  FROM USER_RECENT_GOODS urg, GOODS g
+  WHERE urg.user_idx = ?
+  AND urg.goods_idx = g.goods_idx
+  ORDER BY urg.user_recent_goods_date_time DESC
+  LIMIT ${mysqlConfig.paginationCnt} 
+  `;
+  const result = await mysql.query(sql, [userIdx]);
   return result;
 }
 
@@ -244,15 +264,14 @@ async function deleteAlarm() {
   await mysql.query(sql);
 }
 
-async function updateUserProfile(userIdx, profileImg) {
+async function updateUserProfile(profileImg, userIdx) {
   const sql = `
   UPDATE USER
-  SET alarm_check_flag = 1
+  SET user_img = ?
   WHERE user_idx = ?
   `;
 
-  const result = await mysql.query(sql, [userIdx, profileImg]);
-
+  const result = await mysql.query(sql, [profileImg, userIdx]);
   return result;
 }
 
@@ -269,6 +288,17 @@ async function selectGoodsIdxWithGoodsScrapIdx(goodsScrapIdx) {
   return result;
 }
 
+async function updateUserNickname(userName, userIdx) {
+  const sql = `
+  UPDATE USER
+  SET user_name = ?
+  WHERE user_idx = ?
+  `;
+  const result = await mysql.query(sql, [userName, userIdx]);
+  
+  return result;
+}
+
 module.exports = {
   selectUserWithGoods,
   selectFirstGoodsScrap,
@@ -278,7 +308,8 @@ module.exports = {
   updateRefreshToken,
   getRefreshToken,
   selectUserIdxByCommentIdx,
-  selectUserRecentGoods,
+  selectNextUserRecentGoods,
+  selectFirstUserRecentGoods,
   selectUserAlarm,
   selectAlarmFlag,
   updateUserAlarmFlag,
@@ -289,4 +320,5 @@ module.exports = {
   updateUserProfile,
   selectGoodsIdxWithGoodsScrapIdx,
   selectUserByUserId,
+  updateUserNickname,
 };

@@ -31,7 +31,8 @@ async function getGoodsByGoodsName(searchAfter, goodsName, order) {
 
   const response = await esClient.search({
     size: paginationCnt,
-    index: 'goods',
+    index: 'yamyamgoods',
+    type: 'goods',
     body,
   });
 
@@ -83,7 +84,8 @@ async function addGoods(goodsIdx, goodsName, goodsDate, storeIdx, storeName, pri
 
   await esClient.create({
     id: goodsIdx,
-    index: 'goods',
+    index: 'yamyamgoods',
+    type: 'goods',
     body,
   });
 }
@@ -97,7 +99,8 @@ async function updateReviewCnt(goodsIdx) {
 
   await esClient.update({
     id: goodsIdx,
-    index: 'goods',
+    index: 'yamyamgoods',
+    type: 'goods',
     body,
   });
 }
@@ -110,7 +113,8 @@ async function updateGoodsRating(goodsIdx, goodsRating) {
 
   await esClient.update({
     id: goodsIdx,
-    index: 'goods',
+    index: 'yamyamgoods',
+    type: 'goods',
     body,
   });
 }
@@ -123,7 +127,8 @@ async function updateGoodsScore(goodsIdx, goodsScore) {
 
   await esClient.update({
     id: goodsIdx,
-    index: 'goods',
+    index: 'yamyamgoods',
+    type: 'goods',
     body,
   });
 }

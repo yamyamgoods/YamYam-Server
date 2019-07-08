@@ -4,6 +4,8 @@ const router = express.Router();
 
 const { jwtCheck } = require('../library/jwtCheck');
 
+const upload = require('../library/s3Bucket').getMulter('user');    
+
 // userController
 const userController = require('../controller/userController');
 
@@ -21,9 +23,13 @@ router.get('/goods/recent/:lastIndex', jwtCheck, userController.getUserRecentGoo
 router.get('/alarm/list/:lastIndex', jwtCheck, userController.getUserAlarmList);
 // 알람 플래그 주기
 router.get('/alarm/flag', jwtCheck, userController.getUserAlarmFlag);
-// 알람 플래그 주기
+// 알람목록에서 리뷰상세보기
 router.get('/alarm/:alarmIdx/review/:reviewIdx', jwtCheck, userController.getAlarmReviewDetail);
 // 카카오 로그인
 router.post('/signin/kakao', userController.kakaoSignin);
+// 유저프로필 수정
+router.put('/profile', upload.single('img'), jwtCheck, userController.modifyUserProfile);
+// 유저이름 수정
+router.put('/name', jwtCheck, userController.modifyUserNickname);
 
 module.exports = router;

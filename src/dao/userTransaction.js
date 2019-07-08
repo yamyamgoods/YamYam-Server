@@ -4,7 +4,7 @@ const { sign, getRefreshToken } = require('../library/jwtCheck');
 async function insertUser(connection, userId, name, deviceToken) {
   const sql = `
   INSERT INTO USER 
-  (user_id, user_name, device_token, deviceToken)
+  (user_id, user_name, device_token)
   VALUES
   (?, ?, ?);
   `;

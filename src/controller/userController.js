@@ -112,13 +112,44 @@ async function kakaoSignin(req, res) {
     const accesstoken = req.headers.accesstoken;
     const devicetoken = req.body.devicetoken;
 
-    await userService.kakaoSignin(accesstoken, devicetoken);
+    const result = await userService.kakaoSignin(accesstoken, devicetoken);
 
-    response('Success', [], res, 200);
+    response('Success', result, res, 201);
   } catch (error) {
     console.log(error);
     errorResponse(error.message, res, error.statusCode);
   }
+}
+
+async function modifyUserProfile(req, res) {
+  try {
+    const profileImg = req.file.location;
+
+    const userIdx = req.user.userIdx;
+
+    await userService.modifyUserProfile(profileImg, userIdx);
+
+    response('Success', [], res, 201);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
+async function modifyUserNickname(req, res) {
+
+  try {
+    const userName = req.body.userName;  
+    const userIdx = req.user.userIdx;
+ 
+    await userService.modifyUserNickname(userName, userIdx);
+
+    response('Success', [], res, 201);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+
 }
 
 module.exports = {
@@ -131,4 +162,6 @@ module.exports = {
   getUserAlarmFlag,
   getAlarmReviewDetail,
   kakaoSignin,
+  modifyUserProfile,
+  modifyUserNickname,
 };
