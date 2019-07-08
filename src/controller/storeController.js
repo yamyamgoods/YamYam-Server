@@ -64,7 +64,7 @@ async function removeStoreScrap(req, res) {
 
     await storeService.removeStoreScrap(storeIdx, userIdx);
 
-    response('Success', [], res, 203);
+    response('Success', [], res, 200);
   } catch (error) {
     console.log(error);
     errorResponse(error.message, res, error.statusCode);
