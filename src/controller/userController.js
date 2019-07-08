@@ -112,9 +112,9 @@ async function kakaoSignin(req, res) {
     const accesstoken = req.headers.accesstoken;
     const devicetoken = req.body.devicetoken;
 
-    await userService.kakaoSignin(accesstoken, devicetoken);
+    const result = await userService.kakaoSignin(accesstoken, devicetoken);
 
-    response('Success', [], res, 200);
+    response('Success', result, res, 201);
   } catch (error) {
     console.log(error);
     errorResponse(error.message, res, error.statusCode);
