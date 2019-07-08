@@ -23,5 +23,7 @@ router.get('/alarm/list/:lastIndex', jwtCheck, userController.getUserAlarmList);
 router.get('/alarm/flag', jwtCheck, userController.getUserAlarmFlag);
 // 알람 플래그 주기
 router.get('/alarm/:alarmIdx/review/:reviewIdx', jwtCheck, userController.getAlarmReviewDetail);
+// 카카오 로그인
+router.post('/signin/kakao', userController.kakaoSignin);
 
 module.exports = router;

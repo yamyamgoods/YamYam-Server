@@ -44,12 +44,11 @@ async function getNewJwtToken(req, res) {
 }
 
 async function getUserInfo(req, res) {
-  try { 
+  try {
     const userIdx = req.user.userIdx;
     const result = await userService.getUserInfo(userIdx);
 
     response('Success', result, res, 200);
-
   } catch (error) {
     console.log(error);
     errorResponse(error.message, res, error.statusCode);
@@ -57,14 +56,13 @@ async function getUserInfo(req, res) {
 }
 
 async function getUserRecentGoods(req, res) {
-  try { 
+  try {
     const userIdx = req.user.userIdx;
     const lastIndex = req.params.lastIndex;
 
     const result = await userService.getUserRecentGoods(userIdx, lastIndex);
 
     response('Success', result, res, 200);
-
   } catch (error) {
     console.log(error);
     errorResponse(error.message, res, error.statusCode);
@@ -109,6 +107,20 @@ async function getAlarmReviewDetail(req, res) {
   }
 }
 
+async function kakaoSignin(req, res) {
+  try {
+    const accesstoken = req.headers.accesstoken;
+    const devicetoken = req.body.devicetoken;
+
+    await userService.kakaoSignin(accesstoken, accesstoken);
+
+    response('Success', [], res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getGoodsScrap,
   getUserScrapOption,
@@ -118,4 +130,5 @@ module.exports = {
   getUserAlarmList,
   getUserAlarmFlag,
   getAlarmReviewDetail,
+  kakaoSignin,
 };
