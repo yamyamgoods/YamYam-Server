@@ -591,10 +591,10 @@ async function selectStoreGoods(storeIdx, order, lastIndex, goodsCategoryIdx) {
 
   if (order == 0) {
     sql += ' ORDER BY goods_score DESC';
-  } else if (order == 1) { // 저가순
-    sql += ' ORDER BY goods_price';
-  } else if (order == 2) { // 고가순
+  } else if (order == 1) { // 고가순
     sql += ' ORDER BY goods_price DESC';
+  } else if (order == 2) { // 저가순
+    sql += ' ORDER BY goods_price';
   }
 
   sql += ` LIMIT ${mysqlConfig.paginationCnt}`;
@@ -658,10 +658,10 @@ async function selectAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, pr
 
   if (order == 0) {
     sql += ' ORDER BY goods_score DESC';
-  } else if (order == 1) { // 저가순
-    sql += ' ORDER BY goods_price';
-  } else if (order == 2) { // 고가순
+  } else if (order == 1) { // 고가순
     sql += ' ORDER BY goods_price DESC';
+  } else if (order == 2) { // 저가순
+    sql += ' ORDER BY goods_price';
   }
 
   sql += ` LIMIT ${mysqlConfig.paginationCnt}`;
@@ -716,13 +716,13 @@ async function updateGoodsScrap(goodsScrapOptionIdx) {
   return result;
 }
 
-async function selectCategoryOption(categoryIdx) {
+async function selectCategoryOption(goodsCategoryIdx) {
   const sql = `
   SELECT goods_category_option_idx as category_option_idx, goods_category_option_name as category_option_name
   FROM GOODS_CATEGORY_OPTION
   WHERE goods_category_idx = ?
   `;
-  const result = await mysql.query(sql, [categoryIdx]);
+  const result = await mysql.query(sql, [goodsCategoryIdx]);
   return result;
 }
 

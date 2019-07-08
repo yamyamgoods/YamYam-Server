@@ -571,8 +571,8 @@ async function getGoodsOption(goodsIdx) {
 // 찜 수정하기
 async function modifyUserGoodsOption() {}
 
-async function getCategoryOption(categoryIdx) {
-  const options = await goodsDao.selectCategoryOption(categoryIdx);
+async function getCategoryOption(goodsCategoryIdx) {
+  const options = await goodsDao.selectCategoryOption(goodsCategoryIdx);
 
   const optionsLength = options.length;
 

@@ -470,9 +470,9 @@ async function selectGoodsReviewRating(connection, reviewIdx) {
   WHERE goods_review_idx = ?
   `;
 
-  const result = await connection.query;
+  const result = await connection.query(sql, [reviewIdx]);
 
-  if (result == []) {
+  if (result != []) {
     return result[0].goods_review_rating;
   }
   throw new Error('Doesn\'t exist reviewIdx');
