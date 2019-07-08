@@ -82,8 +82,26 @@ async function addGoods(goodsIdx, goodsName, goodsDate, storeIdx, storeName, pri
     store_name: storeName,
   };
 
-  await esClient.create({
+  await esClient.index({
     id: goodsIdx,
+    index: 'yamyamgoods',
+    type: 'goods',
+    body,
+  });
+}
+
+async function updateReviewCntAndGoodsRating(goodsIdx, goodsRating) {
+  const body = {};
+  body.query = {
+    match: {
+      goods_idx: goodsIdx,
+    },
+  };
+  body.script = {
+    inline: `ctx._source.goods_review_cnt++; ctx._source.goods_rating=${goodsRating}`,
+  };
+
+  await esClient.updateByQuery({
     index: 'yamyamgoods',
     type: 'goods',
     body,
@@ -93,12 +111,16 @@ async function addGoods(goodsIdx, goodsName, goodsDate, storeIdx, storeName, pri
 // ReviewCnt += 1
 async function updateReviewCnt(goodsIdx) {
   const body = {};
+  body.query = {
+    match: {
+      goods_idx: goodsIdx,
+    },
+  };
   body.script = {
-    source: 'ctx._source.goods_review_cnt++',
+    inline: 'ctx._source.goods_review_cnt++',
   };
 
-  await esClient.update({
-    id: goodsIdx,
+  await esClient.updateByQuery({
     index: 'yamyamgoods',
     type: 'goods',
     body,
@@ -107,12 +129,16 @@ async function updateReviewCnt(goodsIdx) {
 
 async function updateGoodsRating(goodsIdx, goodsRating) {
   const body = {};
+  body.query = {
+    match: {
+      goods_idx: goodsIdx,
+    },
+  };
   body.script = {
-    source: `ctx._source.goods_rating=${goodsRating}`,
+    inline: `ctx._source.goods_rating=${goodsRating}`,
   };
 
-  await esClient.update({
-    id: goodsIdx,
+  await esClient.updateByQuery({
     index: 'yamyamgoods',
     type: 'goods',
     body,
@@ -121,12 +147,16 @@ async function updateGoodsRating(goodsIdx, goodsRating) {
 
 async function updateGoodsScore(goodsIdx, goodsScore) {
   const body = {};
+  body.query = {
+    match: {
+      goods_idx: goodsIdx,
+    },
+  };
   body.script = {
     source: `ctx._source.goods_score=${goodsScore}`,
   };
 
-  await esClient.update({
-    id: goodsIdx,
+  await esClient.updateByQuery({
     index: 'yamyamgoods',
     type: 'goods',
     body,
@@ -139,4 +169,5 @@ module.exports = {
   updateReviewCnt,
   updateGoodsRating,
   updateGoodsScore,
+  updateReviewCntAndGoodsRating,
 };
