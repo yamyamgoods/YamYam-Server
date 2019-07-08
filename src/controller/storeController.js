@@ -100,18 +100,16 @@ async function getStoreCategory(req, res) {
 // store 굿즈 보기
 async function getStoreGoods(req, res) {
   try {
-    const storeIdx = req.params.storeIdx;
-    const order = req.params.order;
-    const lastIndex = req.params.lastIndex;
+    const { storeIdx, order, lastIndex } = req.params;
 
-    const goodsCategoryIdx = req.query.goodsCategoryIdx;
+    const { goodsCategoryIdx, firstFlag } = req.query;
 
     let userIdx;
     if (req.headers.authorization) {
       userIdx = getUserIdxFromJwt(req.headers.authorization);
     }
 
-    const result = await storeService.getStoreGoods(userIdx, storeIdx, order, lastIndex, goodsCategoryIdx);
+    const result = await storeService.getStoreGoods(userIdx, storeIdx, order, lastIndex, goodsCategoryIdx, firstFlag);
 
     response('Success', result, res, 200);
   } catch (error) {
