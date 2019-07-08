@@ -381,7 +381,15 @@ async function removeReviewComment(userIdx, reviewIdx, commentIdx) {
 }
 
 async function getGoodsOptionsName(goodsIdx) {
-  const result = await goodsDao.selectGoodsOptionsName(goodsIdx);
+  const result = [];
+  const goodsOptionNameArr = await goodsDao.selectGoodsOptionsName(goodsIdx);
+
+  const obj = { goods_option_name: [] };
+  const goodsOptionNameArrLength = goodsOptionNameArr.length;
+  for (let i = 0; i < goodsOptionNameArrLength; i++) {
+    obj.goods_option_name.push(goodsOptionNameArr[i].goods_option_name);
+  }
+  result.push(obj);
 
   return result;
 }
@@ -611,6 +619,10 @@ async function editGoodsReview(goodsIdx, reviewIdx, userIdx, rating, content, im
   await goodsTransaction.updateGoodsReviewTransaction(goodsIdx, reviewIdx, userIdx, rating, content, img);
 }
 
+async function removeGoodsReview(goodsIdx, reviewIdx) {
+  await goodsTransaction.deleteGoodsReviewTransaction(goodsIdx, reviewIdx);
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -641,4 +653,5 @@ module.exports = {
   addCategoryOption,
   addGoodsReview,
   editGoodsReview,
+  removeGoodsReview,
 };

@@ -403,14 +403,14 @@ async function updateGoodsRating(connection, cnt, rating, goodsIdx) {
   return await connection.query(sql, [cnt, cnt, parseFloat(rating), goodsIdx]);
 }
 
-async function updateStoreCnt(connection, storeIdx) {
+async function updateStoreCnt(connection, cnt, storeIdx) {
   const sql = `
   UPDATE STORE
-  SET store_review_cnt = store_review_cnt + 1
+  SET store_review_cnt = store_review_cnt + ?
   WHERE store_idx = ?
   `;
 
-  const result = await connection.query(sql, [storeIdx]);
+  const result = await connection.query(sql, [cnt, storeIdx]);
 }
 
 async function getStoreIdxByGoodsIdx(connection, goodsIdx) {
@@ -440,7 +440,7 @@ async function insertGoodsReviewTransaction(goodsIdx, userIdx, rating, content, 
 
     const storeIdx = await getStoreIdxByGoodsIdx(connection, goodsIdx);
 
-    await updateStoreCnt(connection, storeIdx);
+    await updateStoreCnt(connection, 1, storeIdx);
   });
 }
 
@@ -470,9 +470,12 @@ async function selectGoodsReviewRating(connection, reviewIdx) {
   WHERE goods_review_idx = ?
   `;
 
-  const result = await connection.query(sql, [reviewIdx]);
+  const result = await connection.query;
 
-  return result[0].goods_review_rating;
+  if (result == []) {
+    return result[0].goods_review_rating;
+  }
+  throw new Error('Doesn\'t exist reviewIdx');
 }
 
 async function updateGoodsReviewTransaction(goodsIdx, reviewIdx, userIdx, rating, content, img) {
@@ -495,6 +498,37 @@ async function updateGoodsReviewTransaction(goodsIdx, reviewIdx, userIdx, rating
   });
 }
 
+async function deleteGoodsReview(connection, reviewIdx, goodsIdx) {
+  const sql = `
+  DELETE FROM GOODS_REVIEW
+  WHERE goods_review_idx = ? AND goods_idx = ?
+  `;
+
+  const result = await connection.query(sql, [reviewIdx, goodsIdx]);
+
+  return result.affectedRows;
+}
+
+async function deleteGoodsReviewTransaction(goodsIdx, reviewIdx) {
+  await mysql.transaction(async (connection) => {
+    const oldRating = await selectGoodsReviewRating(connection, reviewIdx);
+
+    const chkDelete = await deleteGoodsReview(connection, reviewIdx, goodsIdx);
+
+    if (chkDelete == 0) {
+      throw new Error('reviewIdx and goodsIdx don\'t match');
+    } else {
+      await deleteGoodsReviewImg(connection, reviewIdx);
+
+      await updateGoodsRating(connection, -1, -oldRating, goodsIdx);
+
+      const storeIdx = await getStoreIdxByGoodsIdx(connection, goodsIdx);
+
+      await updateStoreCnt(connection, -1, storeIdx);
+    }
+  });
+}
+
 module.exports = {
   insertGoodsScrapTransaction,
   insertGoodsTransaction,
@@ -510,4 +544,5 @@ module.exports = {
   updateStoreCnt,
   insertGoodsReviewTransaction,
   updateGoodsReviewTransaction,
+  deleteGoodsReviewTransaction,
 };
