@@ -476,7 +476,7 @@ async function getGoodsDetail(userIdx, goodsIdx) {
 
     // 시간 String 생성
     reviewsArr[i]
-      .goods_review_date = makeReviewTimeString(reviewsArr[i].goods_review_date);
+      .goods_review_date = moment(reviewsArr[i].goods_review_date).format('YYYY.MM.DD');
 
     reviewsArr[i].goods_review_img = imgResultArray;
 
@@ -486,11 +486,11 @@ async function getGoodsDetail(userIdx, goodsIdx) {
   // 굿즈 조회수 +1
   await goodsDao.updateGoodsHit(1, goodsIdx);
 
-  return {
+  return [{
     goods,
     store,
     reviews,
-  };
+  }];
 }
 
 async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, files, options, goodsCategoryOptionIdx) {
