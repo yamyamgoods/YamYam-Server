@@ -3,15 +3,13 @@
 
 const schedule = require('node-schedule');
 
-const storeDao = require('../src/dao/storeDao');
 const userDao = require('../src/dao/userDao');
-const goodsDao = require('../src/dao/goodsDao');
 
 const goodsTransaction = require('../src/dao/goodsTransaction');
 const storeTransaction = require('../src/dao/storeTransaction');
 
 async function calculateStoreRank() {
-  await storeTransaction.calculateStoreRank();
+  await storeTransaction.calculateStoreRankTransaction();
 }
 
 async function calculateGoodsRank() {

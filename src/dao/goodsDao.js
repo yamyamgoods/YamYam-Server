@@ -768,6 +768,17 @@ async function updateGoodsHit(value, goodsIdx) {
   await mysql.query(sql, [value, goodsIdx]);
 }
 
+async function insertCategory(categoryName) {
+  const sql = `
+  INSERT INTO GOODS_CATEGORY
+  (goods_category_name)
+  VALUES
+  (?)
+  `;
+
+  await mysql.query(sql, [categoryName]);
+}
+
 module.exports = {
   selectFirstBestGoods,
   selectNextBestGoods,
@@ -812,15 +823,12 @@ module.exports = {
   selectAllGoods,
   selectGoodsOption,
   selectGoodsOptionDetail,
-<<<<<<< HEAD
   updateGoodsScrap,
-
-=======
   selectCategoryOption,
   selectCategoryOptionDetail,
   updateAllGoodsHit,
   updateAllGoodsReviewWeekCnt,
   updateAllGoodsRank,
   updateGoodsHit,
->>>>>>> efc44529ac311cd332e5c9cdadf5eb828e240850
+  insertCategory,
 };

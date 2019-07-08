@@ -91,6 +91,28 @@ async function selectUser(userIdx) {
   return result;
 }
 
+async function selectUserByUserId(userId) {
+  const sql = `
+  SELECT 
+  user_idx,
+  user_email,
+  user_name,
+  user_img,
+  user_point,
+  user_alarm_cnt,
+  refresh_token,
+  device_token,
+  admin,
+  user_id,
+  FROM USER 
+  WHERE user_id = ?
+  `;
+
+  const result = await mysql.query(sql, [userId]);
+
+  return result;
+}
+
 async function getRefreshToken(userIdx) {
   const sql = `
   SELECT refresh_token
@@ -222,14 +244,14 @@ async function deleteAlarm() {
   await mysql.query(sql);
 }
 
-async function updateUserProfile(userIdx,profileImg) {
+async function updateUserProfile(userIdx, profileImg) {
   const sql = `
   UPDATE USER
   SET alarm_check_flag = 1
   WHERE user_idx = ?
   `;
 
-  const result = await mysql.query(sql, [userIdx,profileImg]);
+  const result = await mysql.query(sql, [userIdx, profileImg]);
 
   return result;
 }
@@ -266,5 +288,5 @@ module.exports = {
   deleteAlarm,
   updateUserProfile,
   selectGoodsIdxWithGoodsScrapIdx,
-
+  selectUserByUserId,
 };

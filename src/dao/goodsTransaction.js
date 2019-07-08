@@ -93,15 +93,15 @@ async function insertGoodsImg(connection, goodsIdx, goodsImg) {
   await connection.query(sql, [goodsIdx, goodsImg]);
 }
 
-async function insertGoodsCategoryOptionDetailGoods(connection, goodsIdx, goodsCategoryOptionDetailIdx) {
+async function insertGoodsCategoryOptionGoods(connection, goodsIdx, goodsCategoryOptionIdx) {
   const sql = `
-  INSERT INTO GOODS_CATEGORY_OPTION_DETAIL_GOODS
-  (goods_idx, goods_category_option_detail_idx)
+  INSERT INTO GOODS_CATEGORY_OPTION_GOODS
+  (goods_idx, goods_category_option_idx)
   VALUES
   (?, ?)
   `;
 
-  await connection.query(sql, [goodsIdx, goodsCategoryOptionDetailIdx]);
+  await connection.query(sql, [goodsIdx, goodsCategoryOptionIdx]);
 }
 
 async function selectGoodsDate(connection, goodsIdx) {
@@ -114,7 +114,7 @@ async function selectGoodsDate(connection, goodsIdx) {
   return result;
 }
 
-async function insertGoodsTransaction(goodsName, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, optionArr, goodsCategoryOptionDetailIdx) {
+async function insertGoodsTransaction(goodsName, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, optionArr, goodsCategoryOptionIdx) {
   await mysql.transaction(async (connection) => {
     // 굿즈 등록
     const goods = await insertGoods(connection, goodsName, storeIdx, price, categoryIdx, deliveryCharge, deliveryPeriod, minimumAmount, detail);
@@ -141,7 +141,7 @@ async function insertGoodsTransaction(goodsName, storeIdx, storeName, price, del
       await insertGoodsImg(connection, goodsIdx, imgArr[i]);
     }
 
-    await insertGoodsCategoryOptionDetailGoods(connection, goodsIdx, goodsCategoryOptionDetailIdx);
+    await insertGoodsCategoryOptionGoods(connection, goodsIdx, goodsCategoryOptionIdx);
 
     // 등록한 굿즈 시간 가져오기
     const goodsDateArr = await selectGoodsDate(connection, goodsIdx);
@@ -201,6 +201,15 @@ async function updateUserAlarmCnt(connection, userIdx) {
   await connection.query(sql, [userIdx]);
 }
 
+async function updateGoodsReviewCmtCnt(connection, reviewIdx, value) {
+  const sql = `
+  UPDATE GOODS_REVIEW SET goods_review_cmt_count = goods_review_cmt_count + ?
+  WHERE goods_review_idx = ?
+  `;
+
+  await connection.query(sql, [value, reviewIdx]);
+}
+
 async function insertReviewCommentTransaction(userIdx, userIdxForAlarm, reviewIdx, contents, recommentFlag) {
   await mysql.transaction(async (connection) => {
     let alarmMessage;
@@ -220,12 +229,31 @@ async function insertReviewCommentTransaction(userIdx, userIdxForAlarm, reviewId
 
     await insertAlarm(connection, userIdxForAlarm, 'GOODS_REVIEW_COMMENT', commentIdx, alarmMessage);
     await updateUserAlarmCnt(connection, userIdxForAlarm);
+
+    // 굿즈 리뷰의 댓글 수 증가
+    await updateGoodsReviewCmtCnt(connection, reviewIdx, 1);
   });
 }
 
-async function updateAllGoodsHit(connection, value) {
+async function deleteReviewComment(connection, commentIdx) {
   const sql = `
-  UPDATE GOODS SET goods_hit = ?
+  DELETE FROM GOODS_REVIEW_COMMENT
+  WHERE goods_review_cmt_idx = ?
+  `;
+
+  await connection.query(sql, [commentIdx]);
+}
+
+async function deleteReviewCommentTransaction(reviewIdx, commentIdx) {
+  await mysql.transaction(async (connection) => {
+    await deleteReviewComment(connection, commentIdx);
+    await updateGoodsReviewCmtCnt(connection, reviewIdx, -1);
+  });
+}
+
+async function updateAllGoodsSrapCnt(connection, value) {
+  const sql = `
+  UPDATE GOODS SET goods_scrap_cnt = ?
   `;
 
   await connection.query(sql, [value]);
@@ -241,7 +269,7 @@ async function updateAllGoodsReviewWeekCnt(connection, value) {
 
 async function updateAllGoodsRank(connection) {
   const sql = `
-  UPDATE GOODS SET goods_score = goods_review_week_cnt + goods_hit;
+  UPDATE GOODS SET goods_score = goods_review_week_cnt + goods_scrap_cnt;
   `;
 
   await connection.query(sql);
@@ -260,7 +288,7 @@ async function selectGoods(connection) {
 async function calculateGoodsRankTransaction() {
   await mysql.transaction(async (connection) => {
     await updateAllGoodsRank(connection);
-    await updateAllGoodsHit(connection, 0);
+    await updateAllGoodsSrapCnt(connection, 0);
     await updateAllGoodsReviewWeekCnt(connection, 0);
 
     const goodsArr = await selectGoods(connection);
@@ -275,9 +303,76 @@ async function calculateGoodsRankTransaction() {
   });
 }
 
+async function insertReviewLike(connection, userIdx, reviewIdx) {
+  const sql = `
+  INSERT INTO GOODS_REVIEW_LIKE
+  (user_idx, goods_review_idx)
+  VALUES
+  (?, ?)
+  `;
+
+  await connection.query(sql, [userIdx, reviewIdx]);
+}
+
+async function updateGoodsReviewLikeCnt(connection, reviewIdx, value) {
+  const sql = `
+  UPDATE GOODS_REVIEW SET goods_review_like_count = goods_review_like_count + ?
+  WHERE goods_review_idx = ?
+  `;
+
+  await connection.query(sql, [value, reviewIdx]);
+}
+
+async function deleteReviewLike(connection, userIdx, reviewIdx) {
+  const sql = `
+  DELETE FROM GOODS_REVIEW_LIKE
+  WHERE user_idx = ? AND goods_review_idx = ?
+  `;
+
+  await connection.query(sql, [userIdx, reviewIdx]);
+}
+
+async function insertReviewLikeTransaction(userIdx, reviewIdx) {
+  await mysql.transaction(async (connection) => {
+    await insertReviewLike(connection, userIdx, reviewIdx);
+    await updateGoodsReviewLikeCnt(connection, reviewIdx, 1);
+  });
+}
+
+async function deleteReviewLikeTransaction(userIdx, reviewIdx) {
+  await mysql.transaction(async (connection) => {
+    await deleteReviewLike(connection, userIdx, reviewIdx);
+    await updateGoodsReviewLikeCnt(connection, reviewIdx, -1);
+  });
+}
+
+async function insertCategoryOption(connection, categoryIdx, categoryOptionName) {
+  const sql = `
+  INSERT INTO GOODS_CATEGORY_OPTION
+  (goods_category_idx, goods_category_option_name)
+  VALUES
+  (?, ?)
+  `;
+
+  await connection.query(sql, [categoryIdx, categoryOptionName]);
+}
+
+async function insertCategoryOptionTransaction(categoryIdx, categoryOption) {
+  await mysql.transaction(async (connection) => {
+    const categoryOptionLength = categoryOption.length;
+    for (let i = 0; i < categoryOptionLength; i++) {
+      await insertCategoryOption(connection, categoryIdx, categoryOption[i]);
+    }
+  });
+}
+
 module.exports = {
   insertGoodsScrapTransaction,
   insertGoodsTransaction,
   insertReviewCommentTransaction,
   calculateGoodsRankTransaction,
+  insertReviewLikeTransaction,
+  deleteReviewLikeTransaction,
+  deleteReviewCommentTransaction,
+  insertCategoryOptionTransaction,
 };
