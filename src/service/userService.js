@@ -112,7 +112,7 @@ async function getUserInfo(userIdx) {
   userInfoObject.user_idx = user[0].user_idx;
   userInfoObject.user_name = user[0].user_name;
   userInfoObject.user_email = user[0].user_email;
-  userInfoObject.user_img = user[0].user_img;
+  userInfoObject.user_img = s3Location + user[0].user_img;
   userInfoObject.user_point = user[0].user_point;
 
   if (user[0].user_alarm_cnt > 0) {
