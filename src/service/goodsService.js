@@ -486,11 +486,11 @@ async function getGoodsDetail(userIdx, goodsIdx) {
   // 굿즈 조회수 +1
   await goodsDao.updateGoodsHit(1, goodsIdx);
 
-  return [{
+  return {
     goods,
     store,
     reviews,
-  }];
+  };
 }
 
 async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, files, options, goodsCategoryOptionIdx) {
@@ -631,6 +631,7 @@ async function editGoodsReview(goodsIdx, reviewIdx, userIdx, rating, content, im
 async function removeGoodsReview(goodsIdx, reviewIdx) {
   await goodsTransaction.deleteGoodsReviewTransaction(goodsIdx, reviewIdx);
 }
+
 
 module.exports = {
   getBestGoods,
