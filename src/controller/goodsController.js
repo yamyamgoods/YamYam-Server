@@ -53,7 +53,7 @@ async function removeReviewLike(req, res) {
 
     await goodsService.removeReviewLike(userIdx, reviewIdx);
 
-    response('Success', null, res, 204);
+    response('Success', null, res, 200);
   } catch (error) {
     console.log(error);
     errorResponse(error.message, res, error.statusCode);
@@ -84,7 +84,7 @@ async function removeGoodsScrap(req, res) {
 
     await goodsService.removeGoodsScrap(userIdx, goodsIdx, scrapIdx);
 
-    response('Success', null, res, 204);
+    response('Success', null, res, 200);
   } catch (error) {
     console.log(error);
     errorResponse(error.message, res, error.statusCode);
@@ -210,7 +210,7 @@ async function modifyReviewComment(req, res) {
 
     await goodsService.modifyReviewComment(userIdx, commentIdx, contents);
 
-    response('Success', [], res, 201);
+    response('Success', [], res, 200);
   } catch (error) {
     console.log(error);
     errorResponse(error.message, res, error.statusCode);
@@ -225,7 +225,7 @@ async function removeReviewComment(req, res) {
 
     await goodsService.removeReviewComment(userIdx, reviewIdx, commentIdx);
 
-    response('Success', [], res, 204);
+    response('Success', [], res, 200);
   } catch (error) {
     console.log(error);
     errorResponse(error.message, res, error.statusCode);
@@ -398,6 +398,24 @@ async function addCategoryOption(req, res) {
   }
 }
 
+async function addReview(req, res) {
+  try {
+    const { userIdx } = req.user;
+    const {
+      goodsIdx, content, rating,
+    } = req.body;
+
+    const { files } = req;
+
+    const result = await goodsService.addGoodsReview(goodsIdx, userIdx, rating, content, files);
+
+    response('Success', result, res, 201);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -424,4 +442,5 @@ module.exports = {
   getCategoryOption,
   addCategory,
   addCategoryOption,
+  addReview,
 };

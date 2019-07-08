@@ -15,7 +15,7 @@ async function selectFirstBestGoods() {
   goods_review_cnt
   FROM GOODS 
   JOIN STORE ON GOODS.store_idx = STORE.store_idx 
-  ORDER BY goods_score, goods_idx DESC 
+  ORDER BY goods_score DESC, goods_idx DESC 
   LIMIT ${mysqlConfig.paginationCnt}
   `;
 
@@ -39,7 +39,7 @@ async function selectNextBestGoods(lastIndex) {
   FROM GOODS 
   JOIN STORE ON GOODS.store_idx = STORE.store_idx 
   WHERE goods_idx < ?
-  ORDER BY goods_score, goods_idx DESC 
+  ORDER BY goods_score DESC, goods_idx DESC 
   LIMIT ${mysqlConfig.paginationCnt}
   `;
 
@@ -75,7 +75,7 @@ async function selectFirstBestReviews() {
   goods_review_photo_flag
   FROM GOODS_REVIEW
   JOIN USER ON GOODS_REVIEW.user_idx = USER.user_idx
-  ORDER BY goods_review_rating, goods_review_idx DESC
+  ORDER BY goods_review_rating DESC, goods_review_idx DESC
   LIMIT ${mysqlConfig.paginationCnt}
   `;
 
@@ -98,7 +98,7 @@ async function selectNextBestReviews(lastIndex) {
   FROM GOODS_REVIEW
   JOIN USER ON GOODS_REVIEW.user_idx = USER.user_idx
   WHERE goods_review_idx < ?
-  ORDER BY goods_review_rating, goods_review_idx DESC
+  ORDER BY goods_review_rating DESC, goods_review_idx DESC
   LIMIT ${mysqlConfig.paginationCnt}
   `;
 
@@ -779,6 +779,22 @@ async function insertCategory(categoryName) {
   await mysql.query(sql, [categoryName]);
 }
 
+async function selectStoreGoodsCategory(storeIdx) {
+  const sql = `
+  SELECT goods_category_idx, goods_category_name
+  FROM GOODS_CATEGORY
+  WHERE goods_category_idx IN (
+    SELECT DISTINCT goods_category_idx
+    FROM GOODS
+    WHERE store_idx = ?
+  )
+  `;
+
+  const result = await mysql.query(sql, [storeIdx]);
+
+  return result;
+}
+
 module.exports = {
   selectFirstBestGoods,
   selectNextBestGoods,
@@ -824,7 +840,6 @@ module.exports = {
   selectGoodsOption,
   selectGoodsOptionDetail,
   updateGoodsScrap,
-
   selectCategoryOption,
   selectCategoryOptionDetail,
   updateAllGoodsHit,
@@ -832,4 +847,5 @@ module.exports = {
   updateAllGoodsRank,
   updateGoodsHit,
   insertCategory,
+  selectStoreGoodsCategory,
 };

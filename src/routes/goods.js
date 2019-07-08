@@ -63,5 +63,7 @@ router.get('/category/:categoryIdx/options', goodsController.getCategoryOption);
 router.post('/category', adminCheck, goodsController.addCategory);
 // 카테고리 옵션 등록
 router.post('/category/option', adminCheck, goodsController.addCategoryOption);
+// 리뷰 등록
+router.post('/review', jwtCheck, upload.array('img'), goodsController.addReview);
 
 module.exports = router;
