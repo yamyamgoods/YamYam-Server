@@ -362,8 +362,8 @@ async function getGoodsOption(req, res) {
 
 async function getCategoryOption(req, res) {
   try {
-    const { categoryIdx } = req.params;
-    const result = await goodsService.getCategoryOption(categoryIdx);
+    const { goodsCategoryIdx } = req.params;
+    const result = await goodsService.getCategoryOption(goodsCategoryIdx);
     response('Success', result, res, 200);
   } catch (error) {
     console.log(error);
