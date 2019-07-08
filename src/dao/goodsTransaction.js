@@ -366,6 +366,85 @@ async function insertCategoryOptionTransaction(categoryIdx, categoryOption) {
   });
 }
 
+// insertGoodsReviewTransaction에서 사용하는 함수 네개
+async function insertGoodsReview(connection, goodsIdx, userIdx, photoFlag, rating, content) {
+  const sql = `
+  INSERT INTO GOODS_REVIEW
+  (goods_idx, user_idx, goods_review_photo_flag, goods_review_rating, goods_review_content)
+  VALUES
+  (?, ?, ?, ?, ?)
+  `;
+
+  return await connection.query(sql, [goodsIdx, userIdx, photoFlag, rating, content]);
+}
+
+async function insertGoodsReviewImg(connection, goodsReviewIdx, img) {
+  const sql = `
+  INSERT INTO GOODS_REVIEW_IMG
+  (goods_review_idx, goods_review_img)
+  VALUES
+  (?, ?)
+  `;
+
+  await connection.query(sql, [goodsReviewIdx, img.key]);
+}
+
+async function updateGoodsRating(connection, rating, goodsIdx) {
+  const sql = `
+  UPDATE GOODS
+  SET
+  goods_review_cnt = goods_review_cnt + 1,
+  goods_review_week_cnt = goods_review_week_cnt + 1,
+  goods_ratingsum = goods_ratingsum + ?,
+  goods_rating = goods_ratingsum / goods_review_cnt
+  WHERE goods_idx = ?
+  `;
+
+  return await connection.query(sql, [parseFloat(rating), goodsIdx]);
+}
+
+async function updateStoreRating(connection, storeIdx) {
+  const sql = `
+  UPDATE STORE
+  SET store_review_cnt = store_review_cnt + 1
+  WHERE store_idx = ?
+  `;
+
+  const result = await connection.query(sql, [storeIdx]);
+  console.log(result);
+}
+
+async function getStoreIdxByGoodsIdx(connection, goodsIdx) {
+  const sql = `
+  SELECT store_idx
+  FROM GOODS
+  WHERE goods_idx = ?
+  `;
+
+  const result = await connection.query(sql, [goodsIdx]);
+
+  return result[0];
+}
+async function insertGoodsReviewTransaction(goodsIdx, userIdx, rating, content, img) {
+  await mysql.transaction(async (connection) => {
+    let photoFlag = false;
+    if (img) photoFlag = true;
+    const reviewRow = await insertGoodsReview(connection, goodsIdx, userIdx, photoFlag, rating, content);
+
+    if (img) {
+      for (let i = 0; i < img.length; i++) {
+        await insertGoodsReviewImg(connection, reviewRow.insertId, img[i]);
+      }
+    }
+
+    await updateGoodsRating(connection, rating, goodsIdx);
+
+    const storeIdx = await getStoreIdxByGoodsIdx(connection, goodsIdx);
+
+    await updateStoreRating(connection, storeIdx);
+  });
+}
+
 module.exports = {
   insertGoodsScrapTransaction,
   insertGoodsTransaction,
@@ -375,4 +454,9 @@ module.exports = {
   deleteReviewLikeTransaction,
   deleteReviewCommentTransaction,
   insertCategoryOptionTransaction,
+  insertGoodsReview,
+  insertGoodsReviewImg,
+  updateGoodsRating,
+  updateStoreRating,
+  insertGoodsReviewTransaction,
 };

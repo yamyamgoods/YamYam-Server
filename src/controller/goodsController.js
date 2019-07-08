@@ -398,6 +398,24 @@ async function addCategoryOption(req, res) {
   }
 }
 
+async function addReview(req, res) {
+  try {
+    const { userIdx } = req.user;
+    const {
+      goodsIdx, content, rating,
+    } = req.body;
+
+    const { files } = req;
+
+    const result = await goodsService.addGoodsReview(goodsIdx, userIdx, rating, content, files);
+
+    response('Success', result, res, 201);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -424,4 +442,5 @@ module.exports = {
   getCategoryOption,
   addCategory,
   addCategoryOption,
+  addReview,
 };
