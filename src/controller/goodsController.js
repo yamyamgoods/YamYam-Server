@@ -447,6 +447,19 @@ async function removeReview(req, res) {
   }
 }
 
+async function modifyUserGoodsOption(req, res) {
+  try {
+    const { goodsScrapIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel, options } = req.body;  
+    const userIdx = req.user.userIdx;
+    await goodsService.modifyUserGoodsOption(goodsScrapIdx, userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel, options);
+
+    response('Success', [], res, 201);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -476,4 +489,6 @@ module.exports = {
   addReview,
   editReview,
   removeReview,
+  modifyUserGoodsOption,
+
 };
