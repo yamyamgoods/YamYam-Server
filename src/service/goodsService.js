@@ -101,11 +101,11 @@ async function getBestReviews(userIdx, lastIndex) {
 }
 
 async function addReviewLike(userIdx, reviewIdx) {
-  await goodsDao.insertReviewLike(userIdx, reviewIdx);
+  await goodsTransaction.insertReviewLikeTransaction(userIdx, reviewIdx);
 }
 
 async function removeReviewLike(userIdx, reviewIdx) {
-  await goodsDao.deleteReviewLike(userIdx, reviewIdx);
+  await goodsTransaction.deleteReviewLikeTransaction(userIdx, reviewIdx);
 }
 
 async function addGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel, options) {
@@ -369,7 +369,7 @@ async function modifyReviewComment(userIdx, commentIdx, contents) {
   await goodsDao.updateReviewComment(commentIdx, contents);
 }
 
-async function removeReviewComment(userIdx, commentIdx) {
+async function removeReviewComment(userIdx, reviewIdx, commentIdx) {
   const commentUserIdxArr = await userDao.selectUserIdxByCommentIdx(commentIdx);
   const commentUserIdx = commentUserIdxArr[0].user_idx;
 
@@ -377,7 +377,7 @@ async function removeReviewComment(userIdx, commentIdx) {
     throw errorResponseObject.accessDinedError;
   }
 
-  await goodsDao.deleteReviewComment(commentIdx);
+  await goodsTransaction.deleteReviewCommentTransaction(reviewIdx, commentIdx);
 }
 
 async function getGoodsOptionsName(goodsIdx) {
@@ -476,7 +476,7 @@ async function getGoodsDetail(userIdx, goodsIdx) {
   };
 }
 
-async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, files, options, goodsCategoryOptionDetailIdx) {
+async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, files, options, goodsCategoryOptionIdx) {
   // store, category가 없는 경우
   const storeArr = await storeDao.selectStoreName(storeIdx);
   const categoryArr = await goodsDao.goodsCategoryByCategoryIdx(categoryIdx);
@@ -496,7 +496,7 @@ async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeri
 
   const storeName = storeArr[0].store_name;
 
-  await goodsTransaction.insertGoodsTransaction(goodsName, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, options, goodsCategoryOptionDetailIdx);
+  await goodsTransaction.insertGoodsTransaction(goodsName, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, options, goodsCategoryOptionIdx);
 }
 
 // 카테고리에 따른 굿즈 최소 최대 금액 (옵션 - 최소 수량)
@@ -545,8 +545,7 @@ async function getGoodsOption(goodsIdx) {
   const goodsOptionArr = await goodsDao.selectGoodsOption(goodsIdx);
 
   const goodsOptionLength = goodsOptionArr.length;
-  for(let i = 0; i < goodsOptionLength; i++) {
-
+  for (let i = 0; i < goodsOptionLength; i++) {
     const goodsOptionIdx = goodsOptionArr[i].goods_option_idx;
     const goodsOptionDetailArr = await goodsDao.selectGoodsOptionDetail(goodsOptionIdx);
     const goodsOptionDetailLength = goodsOptionDetailArr.length;
@@ -556,7 +555,7 @@ async function getGoodsOption(goodsIdx) {
     for (let k = 0; k < goodsOptionDetailLength; k++) {
       goodsOptionArr[i].goods_option_detail_name[k] = goodsOptionDetailArr[k].goods_option_detail_name;
     }
-    result.push(goodsOptionArr[i]); 
+    result.push(goodsOptionArr[i]);
   }
   return result;
 }
@@ -596,6 +595,14 @@ async function getGoodsBySearch(userIdx, searchAfter, goodsName, order) {
   return goods;
 }
 
+async function addCategory(categoryName) {
+  await goodsDao.insertCategory(categoryName);
+}
+
+async function addCategoryOption(categoryIdx, categoryOption) {
+  await goodsTransaction.insertCategoryOptionTransaction(categoryIdx, categoryOption);
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -620,7 +627,8 @@ module.exports = {
   getAllGoods,
   getGoodsOption,
   modifyUserGoodsOption,
-
   getCategoryOption,
   getGoodsBySearch,
+  addCategory,
+  addCategoryOption,
 };

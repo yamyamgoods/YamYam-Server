@@ -1,6 +1,8 @@
+const request = require('request-promise');
 const userDao = require('../dao/userDao');
 const goodsDao = require('../dao/goodsDao');
 const storeDao = require('../dao/storeDao');
+const userTransaction = require('../dao/userTransaction');
 const errorResponseObject = require('../../config/errorResponseObject');
 const { sign, getRefreshToken } = require('../library/jwtCheck');
 const { makeReviewTimeString } = require('../library/changeTimeString');
@@ -38,7 +40,6 @@ async function getGoodsScrap(userIdx, lastIndex) {
 }
 
 async function getUserScrapOption(goodsScrapIdx) {
-
   const userScrapOptionData = [];
   const userScrapOptionDataAll = [];
 
@@ -48,8 +49,8 @@ async function getUserScrapOption(goodsScrapIdx) {
 
   const goodsOptionArr = await goodsDao.selectGoodsOption(goodsIdx[0].goods_idx);
   const goodsOptionLength = goodsOptionArr.length;
-  for(let i = 0; i < goodsOptionLength; i++) {
-    let tempObj = {};
+  for (let i = 0; i < goodsOptionLength; i++) {
+    const tempObj = {};
     tempObj.goods_option_name = goodsOptionArr[i].goods_option_name;
 
     const goodsOptionIdx = goodsOptionArr[i].goods_option_idx;
@@ -116,7 +117,7 @@ async function getUserInfo(userIdx) {
 
   if (user[0].user_alarm_cnt > 0) {
     userInfoObject.alarm_flag = 1;
-  }else {
+  } else {
     userInfoObject.alarm_flag = 0;
   }
 
@@ -129,11 +130,10 @@ async function getUserRecentGoods(userIdx, lastIndex) {
   const userRecentGoods = await userDao.selectUserRecentGoods(userIdx, lastIndex);
   const userRecentGoodsLength = userRecentGoods.length;
 
-  for (let i = 0;i < userRecentGoodsLength; i++) {
-
+  for (let i = 0; i < userRecentGoodsLength; i++) {
     const goodsIdx = userRecentGoods[i].goods_idx;
     const goodsStoreIdx = userRecentGoods[i].store_idx;
-    const user = await userDao.selectUserWithGoods(userIdx,goodsIdx);
+    const user = await userDao.selectUserWithGoods(userIdx, goodsIdx);
 
     // 해당 굿즈의 스토어 이름 추가
     const storeName = await storeDao.selectStoreName(goodsStoreIdx);
@@ -155,15 +155,15 @@ async function getUserRecentGoods(userIdx, lastIndex) {
   return result;
 }
 
-async function getUserAlarmList(userIdx, lastIndex) { 
+async function getUserAlarmList(userIdx, lastIndex) {
   const result = [];
   const userAlarmList = await userDao.selectUserAlarm(userIdx, lastIndex);
   const userAlarmListLength = userAlarmList.length;
 
-  for (let i = 0; i < userAlarmListLength ; i++) {
+  for (let i = 0; i < userAlarmListLength; i++) {
     const alarmTargetIdx = userAlarmList[i].alarm_target_idx;
     const reviewComments = await userDao.selectReviewIdx(alarmTargetIdx);
-    userAlarmList[i].goods_review_idx = reviewComments[0].goods_review_idx;  
+    userAlarmList[i].goods_review_idx = reviewComments[0].goods_review_idx;
     result.push(userAlarmList[i]);
   }
   await userDao.updateUserAlarmFlag(userIdx);
@@ -193,7 +193,7 @@ async function getAlarmReviewDetail(alarmIdx, reviewIdx) {
   const goodsImg = await goodsDao.selectGoodsImg(goodsIdx);
 
   const alarmIdxArr = await userDao.selectAlarmCheckFlag(alarmIdx);
-  if(alarmIdxArr[0].alarm_check_flag == 0) { // 0 이면 읽었다고 1로 업데이트 하기
+  if (alarmIdxArr[0].alarm_check_flag == 0) { // 0 이면 읽었다고 1로 업데이트 하기
     await userDao.updateAlarmCheckFlag(alarmIdx);
   }
 
@@ -230,8 +230,45 @@ async function getAlarmReviewDetail(alarmIdx, reviewIdx) {
   return result;
 }
 
-async function updateUserProfile(userIdx){
+async function updateUserProfile(userIdx) {
 
+}
+
+async function kakaoSignin(accesstoken, devicetoken) {
+  const option = {
+    method: 'GET',
+    uri: 'https://kapi.kakao.com/v2/user/me',
+    json: true,
+    headers: {
+      Authorization: `Bearer ${accesstoken}`,
+    },
+  };
+
+  const kakaoUserInfo = await request(option);
+
+  // 데이터베이스에서 유저 유무 확인
+  const user = await userDao.selectUserByUserId(`kakao/${kakaoUserInfo.id}`);
+  const userIdx = user[0].user_idx;
+
+  let newToken;
+  let refreshToken;
+  // 유저가 있는 경우
+  if (user.length != 0) {
+    newToken = sign(userIdx);
+    refreshToken = getRefreshToken(userIdx);
+    await userDao.updateRefreshToken(userIdx, refreshToken);
+  } else {
+    await userTransaction.insertKakaoUserTransaction(`kakao/${kakaoUserInfo.id}`, kakaoUserInfo.properties.nickname, devicetoken);
+
+    const newUser = await userDao.selectUserByUserId(`kakao/${kakaoUserInfo.id}`);
+    newToken = sign(newUser[0].user_idx);
+    refreshToken = newUser[0].refresh_token;
+  }
+
+  return {
+    authorization: newToken,
+    refreshtoken: refreshToken,
+  };
 }
 
 module.exports = {
@@ -244,4 +281,5 @@ module.exports = {
   getUserAlarmFlag,
   getAlarmReviewDetail,
   updateUserProfile,
+  kakaoSignin,
 };
