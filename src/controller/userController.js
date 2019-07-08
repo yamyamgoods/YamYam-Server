@@ -129,7 +129,7 @@ async function modifyUserProfile(req, res) {
 
     await userService.modifyUserProfile(profileImg, userIdx);
 
-    response('Success', [], res, 201);
+    response('Success', [], res, 200);
   } catch (error) {
     console.log(error);
     errorResponse(error.message, res, error.statusCode);
@@ -137,19 +137,17 @@ async function modifyUserProfile(req, res) {
 }
 
 async function modifyUserNickname(req, res) {
-
   try {
-    const userName = req.body.userName;  
+    const userName = req.body.userName;
     const userIdx = req.user.userIdx;
- 
+
     await userService.modifyUserNickname(userName, userIdx);
 
-    response('Success', [], res, 201);
+    response('Success', [], res, 200);
   } catch (error) {
     console.log(error);
     errorResponse(error.message, res, error.statusCode);
   }
-
 }
 
 module.exports = {
