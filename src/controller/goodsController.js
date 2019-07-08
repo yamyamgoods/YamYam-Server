@@ -220,9 +220,10 @@ async function modifyReviewComment(req, res) {
 async function removeReviewComment(req, res) {
   try {
     const userIdx = req.user.userIdx;
-    const commentIdx = req.body.commentIdx;
+    const commentIdx = req.params.commentIdx;
+    const reviewIdx = req.params.reviewIdx;
 
-    await goodsService.removeReviewComment(userIdx, commentIdx);
+    await goodsService.removeReviewComment(userIdx, reviewIdx, commentIdx);
 
     response('Success', [], res, 204);
   } catch (error) {

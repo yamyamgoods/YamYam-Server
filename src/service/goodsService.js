@@ -369,7 +369,7 @@ async function modifyReviewComment(userIdx, commentIdx, contents) {
   await goodsDao.updateReviewComment(commentIdx, contents);
 }
 
-async function removeReviewComment(userIdx, commentIdx) {
+async function removeReviewComment(userIdx, reviewIdx, commentIdx) {
   const commentUserIdxArr = await userDao.selectUserIdxByCommentIdx(commentIdx);
   const commentUserIdx = commentUserIdxArr[0].user_idx;
 
@@ -377,7 +377,7 @@ async function removeReviewComment(userIdx, commentIdx) {
     throw errorResponseObject.accessDinedError;
   }
 
-  await goodsDao.deleteReviewComment(commentIdx);
+  await goodsTransaction.deleteReviewCommentTransaction(reviewIdx, commentIdx);
 }
 
 async function getGoodsOptionsName(goodsIdx) {

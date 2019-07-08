@@ -201,6 +201,15 @@ async function updateUserAlarmCnt(connection, userIdx) {
   await connection.query(sql, [userIdx]);
 }
 
+async function updateGoodsReviewCmtCnt(connection, reviewIdx, value) {
+  const sql = `
+  UPDATE GOODS_REVIEW SET goods_review_cmt_count = goods_review_cmt_count + ?
+  WHERE goods_review_idx = ?
+  `;
+
+  await connection.query(sql, [value, reviewIdx]);
+}
+
 async function insertReviewCommentTransaction(userIdx, userIdxForAlarm, reviewIdx, contents, recommentFlag) {
   await mysql.transaction(async (connection) => {
     let alarmMessage;
@@ -220,6 +229,25 @@ async function insertReviewCommentTransaction(userIdx, userIdxForAlarm, reviewId
 
     await insertAlarm(connection, userIdxForAlarm, 'GOODS_REVIEW_COMMENT', commentIdx, alarmMessage);
     await updateUserAlarmCnt(connection, userIdxForAlarm);
+
+    // 굿즈 리뷰의 댓글 수 증가
+    await updateGoodsReviewCmtCnt(connection, reviewIdx, 1);
+  });
+}
+
+async function deleteReviewComment(connection, commentIdx) {
+  const sql = `
+  DELETE FROM GOODS_REVIEW_COMMENT
+  WHERE goods_review_cmt_idx = ?
+  `;
+
+  await connection.query(sql, [commentIdx]);
+}
+
+async function deleteReviewCommentTransaction(reviewIdx, commentIdx) {
+  await mysql.transaction(async (connection) => {
+    await deleteReviewComment(connection, commentIdx);
+    await updateGoodsReviewCmtCnt(connection, reviewIdx, -1);
   });
 }
 
@@ -325,4 +353,5 @@ module.exports = {
   calculateGoodsRankTransaction,
   insertReviewLikeTransaction,
   deleteReviewLikeTransaction,
+  deleteReviewCommentTransaction,
 };

@@ -42,7 +42,7 @@ router.get('/:goodsIdx/reviews/:photoFlag/:lastIndex', goodsController.getGoodsR
 // 댓글 수정하기
 router.put('/review/comment', jwtCheck, goodsController.modifyReviewComment);
 // 댓글 삭제하기
-router.delete('/review/comment/:commentIdx', jwtCheck, goodsController.removeReviewComment);
+router.delete('/review/:reviewIdx/comment/:commentIdx', jwtCheck, goodsController.removeReviewComment);
 // 리뷰 작성 페이지
 router.get('/:goodsIdx/options/name', goodsController.getGoodsOptionsName);
 // 굿즈 상세보기
