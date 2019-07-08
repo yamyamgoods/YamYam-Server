@@ -578,7 +578,22 @@ async function getGoodsOption(goodsIdx) {
 }
 
 // 찜 수정하기
-async function modifyUserGoodsOption() {}
+async function modifyUserGoodsOption(goodsScrapIdx, userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel, options) {
+
+  const goodsScrapArr = await goodsDao.selectGoodsScrapOptionFlag(userIdx, goodsIdx, goodsScrapIdx);
+  // const goodsScrapIdx = await goodsDao.goodsScrapArr[0].goods_scrap_idx;
+  const goodsScrapOptionFlag = goodsScrapArr[0].goods_scrap_option_flag;
+  if (goodsScrapOptionFlag == 1) {
+    // 견적옵션이 있을 경우 - update
+    await goodsDao.updateGoodsScrap(goodsScrapLabel, goodsScrapPrice, goodsScrapIdx);
+    await goodsDao.updateGoodsScrapOption(options, goodsScrapIdx);
+  }else {
+    // 견적옵션이 없을 경우 - 새로 insert
+    await goodsDao.insertGoodsScrapOption(goodsScrapIdx, options);
+    await goodsDao.updateGoodsScrap(goodsScrapLabel, goodsScrapPrice, goodsScrapIdx);
+    await goodsDao.updateGoodsScrapOptionFlag(goodsScrapIdx);
+  }
+}
 
 async function getCategoryOption(goodsCategoryIdx) {
   const options = await goodsDao.selectCategoryOption(goodsCategoryIdx);
