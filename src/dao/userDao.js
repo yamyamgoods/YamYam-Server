@@ -184,7 +184,23 @@ async function selectFirstUserRecentGoods(userIdx) {
   return result;
 }
 
-async function selectUserAlarm(userIdx, lastIndex) {
+async function selectFirstUserAlarm(userIdx) {
+  const sql = `
+  SELECT 
+  a.alarm_idx,
+  a.alarm_target_idx,
+  a.alarm_date_time,
+  a.alarm_message
+  FROM ALARM a
+  WHERE a.user_idx = ?
+  ORDER BY a.alarm_date_time DESC
+  LIMIT ${mysqlConfig.paginationCnt} 
+  `;
+  const result = await mysql.query(sql, [userIdx]);
+  return result;
+}
+
+async function selectNextUserAlarm(userIdx, lastIndex) {
   const sql = `
   SELECT 
   a.alarm_idx,
@@ -310,7 +326,8 @@ module.exports = {
   selectUserIdxByCommentIdx,
   selectNextUserRecentGoods,
   selectFirstUserRecentGoods,
-  selectUserAlarm,
+  selectFirstUserAlarm,
+  selectNextUserAlarm,
   selectAlarmFlag,
   updateUserAlarmFlag,
   selectReviewIdx,
