@@ -304,7 +304,7 @@ async function addGoods(req, res) {
       ]
      */
     const options = req.body.options;
-
+    
     await goodsService.addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, files, options, goodsCategoryOptionIdx);
 
     response('Success', [], res, 201);
