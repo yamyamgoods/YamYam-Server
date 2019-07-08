@@ -346,6 +346,26 @@ async function deleteReviewLikeTransaction(userIdx, reviewIdx) {
   });
 }
 
+async function insertCategoryOption(connection, categoryIdx, categoryOptionName) {
+  const sql = `
+  INSERT INTO GOODS_CATEGORY_OPTION
+  (goods_category_idx, goods_category_option_name)
+  VALUES
+  (?, ?)
+  `;
+
+  await connection.query(sql, [categoryIdx, categoryOptionName]);
+}
+
+async function insertCategoryOptionTransaction(categoryIdx, categoryOption) {
+  await mysql.transaction(async (connection) => {
+    const categoryOptionLength = categoryOption.length;
+    for (let i = 0; i < categoryOptionLength; i++) {
+      await insertCategoryOption(connection, categoryIdx, categoryOption[i]);
+    }
+  });
+}
+
 module.exports = {
   insertGoodsScrapTransaction,
   insertGoodsTransaction,
@@ -354,4 +374,5 @@ module.exports = {
   insertReviewLikeTransaction,
   deleteReviewLikeTransaction,
   deleteReviewCommentTransaction,
+  insertCategoryOptionTransaction,
 };

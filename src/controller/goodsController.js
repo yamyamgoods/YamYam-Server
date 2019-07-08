@@ -385,7 +385,17 @@ async function addCategory(req, res) {
 }
 
 async function addCategoryOption(req, res) {
+  try {
+    const categoryId = req.body.categoryIdx;
+    const categoryOption = req.body.categoryOption;
 
+    const result = await goodsService.addCategoryOption(categoryId, categoryOption);
+
+    response('Success', result, res, 201);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
 }
 
 module.exports = {
@@ -413,4 +423,5 @@ module.exports = {
   getGoodsOption,
   getCategoryOption,
   addCategory,
+  addCategoryOption,
 };

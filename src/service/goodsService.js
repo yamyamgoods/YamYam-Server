@@ -599,6 +599,10 @@ async function addCategory(categoryName) {
   await goodsDao.insertCategory(categoryName);
 }
 
+async function addCategoryOption(categoryIdx, categoryOption) {
+  await goodsTransaction.insertCategoryOptionTransaction(categoryIdx, categoryOption);
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -626,4 +630,5 @@ module.exports = {
   getCategoryOption,
   getGoodsBySearch,
   addCategory,
+  addCategoryOption,
 };
