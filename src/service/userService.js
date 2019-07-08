@@ -162,7 +162,12 @@ async function getUserRecentGoods(userIdx, lastIndex) {
 
 async function getUserAlarmList(userIdx, lastIndex) {
   const result = [];
-  const userAlarmList = await userDao.selectUserAlarm(userIdx, lastIndex);
+  let userAlarmList;
+  if (lastIndex == -1) {
+    userAlarmList = await userDao.selectFirstUserAlarm(userIdx);
+  } else {
+    userAlarmList = await userDao.selectNextUserAlarm(userIdx, lastIndex);
+  }
   const userAlarmListLength = userAlarmList.length;
 
   for (let i = 0; i < userAlarmListLength; i++) {
