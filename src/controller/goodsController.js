@@ -416,6 +416,24 @@ async function addReview(req, res) {
   }
 }
 
+async function editReview(req, res) {
+  try {
+    const { userIdx } = req.user;
+    const {
+      goodsIdx, reviewIdx, content, rating,
+    } = req.body;
+
+    const { files } = req;
+
+    const result = await goodsService.editGoodsReview(goodsIdx, reviewIdx, userIdx, rating, content, files);
+
+    response('Success', result, res, 201);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -443,4 +461,5 @@ module.exports = {
   addCategory,
   addCategoryOption,
   addReview,
+  editReview,
 };

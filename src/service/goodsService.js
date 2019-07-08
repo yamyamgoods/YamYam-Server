@@ -607,6 +607,10 @@ async function addGoodsReview(goodsIdx, userIdx, rating, content, img) {
   await goodsTransaction.insertGoodsReviewTransaction(goodsIdx, userIdx, rating, content, img);
 }
 
+async function editGoodsReview(goodsIdx, reviewIdx, userIdx, rating, content, img) {
+  await goodsTransaction.updateGoodsReviewTransaction(goodsIdx, reviewIdx, userIdx, rating, content, img);
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -636,4 +640,5 @@ module.exports = {
   addCategory,
   addCategoryOption,
   addGoodsReview,
+  editGoodsReview,
 };
