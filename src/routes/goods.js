@@ -67,5 +67,7 @@ router.post('/category/option', adminCheck, goodsController.addCategoryOption);
 router.post('/review', jwtCheck, upload.array('img'), goodsController.addReview);
 // 리뷰 수정
 router.put('/review', jwtCheck, upload.array('img'), goodsController.editReview);
+// 리뷰 삭제
+router.delete('/:goodsIdx/review/:reviewIdx', jwtCheck, goodsController.removeReview);
 
 module.exports = router;

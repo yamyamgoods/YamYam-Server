@@ -434,6 +434,19 @@ async function editReview(req, res) {
   }
 }
 
+async function removeReview(req, res) {
+  try {
+    const { goodsIdx, reviewIdx } = req.params;
+
+    const result = await goodsService.removeGoodsReview(goodsIdx, reviewIdx);
+
+    response('Success', result, res, 201);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -462,4 +475,5 @@ module.exports = {
   addCategoryOption,
   addReview,
   editReview,
+  removeReview,
 };
