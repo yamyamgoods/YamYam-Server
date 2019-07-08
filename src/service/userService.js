@@ -230,8 +230,10 @@ async function getAlarmReviewDetail(alarmIdx, reviewIdx) {
   return result;
 }
 
-async function updateUserProfile(userIdx) {
+async function modifyUserProfile(profileImg, userIdx) {
 
+  const userImg = profileImg.split(s3Location)[1];
+  await userDao.updateUserProfile(userImg, userIdx);
 }
 
 async function kakaoSignin(accesstoken, devicetoken) {
@@ -273,6 +275,11 @@ async function kakaoSignin(accesstoken, devicetoken) {
   };
 }
 
+async function modifyUserNickname(userName,userIdx) {
+  
+  await userDao.updateUserNickname(userName, userIdx);
+}
+
 module.exports = {
   getGoodsScrap,
   getUserScrapOption,
@@ -282,6 +289,7 @@ module.exports = {
   getUserAlarmList,
   getUserAlarmFlag,
   getAlarmReviewDetail,
-  updateUserProfile,
+  modifyUserProfile,
   kakaoSignin,
+  modifyUserNickname,
 };
