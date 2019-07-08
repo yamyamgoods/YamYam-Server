@@ -203,6 +203,8 @@ async function getExhibitionPagination(lastIndex) {
   const exhibitionDataLength = exhibitionData.length;
 
   for (let i = 0; i < exhibitionDataLength; i++) {
+    exhibitionData[i].exhibition_img = s3Location + exhibitionData[i].exhibition_img;
+    exhibitionData[i].exhibition_gradation_img = s3Location + exhibitionData[i].exhibition_gradation_img;
     result.push(exhibitionData[i]);
   }
   return result;
