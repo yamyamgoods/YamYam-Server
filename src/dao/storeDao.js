@@ -186,6 +186,16 @@ async function updateAllStoreScrapCnt(value) {
   await mysql.query(sql, [value]);
 }
 
+async function updateStoreHit(storeIdx) {
+  const sql = `
+  UPDATE STORE
+  SET store_hit = store_hit + 1
+  WHERE store_idx = ?
+  `;
+
+  await mysql.query(sql, [storeIdx]);
+}
+
 module.exports = {
   selectStoreName,
   selectStoreRank,
@@ -199,4 +209,5 @@ module.exports = {
   updateAllStoreRank,
   updateAllStoreHit,
   updateAllStoreScrapCnt,
+  updateStoreHit,
 };

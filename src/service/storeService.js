@@ -82,12 +82,16 @@ async function getStoreCategory() {
   return category;
 }
 
-async function getStoreGoods(userIdx, storeIdx, order, lastIndex, goodsCategoryIdx) {
+async function getStoreGoods(userIdx, storeIdx, order, lastIndex, goodsCategoryIdx, firstFlag) {
   // [{'goods_idx': 1, 'goods_img': 'http://~~', 'goods_name':'asd', 'goods_price': 32900, 'goods_rating':3.2, 'goods_minimum_amount':10, 'goods_review_cnt': 300 [goods_like_flag: true]}, ...]
   const goods = await goodsDao.selectStoreGoods(storeIdx, order, lastIndex, goodsCategoryIdx);
 
   let scrapGoods;
   if (userIdx) scrapGoods = await goodsDao.selectGoodsScrapWithUserIdx(userIdx);
+
+  if (parseInt(firstFlag, 10)) {
+    await storeDao.updateStoreHit(storeIdx);
+  }
 
   const goodsLength = goods.length;
 
