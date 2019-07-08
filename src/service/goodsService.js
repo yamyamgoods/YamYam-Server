@@ -171,6 +171,8 @@ async function getGoodsTab() {
     //     exhibition[i].goods_data.push(exhibitionGoods[k]);
     //   }
     // }
+    exhibition[i].exhibition_img = s3Location + exhibition[i].exhibition_img;
+    exhibition[i].exhibition_gradation_img = s3Location + exhibition[i].exhibition_gradation_img;
     exhibitionData.push(exhibition[i]);
   }
 
@@ -201,6 +203,8 @@ async function getExhibitionPagination(lastIndex) {
   const exhibitionDataLength = exhibitionData.length;
 
   for (let i = 0; i < exhibitionDataLength; i++) {
+    exhibitionData[i].exhibition_img = s3Location + exhibitionData[i].exhibition_img;
+    exhibitionData[i].exhibition_gradation_img = s3Location + exhibitionData[i].exhibition_gradation_img;
     result.push(exhibitionData[i]);
   }
   return result;
@@ -209,7 +213,12 @@ async function getExhibitionPagination(lastIndex) {
 // 기획전 굿즈 모두보기
 async function getExhibitionGoodsAll(userIdx, exhibitionIdx, lastIndex) {
   const result = [];
-  const exhibitionGoodsAll = await goodsDao.selectExhibitionGoodsAll(exhibitionIdx, lastIndex);
+  let exhibitionGoodsAll;
+  if (lastIndex == -1) {
+    exhibitionGoodsAll = await goodsDao.selectFirstExhibitionGoodsAll(exhibitionIdx);
+  } else {
+    exhibitionGoodsAll = await goodsDao.selectNextExhibitionGoodsAll(exhibitionIdx, lastIndex);
+  }
   const exhibitionGoodsAllLength = exhibitionGoodsAll.length;
 
   for (let i = 0; i < exhibitionGoodsAllLength; i++) {
@@ -467,7 +476,7 @@ async function getGoodsDetail(userIdx, goodsIdx) {
 
     // 시간 String 생성
     reviewsArr[i]
-      .goods_review_date = makeReviewTimeString(reviewsArr[i].goods_review_date);
+      .goods_review_date = moment(reviewsArr[i].goods_review_date).format('YYYY.MM.DD');
 
     reviewsArr[i].goods_review_img = imgResultArray;
 
@@ -477,11 +486,11 @@ async function getGoodsDetail(userIdx, goodsIdx) {
   // 굿즈 조회수 +1
   await goodsDao.updateGoodsHit(1, goodsIdx);
 
-  return {
+  return [{
     goods,
     store,
     reviews,
-  };
+  }];
 }
 
 async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, files, options, goodsCategoryOptionIdx) {

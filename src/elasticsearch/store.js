@@ -65,7 +65,7 @@ async function addStore(storeIdx, storeName, imgArr, hashTag) {
     store_rank_score: 0,
   };
 
-  await esClient.create({
+  await esClient.index({
     id: storeIdx,
     index: 'yamyamstore',
     type: 'store',
@@ -75,12 +75,16 @@ async function addStore(storeIdx, storeName, imgArr, hashTag) {
 
 async function updateStoreRankScore(storeIdx, storeRankScore) {
   const body = {};
+  body.query = {
+    match: {
+      store_idx: storeIdx,
+    },
+  };
   body.script = {
-    source: `ctx._source.store_rank_score=${storeRankScore}`,
+    inline: `ctx._source.store_rank_score=${storeRankScore}`,
   };
 
-  await esClient.update({
-    id: storeIdx,
+  await esClient.updateByQuery({
     index: 'yamyamstore',
     type: 'store',
     body,

@@ -424,6 +424,17 @@ async function getStoreIdxByGoodsIdx(connection, goodsIdx) {
 
   return result[0];
 }
+
+async function selectGoodsRating(connection, goodsIdx) {
+  const sql = `
+  SELECT goods_rating FROM GOODS WHERE goods_idx = ?
+  `;
+
+  const result = await connection.query(sql, [goodsIdx]);
+
+  return result;
+}
+
 async function insertGoodsReviewTransaction(goodsIdx, userIdx, rating, content, img) {
   await mysql.transaction(async (connection) => {
     let photoFlag = false;
@@ -441,6 +452,14 @@ async function insertGoodsReviewTransaction(goodsIdx, userIdx, rating, content, 
     const storeIdx = await getStoreIdxByGoodsIdx(connection, goodsIdx);
 
     await updateStoreCnt(connection, 1, storeIdx);
+
+    const goodsRatingArr = await selectGoodsRating(connection, goodsIdx);
+    const goodsRating = goodsRatingArr[0].goods_rating;
+
+    // elasticsearch rankingscore
+    // elasticsearch review cnt+1
+
+    await elasticsearchGoods.updateReviewCntAndGoodsRating(goodsIdx, goodsRating);
   });
 }
 
