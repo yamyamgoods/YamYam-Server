@@ -203,6 +203,8 @@ async function getExhibitionPagination(lastIndex) {
   const exhibitionDataLength = exhibitionData.length;
 
   for (let i = 0; i < exhibitionDataLength; i++) {
+    exhibitionData[i].exhibition_img = s3Location + exhibitionData[i].exhibition_img;
+    exhibitionData[i].exhibition_gradation_img = s3Location + exhibitionData[i].exhibition_gradation_img;
     result.push(exhibitionData[i]);
   }
   return result;
@@ -211,7 +213,12 @@ async function getExhibitionPagination(lastIndex) {
 // 기획전 굿즈 모두보기
 async function getExhibitionGoodsAll(userIdx, exhibitionIdx, lastIndex) {
   const result = [];
-  const exhibitionGoodsAll = await goodsDao.selectExhibitionGoodsAll(exhibitionIdx, lastIndex);
+  let exhibitionGoodsAll;
+  if (lastIndex == -1) {
+    exhibitionGoodsAll = await goodsDao.selectFirstExhibitionGoodsAll(exhibitionIdx);
+  } else {
+    exhibitionGoodsAll = await goodsDao.selectNextExhibitionGoodsAll(exhibitionIdx, lastIndex);
+  }
   const exhibitionGoodsAllLength = exhibitionGoodsAll.length;
 
   for (let i = 0; i < exhibitionGoodsAllLength; i++) {
