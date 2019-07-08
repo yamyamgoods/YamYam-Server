@@ -101,11 +101,11 @@ async function getBestReviews(userIdx, lastIndex) {
 }
 
 async function addReviewLike(userIdx, reviewIdx) {
-  await goodsDao.insertReviewLike(userIdx, reviewIdx);
+  await goodsTransaction.insertReviewLikeTransaction(userIdx, reviewIdx);
 }
 
 async function removeReviewLike(userIdx, reviewIdx) {
-  await goodsDao.deleteReviewLike(userIdx, reviewIdx);
+  await goodsTransaction.deleteReviewLikeTransaction(userIdx, reviewIdx);
 }
 
 async function addGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel, options) {

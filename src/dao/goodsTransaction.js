@@ -275,9 +275,54 @@ async function calculateGoodsRankTransaction() {
   });
 }
 
+async function insertReviewLike(connection, userIdx, reviewIdx) {
+  const sql = `
+  INSERT INTO GOODS_REVIEW_LIKE
+  (user_idx, goods_review_idx)
+  VALUES
+  (?, ?)
+  `;
+
+  await connection.query(sql, [userIdx, reviewIdx]);
+}
+
+async function updateGoodsReviewLikeCnt(connection, reviewIdx, value) {
+  const sql = `
+  UPDATE GOODS_REVIEW SET goods_review_like_count = goods_review_like_count + ?
+  WHERE goods_review_idx = ?
+  `;
+
+  await connection.query(sql, [value, reviewIdx]);
+}
+
+async function deleteReviewLike(connection, userIdx, reviewIdx) {
+  const sql = `
+  DELETE FROM GOODS_REVIEW_LIKE
+  WHERE user_idx = ? AND goods_review_idx = ?
+  `;
+
+  await connection.query(sql, [userIdx, reviewIdx]);
+}
+
+async function insertReviewLikeTransaction(userIdx, reviewIdx) {
+  await mysql.transaction(async (connection) => {
+    await insertReviewLike(connection, userIdx, reviewIdx);
+    await updateGoodsReviewLikeCnt(connection, reviewIdx, 1);
+  });
+}
+
+async function deleteReviewLikeTransaction(userIdx, reviewIdx) {
+  await mysql.transaction(async (connection) => {
+    await deleteReviewLike(connection, userIdx, reviewIdx);
+    await updateGoodsReviewLikeCnt(connection, reviewIdx, -1);
+  });
+}
+
 module.exports = {
   insertGoodsScrapTransaction,
   insertGoodsTransaction,
   insertReviewCommentTransaction,
   calculateGoodsRankTransaction,
+  insertReviewLikeTransaction,
+  deleteReviewLikeTransaction,
 };
