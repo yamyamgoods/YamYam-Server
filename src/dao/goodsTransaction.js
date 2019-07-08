@@ -93,15 +93,15 @@ async function insertGoodsImg(connection, goodsIdx, goodsImg) {
   await connection.query(sql, [goodsIdx, goodsImg]);
 }
 
-async function insertGoodsCategoryOptionDetailGoods(connection, goodsIdx, goodsCategoryOptionDetailIdx) {
+async function insertGoodsCategoryOptionGoods(connection, goodsIdx, goodsCategoryOptionIdx) {
   const sql = `
-  INSERT INTO GOODS_CATEGORY_OPTION_DETAIL_GOODS
-  (goods_idx, goods_category_option_detail_idx)
+  INSERT INTO GOODS_CATEGORY_OPTION_GOODS
+  (goods_idx, goods_category_option_idx)
   VALUES
   (?, ?)
   `;
 
-  await connection.query(sql, [goodsIdx, goodsCategoryOptionDetailIdx]);
+  await connection.query(sql, [goodsIdx, goodsCategoryOptionIdx]);
 }
 
 async function selectGoodsDate(connection, goodsIdx) {
@@ -114,7 +114,7 @@ async function selectGoodsDate(connection, goodsIdx) {
   return result;
 }
 
-async function insertGoodsTransaction(goodsName, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, optionArr, goodsCategoryOptionDetailIdx) {
+async function insertGoodsTransaction(goodsName, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, optionArr, goodsCategoryOptionIdx) {
   await mysql.transaction(async (connection) => {
     // 굿즈 등록
     const goods = await insertGoods(connection, goodsName, storeIdx, price, categoryIdx, deliveryCharge, deliveryPeriod, minimumAmount, detail);
@@ -141,7 +141,7 @@ async function insertGoodsTransaction(goodsName, storeIdx, storeName, price, del
       await insertGoodsImg(connection, goodsIdx, imgArr[i]);
     }
 
-    await insertGoodsCategoryOptionDetailGoods(connection, goodsIdx, goodsCategoryOptionDetailIdx);
+    await insertGoodsCategoryOptionGoods(connection, goodsIdx, goodsCategoryOptionIdx);
 
     // 등록한 굿즈 시간 가져오기
     const goodsDateArr = await selectGoodsDate(connection, goodsIdx);

@@ -59,5 +59,9 @@ router.get('/:goodsIdx/options', goodsController.getGoodsOption);
 router.put('/scrap', jwtCheck, goodsController.addGoodsScrap);
 // 카테고리의 하위 옵션 보기
 router.get('/category/:categoryIdx/options', goodsController.getCategoryOption);
+// 카테고리 등록
+router.post('/category', adminCheck, goodsController.addCategory);
+// 카테고리 옵션 등록
+router.post('/category/option', adminCheck, goodsController.addCategoryOption);
 
 module.exports = router;

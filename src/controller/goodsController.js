@@ -269,7 +269,7 @@ async function addGoods(req, res) {
     const minimumAmount = req.body.minimumAmount;
     const detail = req.body.detail;
     const categoryIdx = req.body.categoryIdx;
-    const goodsCategoryOptionDetailIdx = req.body.goodsCategoryOptionDetailIdx;
+    const goodsCategoryOptionIdx = req.body.goodsCategoryOptionIdx;
 
     const files = req.files;
 
@@ -305,7 +305,7 @@ async function addGoods(req, res) {
      */
     const options = req.body.options;
 
-    await goodsService.addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, files, options, goodsCategoryOptionDetailIdx);
+    await goodsService.addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, files, options, goodsCategoryOptionIdx);
 
     response('Success', [], res, 201);
   } catch (error) {
@@ -371,6 +371,23 @@ async function getCategoryOption(req, res) {
   }
 }
 
+async function addCategory(req, res) {
+  try {
+    const categoryName = req.body.categoryName;
+
+    const result = await goodsService.addCategory(categoryName);
+
+    response('Success', result, res, 201);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
+async function addCategoryOption(req, res) {
+
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -395,4 +412,5 @@ module.exports = {
   getAllGoods,
   getGoodsOption,
   getCategoryOption,
+  addCategory,
 };

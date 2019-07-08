@@ -149,5 +149,5 @@ async function calculateStoreRankTransaction() {
 
 module.exports = {
   insertStoreTransaction,
-    calculateStoreRankTransaction,
+  calculateStoreRankTransaction,
 };

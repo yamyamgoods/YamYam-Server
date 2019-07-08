@@ -768,6 +768,17 @@ async function updateGoodsHit(value, goodsIdx) {
   await mysql.query(sql, [value, goodsIdx]);
 }
 
+async function insertCategory(categoryName) {
+  const sql = `
+  INSERT INTO GOODS_CATEGORY
+  (goods_category_name)
+  VALUES
+  (?)
+  `;
+
+  await mysql.query(sql, [categoryName]);
+}
+
 module.exports = {
   selectFirstBestGoods,
   selectNextBestGoods,
@@ -819,4 +830,5 @@ module.exports = {
   updateAllGoodsReviewWeekCnt,
   updateAllGoodsRank,
   updateGoodsHit,
+  insertCategory,
 };

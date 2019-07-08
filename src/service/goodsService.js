@@ -476,7 +476,7 @@ async function getGoodsDetail(userIdx, goodsIdx) {
   };
 }
 
-async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, files, options, goodsCategoryOptionDetailIdx) {
+async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, files, options, goodsCategoryOptionIdx) {
   // store, category가 없는 경우
   const storeArr = await storeDao.selectStoreName(storeIdx);
   const categoryArr = await goodsDao.goodsCategoryByCategoryIdx(categoryIdx);
@@ -496,7 +496,7 @@ async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeri
 
   const storeName = storeArr[0].store_name;
 
-  await goodsTransaction.insertGoodsTransaction(goodsName, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, options, goodsCategoryOptionDetailIdx);
+  await goodsTransaction.insertGoodsTransaction(goodsName, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, options, goodsCategoryOptionIdx);
 }
 
 // 카테고리에 따른 굿즈 최소 최대 금액 (옵션 - 최소 수량)
@@ -545,8 +545,7 @@ async function getGoodsOption(goodsIdx) {
   const goodsOptionArr = await goodsDao.selectGoodsOption(goodsIdx);
 
   const goodsOptionLength = goodsOptionArr.length;
-  for(let i = 0; i < goodsOptionLength; i++) {
-
+  for (let i = 0; i < goodsOptionLength; i++) {
     const goodsOptionIdx = goodsOptionArr[i].goods_option_idx;
     const goodsOptionDetailArr = await goodsDao.selectGoodsOptionDetail(goodsOptionIdx);
     const goodsOptionDetailLength = goodsOptionDetailArr.length;
@@ -556,7 +555,7 @@ async function getGoodsOption(goodsIdx) {
     for (let k = 0; k < goodsOptionDetailLength; k++) {
       goodsOptionArr[i].goods_option_detail_name[k] = goodsOptionDetailArr[k].goods_option_detail_name;
     }
-    result.push(goodsOptionArr[i]); 
+    result.push(goodsOptionArr[i]);
   }
   return result;
 }
@@ -596,6 +595,10 @@ async function getGoodsBySearch(userIdx, searchAfter, goodsName, order) {
   return goods;
 }
 
+async function addCategory(categoryName) {
+  await goodsDao.insertCategory(categoryName);
+}
+
 module.exports = {
   getBestGoods,
   getBestReviews,
@@ -620,7 +623,7 @@ module.exports = {
   getAllGoods,
   getGoodsOption,
   modifyUserGoodsOption,
-
   getCategoryOption,
   getGoodsBySearch,
+  addCategory,
 };
