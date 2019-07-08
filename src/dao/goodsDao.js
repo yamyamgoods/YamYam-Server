@@ -824,6 +824,7 @@ module.exports = {
   selectGoodsOption,
   selectGoodsOptionDetail,
   updateGoodsScrap,
+
   selectCategoryOption,
   selectCategoryOptionDetail,
   updateAllGoodsHit,
