@@ -149,7 +149,9 @@ async function selectUserIdxByCommentIdx(commentIdx) {
 
 async function selectNextUserRecentGoods(userIdx, lastIndex) {
   const sql = `
-  SELECT g.goods_idx,
+  SELECT
+  urg.user_recent_goods_idx,
+  g.goods_idx,
   g.goods_name,
   g.goods_price,
   g.store_idx
@@ -166,7 +168,9 @@ async function selectNextUserRecentGoods(userIdx, lastIndex) {
 
 async function selectFirstUserRecentGoods(userIdx) {
   const sql = `
-  SELECT g.goods_idx,
+  SELECT
+  urg.user_recent_goods_idx,
+  g.goods_idx,
   g.goods_name,
   g.goods_price,
   g.store_idx

@@ -129,9 +129,9 @@ async function getUserRecentGoods(userIdx, lastIndex) {
   const result = [];
   let userRecentGoods;
   if (lastIndex == -1) {
-    userRecentGoods = await userDao.selectUserFirstRecentGoods(userIdx);
+    userRecentGoods = await userDao.selectFirstUserRecentGoods(userIdx);
   } else {
-    userRecentGoods = await userDao.selectUserNextRecentGoods(userIdx, lastIndex);
+    userRecentGoods = await userDao.selectNextUserRecentGoods(userIdx, lastIndex);
   }
   const userRecentGoodsLength = userRecentGoods.length;
 
@@ -153,7 +153,7 @@ async function getUserRecentGoods(userIdx, lastIndex) {
 
     // 굿즈이미지 한개 골라서 추가
     const goodsImg = await goodsDao.selectGoodsImg(goodsIdx);
-    userRecentGoods[i].goods_img = goodsImg[0].goods_img;
+    userRecentGoods[i].goods_img = s3Location + goodsImg[0].goods_img;
 
     result.push(userRecentGoods[i]);
   }
