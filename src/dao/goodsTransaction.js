@@ -389,21 +389,21 @@ async function insertGoodsReviewImg(connection, goodsReviewIdx, img) {
   await connection.query(sql, [goodsReviewIdx, img.key]);
 }
 
-async function updateGoodsRating(connection, rating, goodsIdx) {
+async function updateGoodsRating(connection, cnt, rating, goodsIdx) {
   const sql = `
   UPDATE GOODS
   SET
-  goods_review_cnt = goods_review_cnt + 1,
-  goods_review_week_cnt = goods_review_week_cnt + 1,
+  goods_review_cnt = goods_review_cnt + ?,
+  goods_review_week_cnt = goods_review_week_cnt + ?,
   goods_ratingsum = goods_ratingsum + ?,
   goods_rating = goods_ratingsum / goods_review_cnt
   WHERE goods_idx = ?
   `;
 
-  return await connection.query(sql, [parseFloat(rating), goodsIdx]);
+  return await connection.query(sql, [cnt, cnt, parseFloat(rating), goodsIdx]);
 }
 
-async function updateStoreRating(connection, storeIdx) {
+async function updateStoreCnt(connection, storeIdx) {
   const sql = `
   UPDATE STORE
   SET store_review_cnt = store_review_cnt + 1
@@ -411,7 +411,6 @@ async function updateStoreRating(connection, storeIdx) {
   `;
 
   const result = await connection.query(sql, [storeIdx]);
-  console.log(result);
 }
 
 async function getStoreIdxByGoodsIdx(connection, goodsIdx) {
@@ -437,11 +436,62 @@ async function insertGoodsReviewTransaction(goodsIdx, userIdx, rating, content, 
       }
     }
 
-    await updateGoodsRating(connection, rating, goodsIdx);
+    await updateGoodsRating(connection, 1, rating, goodsIdx);
 
     const storeIdx = await getStoreIdxByGoodsIdx(connection, goodsIdx);
 
-    await updateStoreRating(connection, storeIdx);
+    await updateStoreCnt(connection, storeIdx);
+  });
+}
+
+async function updateGoodsReview(connection, reviewIdx, photoFlag, rating, content) {
+  const sql = `
+  UPDATE GOODS_REVIEW
+  SET goods_review_photo_flag = ?, goods_review_rating = ?, goods_review_content = ?
+  WHERE goods_review_idx = ?
+  `;
+
+  return await connection.query(sql, [photoFlag, rating, content, reviewIdx]);
+}
+
+async function deleteGoodsReviewImg(connection, reviewIdx) {
+  const sql = `
+  DELETE FROM GOODS_REVIEW_IMG
+  WHERE goods_review_idx = ?
+  `;
+
+  await connection.query(sql, [reviewIdx]);
+}
+
+async function selectGoodsReviewRating(connection, reviewIdx) {
+  const sql = `
+  SELECT goods_review_rating
+  FROM GOODS_REVIEW
+  WHERE goods_review_idx = ?
+  `;
+
+  const result = await connection.query(sql, [reviewIdx]);
+
+  return result[0].goods_review_rating;
+}
+
+async function updateGoodsReviewTransaction(goodsIdx, reviewIdx, userIdx, rating, content, img) {
+  await mysql.transaction(async (connection) => {
+    const oldRating = await selectGoodsReviewRating(connection, reviewIdx);
+
+    let photoFlag = false;
+    if (img) photoFlag = true;
+
+    await updateGoodsReview(connection, reviewIdx, photoFlag, rating, content);
+
+    await deleteGoodsReviewImg(connection, reviewIdx);
+    if (img) {
+      for (let i = 0; i < img.length; i++) {
+        await insertGoodsReviewImg(connection, reviewIdx, img[i]);
+      }
+    }
+
+    await updateGoodsRating(connection, 0, rating - oldRating, goodsIdx);
   });
 }
 
@@ -457,6 +507,7 @@ module.exports = {
   insertGoodsReview,
   insertGoodsReviewImg,
   updateGoodsRating,
-  updateStoreRating,
+  updateStoreCnt,
   insertGoodsReviewTransaction,
+  updateGoodsReviewTransaction,
 };
