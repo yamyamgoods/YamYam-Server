@@ -147,7 +147,7 @@ async function selectUserIdxByCommentIdx(commentIdx) {
   return result;
 }
 
-async function selectUserRecentGoods(userIdx, lastIndex) {
+async function selectNextUserRecentGoods(userIdx, lastIndex) {
   const sql = `
   SELECT g.goods_idx,
   g.goods_name,
@@ -161,6 +161,22 @@ async function selectUserRecentGoods(userIdx, lastIndex) {
   LIMIT ${mysqlConfig.paginationCnt} 
   `;
   const result = await mysql.query(sql, [userIdx, lastIndex]);
+  return result;
+}
+
+async function selectFirstUserRecentGoods(userIdx) {
+  const sql = `
+  SELECT g.goods_idx,
+  g.goods_name,
+  g.goods_price,
+  g.store_idx
+  FROM USER_RECENT_GOODS urg, GOODS g
+  WHERE urg.user_idx = ?
+  AND urg.goods_idx = g.goods_idx
+  ORDER BY urg.user_recent_goods_date_time DESC
+  LIMIT ${mysqlConfig.paginationCnt} 
+  `;
+  const result = await mysql.query(sql, [userIdx]);
   return result;
 }
 
@@ -288,7 +304,8 @@ module.exports = {
   updateRefreshToken,
   getRefreshToken,
   selectUserIdxByCommentIdx,
-  selectUserRecentGoods,
+  selectNextUserRecentGoods,
+  selectFirstUserRecentGoods,
   selectUserAlarm,
   selectAlarmFlag,
   updateUserAlarmFlag,

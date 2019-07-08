@@ -127,7 +127,12 @@ async function getUserInfo(userIdx) {
 
 async function getUserRecentGoods(userIdx, lastIndex) {
   const result = [];
-  const userRecentGoods = await userDao.selectUserRecentGoods(userIdx, lastIndex);
+  let userRecentGoods;
+  if (lastIndex == -1) {
+    userRecentGoods = await userDao.selectUserFirstRecentGoods(userIdx);
+  } else {
+    userRecentGoods = await userDao.selectUserNextRecentGoods(userIdx, lastIndex);
+  }
   const userRecentGoodsLength = userRecentGoods.length;
 
   for (let i = 0; i < userRecentGoodsLength; i++) {
