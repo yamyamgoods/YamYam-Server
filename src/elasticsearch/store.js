@@ -27,7 +27,8 @@ async function getStoreByStoreName(searchAfter, storeName, order) {
 
   const response = await esClient.search({
     size: paginationCnt,
-    index: 'store',
+    index: 'yamyamstore',
+    type: 'store',
     body,
   });
 
@@ -66,7 +67,8 @@ async function addStore(storeIdx, storeName, imgArr, hashTag) {
 
   await esClient.create({
     id: storeIdx,
-    index: 'store',
+    index: 'yamyamstore',
+    type: 'store',
     body,
   });
 }
@@ -79,7 +81,8 @@ async function updateStoreRankScore(storeIdx, storeRankScore) {
 
   await esClient.update({
     id: storeIdx,
-    index: 'store',
+    index: 'yamyamstore',
+    type: 'store',
     body,
   });
 }
