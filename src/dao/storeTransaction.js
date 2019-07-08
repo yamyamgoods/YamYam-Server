@@ -129,7 +129,7 @@ async function selectStore(connection) {
   return result;
 }
 
-async function calculateStoreRank() {
+async function calculateStoreRankTransaction() {
   await mysql.transaction(async (connection) => {
     await updateAllStoreRank(connection);
     await updateAllStoreHit(connection, 0);
@@ -149,5 +149,5 @@ async function calculateStoreRank() {
 
 module.exports = {
   insertStoreTransaction,
-  calculateStoreRank,
+    calculateStoreRankTransaction,
 };

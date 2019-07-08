@@ -223,9 +223,9 @@ async function insertReviewCommentTransaction(userIdx, userIdxForAlarm, reviewId
   });
 }
 
-async function updateAllGoodsHit(connection, value) {
+async function updateAllGoodsSrapCnt(connection, value) {
   const sql = `
-  UPDATE GOODS SET goods_hit = ?
+  UPDATE GOODS SET goods_scrap_cnt = ?
   `;
 
   await connection.query(sql, [value]);
@@ -241,7 +241,7 @@ async function updateAllGoodsReviewWeekCnt(connection, value) {
 
 async function updateAllGoodsRank(connection) {
   const sql = `
-  UPDATE GOODS SET goods_score = goods_review_week_cnt + goods_hit;
+  UPDATE GOODS SET goods_score = goods_review_week_cnt + goods_scrap_cnt;
   `;
 
   await connection.query(sql);
@@ -260,7 +260,7 @@ async function selectGoods(connection) {
 async function calculateGoodsRankTransaction() {
   await mysql.transaction(async (connection) => {
     await updateAllGoodsRank(connection);
-    await updateAllGoodsHit(connection, 0);
+    await updateAllGoodsSrapCnt(connection, 0);
     await updateAllGoodsReviewWeekCnt(connection, 0);
 
     const goodsArr = await selectGoods(connection);
