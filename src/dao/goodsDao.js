@@ -267,7 +267,27 @@ async function selectExhibitionPaging(lastIndex) {
 }
 
 // 기획전 굿즈
-async function selectExhibitionGoodsAll(exhibitionIdx, lastIndex) {
+async function selectFirstExhibitionGoodsAll(exhibitionIdx) {
+  const sql = `
+  SELECT g.goods_idx,
+  g.goods_category_idx,
+  g.goods_name,
+  g.goods_rating,
+  g.goods_price,
+  g.goods_minimum_amount,
+  g.store_idx
+  FROM GOODS g,EXHIBITION_GOODS exg
+  WHERE exg.exhibition_idx = ?
+  AND g.goods_idx = exg.goods_idx
+  ORDER BY g.goods_idx DESC
+  LIMIT ${mysqlConfig.paginationCnt}
+  `;
+  const result = await mysql.query(sql, [exhibitionIdx]);
+
+  return result;
+}
+// 기획전 굿즈
+async function selectNextExhibitionGoodsAll(exhibitionIdx, lastIndex) {
   const sql = `
   SELECT g.goods_idx,
   g.goods_category_idx,
@@ -814,7 +834,8 @@ module.exports = {
   selectExhibitionGoods,
   selectGoodsCategoryPaging,
   selectExhibitionPaging,
-  selectExhibitionGoodsAll,
+  selectFirstExhibitionGoodsAll,
+  selectNextExhibitionGoodsAll,
   selectGoodsIdxByReviewIdx,
   selectGoods,
   selectFirstReviewComments,
