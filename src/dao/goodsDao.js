@@ -207,7 +207,7 @@ async function deleteGoodsScrapByscrapIdx(scrapIdx) {
 // 굿즈탭 보기 (위에 카테고리랑 아래 기획전 및 관련 굿즈들)
 async function selectGoodsCategory() {
   const sql = `
-  SELECT goods_category_name 
+  SELECT goods_category_idx,goods_category_name 
   FROM GOODS_CATEGORY 
   LIMIT ${mysqlConfig.paginationCnt}
   `;
@@ -243,7 +243,7 @@ async function selectGoodsCategoryPaging(lastIndex) {
   const sql = `
   SELECT goods_category_idx,goods_category_name 
   FROM GOODS_CATEGORY 
-  WHERE goods_category_idx < ?
+  WHERE goods_category_idx > ?
   ORDER BY goods_category_idx ASC
   LIMIT ${mysqlConfig.paginationCnt}
   `;

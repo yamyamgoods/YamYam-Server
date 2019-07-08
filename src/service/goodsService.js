@@ -171,6 +171,8 @@ async function getGoodsTab() {
     //     exhibition[i].goods_data.push(exhibitionGoods[k]);
     //   }
     // }
+    exhibition[i].exhibition_img = s3Location + exhibition[i].exhibition_img;
+    exhibition[i].exhibition_gradation_img = s3Location + exhibition[i].exhibition_gradation_img;
     exhibitionData.push(exhibition[i]);
   }
 
