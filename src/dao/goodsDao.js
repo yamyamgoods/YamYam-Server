@@ -812,15 +812,12 @@ module.exports = {
   selectAllGoods,
   selectGoodsOption,
   selectGoodsOptionDetail,
-<<<<<<< HEAD
   updateGoodsScrap,
 
-=======
   selectCategoryOption,
   selectCategoryOptionDetail,
   updateAllGoodsHit,
   updateAllGoodsReviewWeekCnt,
   updateAllGoodsRank,
   updateGoodsHit,
->>>>>>> efc44529ac311cd332e5c9cdadf5eb828e240850
 };
