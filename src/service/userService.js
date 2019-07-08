@@ -248,12 +248,13 @@ async function kakaoSignin(accesstoken, devicetoken) {
 
   // 데이터베이스에서 유저 유무 확인
   const user = await userDao.selectUserByUserId(`kakao/${kakaoUserInfo.id}`);
-  const userIdx = user[0].user_idx;
 
   let newToken;
   let refreshToken;
   // 유저가 있는 경우
   if (user.length != 0) {
+    const userIdx = user[0].user_idx;
+
     newToken = sign(userIdx);
     refreshToken = getRefreshToken(userIdx);
     await userDao.updateRefreshToken(userIdx, refreshToken);
@@ -261,6 +262,7 @@ async function kakaoSignin(accesstoken, devicetoken) {
     await userTransaction.insertKakaoUserTransaction(`kakao/${kakaoUserInfo.id}`, kakaoUserInfo.properties.nickname, devicetoken);
 
     const newUser = await userDao.selectUserByUserId(`kakao/${kakaoUserInfo.id}`);
+
     newToken = sign(newUser[0].user_idx);
     refreshToken = newUser[0].refresh_token;
   }
