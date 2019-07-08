@@ -151,22 +151,6 @@ async function deleteStoreScrap(storeIdx, userIdx) {
   await mysql.query(sql, [storeIdx, userIdx]);
 }
 
-async function selectStoreGoodsCategory(storeIdx) {
-  const sql = `
-  SELECT goods_category_idx, goods_category_name
-  FROM GOODS_CATEGORY
-  WHERE goods_category_idx IN (
-    SELECT DISTINCT goods_category_idx
-    FROM GOODS
-    WHERE store_idx = ?
-  )
-  `;
-
-  const result = await mysql.query(sql, [storeIdx]);
-
-  return result;
-}
-
 async function selectStoreCategory() {
   const sql = `
   SELECT store_category_idx, store_category_name
@@ -211,7 +195,6 @@ module.exports = {
   selectUserScrapWithStoreIdx,
   insertStoreScrap,
   deleteStoreScrap,
-  selectStoreGoodsCategory,
   selectStoreCategory,
   updateAllStoreRank,
   updateAllStoreHit,
