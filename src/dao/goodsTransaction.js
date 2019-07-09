@@ -1,5 +1,6 @@
 const mysql = require('../library/mysql');
 const elasticsearchGoods = require('../elasticsearch/goods');
+const { pushAlarm } = require('../library/firebasePush');
 
 async function insertGoodsScrap(connection, userId, goodsIdx, goodsScrapPrice, goodsScrapLabel) {
   const sql = `
@@ -210,6 +211,16 @@ async function updateGoodsReviewCmtCnt(connection, reviewIdx, value) {
   await connection.query(sql, [value, reviewIdx]);
 }
 
+async function getDevicetoken(connection, userIdx) {
+  const sql = `
+  SELECT device_token FROM USER WHERE user_idx = ?
+  `;
+
+  const result = await connection.query(sql, [userIdx]);
+
+  return result;
+}
+
 async function insertReviewCommentTransaction(userIdx, userIdxForAlarm, reviewIdx, contents, recommentFlag) {
   await mysql.transaction(async (connection) => {
     let alarmMessage;
@@ -232,6 +243,14 @@ async function insertReviewCommentTransaction(userIdx, userIdxForAlarm, reviewId
 
     // 굿즈 리뷰의 댓글 수 증가
     await updateGoodsReviewCmtCnt(connection, reviewIdx, 1);
+
+    // fcm push alaram
+    const userDevicetokenArr = await getDevicetoken(connection, userIdx);
+    const devicetoken = userDevicetokenArr[0].device_token;
+
+    if (!devicetoken) {
+      pushAlarm(devicetoken, alarmMessage);
+    }
   });
 }
 
