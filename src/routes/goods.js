@@ -17,7 +17,7 @@ router.get('/reviews/best/:lastIndex', goodsController.getBestReviews);
 router.post('/review/like', jwtCheck, goodsController.addReviewLike);
 // review 좋아요 취소
 router.delete('/review/:reviewIdx/like', jwtCheck, goodsController.removeReviewLike);
-// 찜하기 (견적 options는 query)
+// 찜하기
 router.post('/scrap', jwtCheck, goodsController.addGoodsScrap);
 // 찜해제 (굿즈 탭)
 router.delete('/:goodsIdx/scrap', jwtCheck, goodsController.removeGoodsScrap);
