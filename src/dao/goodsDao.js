@@ -175,12 +175,12 @@ async function insertGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, label) {
 async function getAllGoodsScrapOption(userIdx, goodsIdx) {
   const sql = `
   SELECT 
-  USER_SCRAP_OPTION.goods_scrap_option as goods_scrap_option,
+  GOODS_SCRAP_OPTION.goods_scrap_option as goods_scrap_option,
   GOODS_SCRAP.goods_scrap_label as goods_scrap_label
   FROM GOODS_SCRAP 
   JOIN
-  USER_SCRAP_OPTION 
-  ON GOODS_SCRAP.goods_scrap_idx = USER_SCRAP_OPTION.goods_scrap_idx
+  GOODS_SCRAP_OPTION 
+  ON GOODS_SCRAP.goods_scrap_idx = GOODS_SCRAP_OPTION.goods_scrap_idx
   WHERE GOODS_SCRAP.user_idx = ? AND GOODS_SCRAP.goods_idx = ?
   `;
 
@@ -205,7 +205,7 @@ async function selectGoodsScrapOptionFlag(userIdx, goodsIdx, goodsScrapIdx) {
 
 async function insertGoodsScrapOption(goodsScrapIdx, goodsScrapOption) {
   const sql = `
-  INSERT INTO USER_SCRAP_OPTION 
+  INSERT INTO GOODS_SCRAP_OPTION 
   (goods_scrap_idx, goods_scrap_option) 
   VALUES (?,?)
   `;
@@ -217,7 +217,7 @@ async function insertGoodsScrapOption(goodsScrapIdx, goodsScrapOption) {
 
 async function updateGoodsScrapOption(goodsScrapOption, goodsScrapIdx) {
   const sql = `
-  UPDATE USER_SCRAP_OPTION 
+  UPDATE GOODS_SCRAP_OPTION 
   SET goods_scrap_option = ?
   WHERE goods_scrap_idx = ?
   `;
