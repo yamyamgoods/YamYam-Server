@@ -66,6 +66,7 @@ async function selectFirstBestReviews() {
   const sql = `
   SELECT 
   USER.user_name as user_name,
+  USER.user_img as user_img,
   goods_review_idx,
   goods_review_date,
   goods_review_rating,
@@ -88,6 +89,7 @@ async function selectNextBestReviews(lastIndex) {
   const sql = `
   SELECT 
   USER.user_name as user_name,
+  USER.user_img as user_img,
   goods_review_idx,
   goods_review_date,
   goods_review_rating,
@@ -487,6 +489,7 @@ async function selectFirstGoodsReviews(goodsIdx, photoFlag) {
   gr.goods_review_content,
   gr.goods_review_like_count,
   gr.goods_review_cmt_count,
+  gr.goods_review_photo_flag,
   gr.user_idx
   FROM GOODS_REVIEW gr
   WHERE gr.goods_idx = ?
@@ -509,6 +512,7 @@ async function selectNextGoodsReviews(goodsIdx, photoFlag, lastIndex) {
   gr.goods_review_content,
   gr.goods_review_like_count,
   gr.goods_review_cmt_count,
+  gr.goods_review_photo_flag,
   gr.user_idx
   FROM GOODS_REVIEW gr
   WHERE gr.goods_idx = ?
@@ -532,6 +536,7 @@ async function selectFirstGoodsReviewsAll(goodsIdx) {
   gr.goods_review_content,
   gr.goods_review_like_count,
   gr.goods_review_cmt_count,
+  gr.goods_review_photo_flag,
   gr.user_idx
   FROM GOODS_REVIEW gr
   WHERE gr.goods_idx = ?
@@ -553,6 +558,7 @@ async function selectNextGoodsReviewsAll(goodsIdx, lastIndex) {
   gr.goods_review_content,
   gr.goods_review_like_count,
   gr.goods_review_cmt_count,
+  gr.goods_review_photo_flag,
   gr.user_idx
   FROM GOODS_REVIEW gr
   WHERE gr.goods_idx = ?
