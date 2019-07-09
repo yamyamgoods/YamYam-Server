@@ -58,7 +58,7 @@ async function getGoodsByGoodsName(searchAfter, goodsName, order) {
     result.goods.push(obj);
   }
 
-  result.totalCnt = response.hits.total.value;
+  result.totalCnt = response.hits.total;
 
   return result;
 }
