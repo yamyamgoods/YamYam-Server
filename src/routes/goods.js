@@ -17,7 +17,7 @@ router.get('/reviews/best/:lastIndex', goodsController.getBestReviews);
 router.post('/review/like', jwtCheck, goodsController.addReviewLike);
 // review 좋아요 취소
 router.delete('/review/:reviewIdx/like', jwtCheck, goodsController.removeReviewLike);
-// 찜하기 (견적 options는 query)
+// 찜하기
 router.post('/scrap', jwtCheck, goodsController.addGoodsScrap);
 // 찜해제 (굿즈 탭)
 router.delete('/:goodsIdx/scrap', jwtCheck, goodsController.removeGoodsScrap);
@@ -55,8 +55,8 @@ router.get('/category/:goodsCategoryIdx/priceRange', goodsController.getGoodsPri
 router.get('/category/:goodsCategoryIdx/:order/:lastIndex', goodsController.getAllGoods);
 // 견적 옵션
 router.get('/:goodsIdx/options', goodsController.getGoodsOption);
-// 찜수정하기
-router.put('/scrap', jwtCheck, goodsController.addGoodsScrap);
+// 찜의 견적 수정하기
+router.put('/scrap', jwtCheck, goodsController.modifyUserGoodsOption);
 // 카테고리의 하위 옵션 보기
 router.get('/category/:goodsCategoryIdx/options', goodsController.getCategoryOption);
 // 카테고리 등록

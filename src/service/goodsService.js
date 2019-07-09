@@ -109,6 +109,8 @@ async function removeReviewLike(userIdx, reviewIdx) {
 }
 
 async function addGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel, options) {
+  // 같은 라벨이 있는 경우
+
   if (!options) { // 견적 옵션이 없는 경우
     await goodsDao.insertGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel);
   } else {
@@ -119,8 +121,10 @@ async function addGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel
     const allOptionsLength = allOptions.length;
 
     for (let i = 0; i < allOptionsLength; i++) {
-      if (options == allOptions[i].goods_scrap_options) {
-        throw errorResponseObject.duplicateDataError;
+      if (options == allOptions[i].goods_scrap_option) {
+        throw errorResponseObject.duplicateScrapOptionError;
+      } else if (goodsScrapLabel == allOptions[i].goods_scrap_label) {
+        throw errorResponseObject.duplicateLabelError;
       }
     }
 
@@ -139,9 +143,7 @@ async function removeGoodsScrap(userIdx, goodsIdx, scrapIdx) {
 
 // 굿즈탭 보기 (위에 카테고리랑 아래 기획전 및 관련 굿즈들)
 async function getGoodsTab() {
-  const result = [];
-
-  const subResult = {};
+  const result = {};
 
   const categoryData = [];
   const exhibitionData = [];
@@ -152,7 +154,7 @@ async function getGoodsTab() {
     categoryData.push(goodsCategory[i]);
   }
 
-  subResult.goods_category_data = categoryData;
+  result.goods_category_data = categoryData;
 
   const exhibition = await goodsDao.selectExhibition();
   const exhibitionGoods = await goodsDao.selectExhibitionGoods();
@@ -176,9 +178,7 @@ async function getGoodsTab() {
     exhibitionData.push(exhibition[i]);
   }
 
-  subResult.exhibition_data = exhibitionData;
-
-  result.push(subResult);
+  result.exhibition_data = exhibitionData;
 
   return result;
 }
@@ -247,8 +247,7 @@ async function getExhibitionGoodsAll(userIdx, exhibitionIdx, lastIndex) {
 }
 
 async function getReviewDetail(reviewIdx) {
-  const result = [];
-  const returnObj = {};
+  const result = {};
 
   const goodsIdxArr = await goodsDao.selectGoodsIdxByReviewIdx(reviewIdx);
   const goodsIdx = goodsIdxArr[0].goods_idx;
@@ -256,7 +255,7 @@ async function getReviewDetail(reviewIdx) {
   const goodsImg = await goodsDao.selectGoodsImg(goodsIdx);
 
   // 굿즈 데이터
-  returnObj.goods = {
+  result.goods = {
     goods_idx: goods[0].goods_idx,
     goods_img: s3Location + goodsImg[0].goods_img,
     goods_name: goods[0].goods_name,
@@ -283,9 +282,7 @@ async function getReviewDetail(reviewIdx) {
   }
 
   // 리뷰 댓글
-  returnObj.review_comment = reviewComment;
-
-  result.push(returnObj);
+  result.review_comment = reviewComment;
 
   return result;
 }
@@ -390,15 +387,13 @@ async function removeReviewComment(userIdx, reviewIdx, commentIdx) {
 }
 
 async function getGoodsOptionsName(goodsIdx) {
-  const result = [];
   const goodsOptionNameArr = await goodsDao.selectGoodsOptionsName(goodsIdx);
 
-  const obj = { goods_option_name: [] };
+  const result = { goods_option_name: [] };
   const goodsOptionNameArrLength = goodsOptionNameArr.length;
   for (let i = 0; i < goodsOptionNameArrLength; i++) {
-    obj.goods_option_name.push(goodsOptionNameArr[i].goods_option_name);
+    result.goods_option_name.push(goodsOptionNameArr[i].goods_option_name);
   }
-  result.push(obj);
 
   return result;
 }
@@ -578,7 +573,21 @@ async function getGoodsOption(goodsIdx) {
 }
 
 // 찜 수정하기
-async function modifyUserGoodsOption() {}
+async function modifyUserGoodsOption(goodsScrapIdx, userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel, options) {
+  const goodsScrapArr = await goodsDao.selectGoodsScrapOptionFlag(userIdx, goodsIdx, goodsScrapIdx);
+  // const goodsScrapIdx = await goodsDao.goodsScrapArr[0].goods_scrap_idx;
+  const goodsScrapOptionFlag = goodsScrapArr[0].goods_scrap_option_flag;
+  if (goodsScrapOptionFlag == 1) {
+    // 견적옵션이 있을 경우 - update
+    await goodsDao.updateGoodsScrap(goodsScrapLabel, goodsScrapPrice, goodsScrapIdx);
+    await goodsDao.updateGoodsScrapOption(options, goodsScrapIdx);
+  } else {
+    // 견적옵션이 없을 경우 - 새로 insert
+    await goodsDao.insertGoodsScrapOption(goodsScrapIdx, options);
+    await goodsDao.updateGoodsScrap(goodsScrapLabel, goodsScrapPrice, goodsScrapIdx);
+    await goodsDao.updateGoodsScrapOptionFlag(goodsScrapIdx);
+  }
+}
 
 async function getCategoryOption(goodsCategoryIdx) {
   const options = await goodsDao.selectCategoryOption(goodsCategoryIdx);

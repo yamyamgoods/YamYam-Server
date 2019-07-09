@@ -172,7 +172,10 @@ async function insertGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, label) {
 // 모든 견적의 옵션 가져오기
 async function getAllGoodsScrapOption(userIdx, goodsIdx) {
   const sql = `
-  SELECT * FROM GOODS_SCRAP 
+  SELECT 
+  USER_SCRAP_OPTION.goods_scrap_option as goods_scrap_option,
+  GOODS_SCRAP.goods_scrap_label as goods_scrap_label
+  FROM GOODS_SCRAP 
   JOIN
   USER_SCRAP_OPTION 
   ON GOODS_SCRAP.goods_scrap_idx = USER_SCRAP_OPTION.goods_scrap_idx
@@ -181,6 +184,68 @@ async function getAllGoodsScrapOption(userIdx, goodsIdx) {
 
   const result = await mysql.query(sql, [userIdx, goodsIdx]);
 
+  return result;
+}
+
+async function selectGoodsScrapOptionFlag(userIdx, goodsIdx, goodsScrapIdx) {
+  const sql = `
+  SELECT goods_scrap_option_flag
+  FROM GOODS_SCRAP
+  WHERE user_idx = ?
+  AND goods_idx = ?
+  AND goods_scrap_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [userIdx, goodsIdx, goodsScrapIdx]);
+
+  return result;
+}
+
+async function insertGoodsScrapOption(goodsScrapIdx, goodsScrapOption) {
+  const sql = `
+  INSERT INTO USER_SCRAP_OPTION 
+  (goods_scrap_idx, goods_scrap_option) 
+  VALUES (?,?)
+  `;
+
+  const result = await mysql.query(sql, [goodsScrapIdx, goodsScrapOption]);
+
+  return result;
+}
+
+async function updateGoodsScrapOption(goodsScrapOption, goodsScrapIdx) {
+  const sql = `
+  UPDATE USER_SCRAP_OPTION 
+  SET goods_scrap_option = ?
+  WHERE goods_scrap_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [goodsScrapOption, goodsScrapIdx]);
+
+  return result;
+}
+
+// 나의 찜 굿즈에서 견적 옵션 없을 때 혹은 없을 때 가격과 라벨도 새로 업데이트
+async function updateGoodsScrap(goodsScrapLabel, goodsScrapPrice, goodsScrapIdx) {
+  const sql = `
+  UPDATE GOODS_SCRAP 
+  SET goods_scrap_label = ?,
+  goods_scrap_price = ?
+  WHERE goods_scrap_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [goodsScrapLabel, goodsScrapPrice, goodsScrapIdx]);
+  return result;
+}
+
+async function updateGoodsScrapOptionFlag(goodsScrapIdx) {
+  const sql = `
+  UPDATE GOODS_SCRAP 
+  SET goods_scrap_option_flag= 1
+  WHERE goods_scrap_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [goodsScrapIdx]);
   return result;
 }
 
@@ -725,16 +790,6 @@ async function selectGoodsOptionDetail(goodsOptionIdx) {
   return result;
 }
 
-async function updateGoodsScrap(goodsScrapOptionIdx) {
-  const sql = `
-  UPDATE goods_option_detail_name
-  FROM GOODS_OPTION_DETAIL
-  WHERE goods_option_idx = ?
-  `;
-
-  const result = await mysql.query(sql, [goodsScrapOptionIdx]);
-  return result;
-}
 
 async function selectCategoryOption(goodsCategoryIdx) {
   const sql = `
@@ -860,7 +915,6 @@ module.exports = {
   selectAllGoods,
   selectGoodsOption,
   selectGoodsOptionDetail,
-  updateGoodsScrap,
   selectCategoryOption,
   selectCategoryOptionDetail,
   updateAllGoodsHit,
@@ -869,4 +923,10 @@ module.exports = {
   updateGoodsHit,
   insertCategory,
   selectStoreGoodsCategory,
+  selectGoodsScrapOptionFlag,
+  insertGoodsScrapOption,
+  updateGoodsScrapOption,
+  updateGoodsScrap,
+  updateGoodsScrapOptionFlag,
+
 };
