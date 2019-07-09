@@ -346,7 +346,7 @@ async function getGoodsReviews(goodsIdx, photoFlag, lastIndex) {
     delete goodsReview[i].user_idx;
 
     const userArr = await userDao.selectUser(userIdx);
-    
+
     const user = userArr[0];
     const goodsReviewIdx = goodsReview[i].goods_review_idx;
     const goodsReviewImg = await goodsDao.selectReviewImg(goodsReviewIdx);
@@ -373,7 +373,7 @@ async function getGoodsReviews(goodsIdx, photoFlag, lastIndex) {
       goodsReview[i].review_like_flag = 1;
     } else {
       goodsReview[i].review_like_flag = 0;
-    } 
+    }
   }
 
   return goodsReview;
@@ -623,22 +623,25 @@ async function getCategoryOption(goodsCategoryIdx) {
 }
 
 async function getGoodsBySearch(userIdx, searchAfter, goodsName, order) {
-  const goods = await elasticsearchGoods.getGoodsByGoodsName(searchAfter, goodsName, order);
+  const goodsFromES = await elasticsearchGoods.getGoodsByGoodsName(searchAfter, goodsName, order);
 
-  const goodsLength = goods.length;
+  const goodsLength = goodsFromES.goods.length;
   for (let i = 0; i < goodsLength; i++) {
-    const goodsIdx = goods[i].goods_idx;
+    // img
+    goodsFromES.goods[i].goods_img = s3Location + goodsFromES.goods[i].goods_img[0];
+
+    const goodsIdx = goodsFromES.goods[i].goods_idx;
     // 유저 즐겨찾기 flag 추가
     const user = await userDao.selectUserWithGoods(userIdx, goodsIdx);
 
     if (user.length === 0) {
-      goods[i].scrap_flag = 0;
+      goodsFromES.goods[i].scrap_flag = 0;
     } else {
-      goods[i].scrap_flag = 1;
+      goodsFromES.goods[i].scrap_flag = 1;
     }
   }
 
-  return goods;
+  return goodsFromES;
 }
 
 async function addCategory(categoryName) {
