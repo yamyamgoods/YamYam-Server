@@ -337,11 +337,11 @@ async function selectExhibitionPaging(lastIndex) {
 async function selectFirstExhibitionGoodsAll(exhibitionIdx) {
   const sql = `
   SELECT g.goods_idx,
-  g.goods_category_idx,
   g.goods_name,
   g.goods_rating,
   g.goods_price,
   g.goods_minimum_amount,
+  g.goods_review_cnt,
   g.store_idx
   FROM GOODS g,EXHIBITION_GOODS exg
   WHERE exg.exhibition_idx = ?
@@ -357,11 +357,11 @@ async function selectFirstExhibitionGoodsAll(exhibitionIdx) {
 async function selectNextExhibitionGoodsAll(exhibitionIdx, lastIndex) {
   const sql = `
   SELECT g.goods_idx,
-  g.goods_category_idx,
   g.goods_name,
   g.goods_rating,
   g.goods_price,
   g.goods_minimum_amount,
+  g.goods_review_cnt,
   g.store_idx
   FROM GOODS g,EXHIBITION_GOODS exg
   WHERE exg.exhibition_idx = ?
