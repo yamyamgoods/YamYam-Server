@@ -437,7 +437,7 @@ async function getGoodsDetail(userIdx, goodsIdx) {
     goods_delivery_charge: goodsArr[0].goods_delivery_charge,
     goods_delivery_period: goodsArr[0].goods_delivery_period,
     goods_minimum_amount: goodsArr[0].goods_minimum_amount,
-    goods_detail: goodsArr[0].goods_detail,
+    goods_detail: s3Location + goodsArr[0].goods_detail,
   };
 
   // 유저 즐겨찾기 flag 추가
