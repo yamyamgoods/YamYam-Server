@@ -503,7 +503,7 @@ async function getGoodsDetail(userIdx, goodsIdx) {
   };
 }
 
-async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, files, options, goodsCategoryOptionIdx) {
+async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, categoryIdx, files, options, goodsCategoryOptionIdx) {
   // store, category가 없는 경우
   const storeArr = await storeDao.selectStoreName(storeIdx);
   const categoryArr = await goodsDao.goodsCategoryByCategoryIdx(categoryIdx);
@@ -518,12 +518,15 @@ async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeri
   const imgArr = [];
   const filesLength = files.length;
   for (let i = 0; i < filesLength; i++) {
-    imgArr.push(files[i].location.split(s3Location)[1]);
+    imgArr.push(files.img[i].location.split(s3Location)[1]);
   }
 
   const storeName = storeArr[0].store_name;
 
-  await goodsTransaction.insertGoodsTransaction(goodsName, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, options, goodsCategoryOptionIdx);
+  // contentsImg
+  const detailImg = files.detailImg[0].location.split(s3Location)[1];
+
+  await goodsTransaction.insertGoodsTransaction(goodsName, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detailImg, categoryIdx, imgArr, options, goodsCategoryOptionIdx);
 }
 
 // 카테고리에 따른 굿즈 최소 최대 금액 (옵션 - 최소 수량)
