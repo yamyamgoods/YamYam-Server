@@ -137,6 +137,7 @@ async function getUserRecentGoods(userIdx, lastIndex) {
   for (let i = 0; i < userRecentGoodsLength; i++) {
     const goodsIdx = userRecentGoods[i].goods_idx;
     const goodsStoreIdx = userRecentGoods[i].store_idx;
+    delete userRecentGoods[i].store_idx;
     const user = await userDao.selectUserWithGoods(userIdx, goodsIdx);
 
     // 해당 굿즈의 스토어 이름 추가
