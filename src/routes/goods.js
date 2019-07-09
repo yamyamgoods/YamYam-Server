@@ -58,7 +58,7 @@ router.get('/:goodsIdx/options', goodsController.getGoodsOption);
 // 찜수정하기
 router.put('/scrap', jwtCheck, goodsController.addGoodsScrap);
 // 카테고리의 하위 옵션 보기
-router.get('/category/:categoryIdx/options', goodsController.getCategoryOption);
+router.get('/category/:goodsCategoryIdx/options', goodsController.getCategoryOption);
 // 카테고리 등록
 router.post('/category', adminCheck, goodsController.addCategory);
 // 카테고리 옵션 등록
