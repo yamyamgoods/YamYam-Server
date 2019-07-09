@@ -102,7 +102,8 @@ async function getStoreGoods(userIdx, storeIdx, order, lastIndex, goodsCategoryI
 
     // add like flag
     if (userIdx) {
-      goods[i].goods_like_flag = scrapGoods.includes(goods[i].goods_idx);
+      if (scrapGoods.includes(goods[i].goods_idx)) goods[i].scrap_flag = 1;
+      else goods[i].scrap_flag = 0;
     }
   }
 
