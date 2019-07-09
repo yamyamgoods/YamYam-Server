@@ -787,7 +787,8 @@ async function selectGoodsOption(goodsIdx) {
 
 async function selectGoodsOptionDetail(goodsOptionIdx) {
   const sql = `
-  SELECT goods_option_detail_name
+  SELECT goods_option_detail_name,
+  goods_option_detail_price
   FROM GOODS_OPTION_DETAIL
   WHERE goods_option_idx = ?
   `;
