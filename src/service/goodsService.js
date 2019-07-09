@@ -109,6 +109,8 @@ async function removeReviewLike(userIdx, reviewIdx) {
 }
 
 async function addGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel, options) {
+  // 같은 라벨이 있는 경우
+
   if (!options) { // 견적 옵션이 없는 경우
     await goodsDao.insertGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel);
   } else {
@@ -119,8 +121,10 @@ async function addGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel
     const allOptionsLength = allOptions.length;
 
     for (let i = 0; i < allOptionsLength; i++) {
-      if (options == allOptions[i].goods_scrap_options) {
-        throw errorResponseObject.duplicateDataError;
+      if (options == allOptions[i].goods_scrap_option) {
+        throw errorResponseObject.duplicateScrapOptionError;
+      } else if (goodsScrapLabel == allOptions[i].goods_scrap_label) {
+        throw errorResponseObject.duplicateLabelError;
       }
     }
 
@@ -579,7 +583,6 @@ async function getGoodsOption(goodsIdx) {
 
 // 찜 수정하기
 async function modifyUserGoodsOption(goodsScrapIdx, userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel, options) {
-
   const goodsScrapArr = await goodsDao.selectGoodsScrapOptionFlag(userIdx, goodsIdx, goodsScrapIdx);
   // const goodsScrapIdx = await goodsDao.goodsScrapArr[0].goods_scrap_idx;
   const goodsScrapOptionFlag = goodsScrapArr[0].goods_scrap_option_flag;
@@ -587,7 +590,7 @@ async function modifyUserGoodsOption(goodsScrapIdx, userIdx, goodsIdx, goodsScra
     // 견적옵션이 있을 경우 - update
     await goodsDao.updateGoodsScrap(goodsScrapLabel, goodsScrapPrice, goodsScrapIdx);
     await goodsDao.updateGoodsScrapOption(options, goodsScrapIdx);
-  }else {
+  } else {
     // 견적옵션이 없을 경우 - 새로 insert
     await goodsDao.insertGoodsScrapOption(goodsScrapIdx, options);
     await goodsDao.updateGoodsScrap(goodsScrapLabel, goodsScrapPrice, goodsScrapIdx);
