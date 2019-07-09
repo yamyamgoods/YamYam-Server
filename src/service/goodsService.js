@@ -582,10 +582,14 @@ async function getGoodsOption(goodsIdx) {
     const goodsOptionDetailArr = await goodsDao.selectGoodsOptionDetail(goodsOptionIdx);
     const goodsOptionDetailLength = goodsOptionDetailArr.length;
 
-    goodsOptionArr[i].goods_option_detail_name = [];
+    goodsOptionArr[i].goods_option_detail = [];
+    const goodsOptionDetailObject = {};
 
     for (let k = 0; k < goodsOptionDetailLength; k++) {
-      goodsOptionArr[i].goods_option_detail_name[k] = goodsOptionDetailArr[k].goods_option_detail_name;
+      // goodsOptionArr[i].goods_option_detail[k] = goodsOptionDetailArr[k].goods_option_detail_name;
+      goodsOptionDetailObject.goods_option_detail_name = goodsOptionDetailArr[k].goods_option_detail_name;
+      goodsOptionDetailObject.goods_option_detail_price = goodsOptionDetailArr[k].goods_option_detail_price;
+      goodsOptionArr[i].goods_option_detail.push(goodsOptionDetailObject);
     }
     result.push(goodsOptionArr[i]);
   }

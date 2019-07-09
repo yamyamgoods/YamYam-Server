@@ -57,9 +57,15 @@ async function getUserScrapOption(goodsScrapIdx) {
     const goodsOptionDetailArr = await goodsDao.selectGoodsOptionDetail(goodsOptionIdx);
     const goodsOptionDetailLength = goodsOptionDetailArr.length;
 
-    tempObj.goods_option_detail_name = [];
+    tempObj.goods_option_detail = [];
+    
     for (let k = 0; k < goodsOptionDetailLength; k++) {
-      tempObj.goods_option_detail_name.push(goodsOptionDetailArr[k].goods_option_detail_name);
+      const goodsOptionDetailObject = {};
+      goodsOptionDetailObject.goods_option_detail_name = goodsOptionDetailArr[k].goods_option_detail_name;
+      goodsOptionDetailObject.goods_option_detail_price = goodsOptionDetailArr[k].goods_option_detail_price;
+
+      tempObj.goods_option_detail.push(goodsOptionDetailObject);
+
     }
 
     userScrapOptionDataAll.push(tempObj);
