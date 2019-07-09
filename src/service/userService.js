@@ -79,11 +79,11 @@ async function getUserScrapOption(goodsScrapIdx) {
     });
   }
 
-  return [{
+  return {
     goods_scrap_option_idx: optionArr[0].goods_scrap_option_idx,
     user_scrap_option_data: userScrapOptionData,
     goods_option_data: userScrapOptionDataAll,
-  }];
+  };
 }
 
 async function getNewToken(refreshToken, userIdx) {
@@ -107,21 +107,20 @@ async function getNewToken(refreshToken, userIdx) {
 
 async function getUserInfo(userIdx) {
   const user = await userDao.selectUser(userIdx);
-  const result = [];
-  const userInfoObject = {};
-  userInfoObject.user_idx = user[0].user_idx;
-  userInfoObject.user_name = user[0].user_name;
-  userInfoObject.user_email = user[0].user_email;
-  userInfoObject.user_img = s3Location + user[0].user_img;
-  userInfoObject.user_point = user[0].user_point;
+
+  const result = {};
+  result.user_idx = user[0].user_idx;
+  result.user_name = user[0].user_name;
+  result.user_email = user[0].user_email;
+  result.user_img = s3Location + user[0].user_img;
+  result.user_point = user[0].user_point;
 
   if (user[0].user_alarm_cnt > 0) {
-    userInfoObject.alarm_flag = 1;
+    result.alarm_flag = 1;
   } else {
-    userInfoObject.alarm_flag = 0;
+    result.alarm_flag = 0;
   }
 
-  result.push(userInfoObject);
   return result;
 }
 
@@ -194,8 +193,7 @@ async function getUserAlarmFlag(userIdx) {
 }
 
 async function getAlarmReviewDetail(alarmIdx, reviewIdx) {
-  const result = [];
-  const returnObj = {};
+  const result = {};
 
   const goodsIdxArr = await goodsDao.selectGoodsIdxByReviewIdx(reviewIdx);
   const goodsIdx = goodsIdxArr[0].goods_idx;
@@ -208,7 +206,7 @@ async function getAlarmReviewDetail(alarmIdx, reviewIdx) {
   }
 
   // 굿즈 데이터
-  returnObj.goods = {
+  result.goods = {
     goods_idx: goods[0].goods_idx,
     goods_img: s3Location + goodsImg[0].goods_img,
     goods_name: goods[0].goods_name,
@@ -235,13 +233,11 @@ async function getAlarmReviewDetail(alarmIdx, reviewIdx) {
   }
 
   // 리뷰 댓글
-  returnObj.review_comment = reviewComment;
-  result.push(returnObj);
+  result.review_comment = reviewComment;
   return result;
 }
 
 async function modifyUserProfile(profileImg, userIdx) {
-
   const userImg = profileImg.split(s3Location)[1];
   await userDao.updateUserProfile(userImg, userIdx);
 }
@@ -285,8 +281,7 @@ async function kakaoSignin(accesstoken, devicetoken) {
   };
 }
 
-async function modifyUserNickname(userName,userIdx) {
-  
+async function modifyUserNickname(userName, userIdx) {
   await userDao.updateUserNickname(userName, userIdx);
 }
 

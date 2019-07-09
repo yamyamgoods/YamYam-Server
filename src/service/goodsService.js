@@ -143,9 +143,7 @@ async function removeGoodsScrap(userIdx, goodsIdx, scrapIdx) {
 
 // 굿즈탭 보기 (위에 카테고리랑 아래 기획전 및 관련 굿즈들)
 async function getGoodsTab() {
-  const result = [];
-
-  const subResult = {};
+  const result = {};
 
   const categoryData = [];
   const exhibitionData = [];
@@ -156,7 +154,7 @@ async function getGoodsTab() {
     categoryData.push(goodsCategory[i]);
   }
 
-  subResult.goods_category_data = categoryData;
+  result.goods_category_data = categoryData;
 
   const exhibition = await goodsDao.selectExhibition();
   const exhibitionGoods = await goodsDao.selectExhibitionGoods();
@@ -180,9 +178,7 @@ async function getGoodsTab() {
     exhibitionData.push(exhibition[i]);
   }
 
-  subResult.exhibition_data = exhibitionData;
-
-  result.push(subResult);
+  result.exhibition_data = exhibitionData;
 
   return result;
 }
@@ -251,8 +247,7 @@ async function getExhibitionGoodsAll(userIdx, exhibitionIdx, lastIndex) {
 }
 
 async function getReviewDetail(reviewIdx) {
-  const result = [];
-  const returnObj = {};
+  const result = {};
 
   const goodsIdxArr = await goodsDao.selectGoodsIdxByReviewIdx(reviewIdx);
   const goodsIdx = goodsIdxArr[0].goods_idx;
@@ -260,7 +255,7 @@ async function getReviewDetail(reviewIdx) {
   const goodsImg = await goodsDao.selectGoodsImg(goodsIdx);
 
   // 굿즈 데이터
-  returnObj.goods = {
+  result.goods = {
     goods_idx: goods[0].goods_idx,
     goods_img: s3Location + goodsImg[0].goods_img,
     goods_name: goods[0].goods_name,
@@ -287,9 +282,7 @@ async function getReviewDetail(reviewIdx) {
   }
 
   // 리뷰 댓글
-  returnObj.review_comment = reviewComment;
-
-  result.push(returnObj);
+  result.review_comment = reviewComment;
 
   return result;
 }
@@ -394,15 +387,13 @@ async function removeReviewComment(userIdx, reviewIdx, commentIdx) {
 }
 
 async function getGoodsOptionsName(goodsIdx) {
-  const result = [];
   const goodsOptionNameArr = await goodsDao.selectGoodsOptionsName(goodsIdx);
 
-  const obj = { goods_option_name: [] };
+  const result = { goods_option_name: [] };
   const goodsOptionNameArrLength = goodsOptionNameArr.length;
   for (let i = 0; i < goodsOptionNameArrLength; i++) {
-    obj.goods_option_name.push(goodsOptionNameArr[i].goods_option_name);
+    result.goods_option_name.push(goodsOptionNameArr[i].goods_option_name);
   }
-  result.push(obj);
 
   return result;
 }
