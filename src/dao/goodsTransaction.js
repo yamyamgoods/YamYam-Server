@@ -115,10 +115,10 @@ async function selectGoodsDate(connection, goodsIdx) {
   return result;
 }
 
-async function insertGoodsTransaction(goodsName, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, optionArr, goodsCategoryOptionIdx) {
+async function insertGoodsTransaction(goodsName, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detailImg, categoryIdx, imgArr, optionArr, goodsCategoryOptionIdx) {
   await mysql.transaction(async (connection) => {
     // 굿즈 등록
-    const goods = await insertGoods(connection, goodsName, storeIdx, price, categoryIdx, deliveryCharge, deliveryPeriod, minimumAmount, detail);
+    const goods = await insertGoods(connection, goodsName, storeIdx, price, categoryIdx, deliveryCharge, deliveryPeriod, minimumAmount, detailImg);
     const goodsIdx = goods.insertId;
 
     // 옵션 등록
@@ -149,7 +149,7 @@ async function insertGoodsTransaction(goodsName, storeIdx, storeName, price, del
     const goodsDate = goodsDateArr[0].goods_date;
 
     // ElasticSearch Goods 등록
-    await elasticsearchGoods.addGoods(goodsIdx, goodsName, goodsDate, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, imgArr);
+    await elasticsearchGoods.addGoods(goodsIdx, goodsName, goodsDate, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detailImg, imgArr);
   });
 }
 

@@ -7,6 +7,7 @@ const goodsTransaction = require('../dao/goodsTransaction');
 const errorResponseObject = require('../../config/errorResponseObject');
 const { makeReviewTimeString } = require('../library/changeTimeString');
 const { s3Location } = require('../../config/s3Config');
+const { addCommaIntoNum } = require('../library/addCommaIntoNum');
 
 // 단일 키 객체 => 값 배열
 function parseObj(dataArr, attr) {
@@ -129,7 +130,9 @@ async function addGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel
       }
     }
 
-    await goodsTransaction.insertGoodsScrapTransaction(userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel, options);
+    const priceWithComma = addCommaIntoNum(goodsScrapPrice);
+
+    await goodsTransaction.insertGoodsScrapTransaction(userIdx, goodsIdx, priceWithComma, goodsScrapLabel, options);
   }
 }
 
@@ -503,7 +506,7 @@ async function getGoodsDetail(userIdx, goodsIdx) {
   };
 }
 
-async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, files, options, goodsCategoryOptionIdx) {
+async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, categoryIdx, files, options, goodsCategoryOptionIdx) {
   // store, category가 없는 경우
   const storeArr = await storeDao.selectStoreName(storeIdx);
   const categoryArr = await goodsDao.goodsCategoryByCategoryIdx(categoryIdx);
@@ -518,12 +521,20 @@ async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeri
   const imgArr = [];
   const filesLength = files.length;
   for (let i = 0; i < filesLength; i++) {
-    imgArr.push(files[i].location.split(s3Location)[1]);
+    imgArr.push(files.img[i].location.split(s3Location)[1]);
   }
 
   const storeName = storeArr[0].store_name;
 
-  await goodsTransaction.insertGoodsTransaction(goodsName, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, imgArr, options, goodsCategoryOptionIdx);
+  // contentsImg
+  const detailImg = files.detailImg[0].location.split(s3Location)[1];
+
+  // 숫자에 Comma 추가
+  const priceWithComma = addCommaIntoNum(price);
+  const minimumAmountWithComma = addCommaIntoNum(minimumAmount);
+  const deliveryChargeWithComma = addCommaIntoNum(deliveryCharge);
+
+  await goodsTransaction.insertGoodsTransaction(goodsName, storeIdx, storeName, priceWithComma, deliveryChargeWithComma, deliveryPeriod, minimumAmountWithComma, detailImg, categoryIdx, imgArr, options, goodsCategoryOptionIdx);
 }
 
 // 카테고리에 따른 굿즈 최소 최대 금액 (옵션 - 최소 수량)

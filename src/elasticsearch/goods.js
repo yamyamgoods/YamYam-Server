@@ -63,7 +63,7 @@ async function getGoodsByGoodsName(searchAfter, goodsName, order) {
   return result;
 }
 
-async function addGoods(goodsIdx, goodsName, goodsDate, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, imgArr) {
+async function addGoods(goodsIdx, goodsName, goodsDate, storeIdx, storeName, price, deliveryCharge, deliveryPeriod, minimumAmount, detailImg, imgArr) {
   const newGoodsDate = moment(goodsDate).format('YYYY-MM-DD HH:mm:ss');
 
   const body = {
@@ -74,7 +74,7 @@ async function addGoods(goodsIdx, goodsName, goodsDate, storeIdx, storeName, pri
     goods_delivery_charge: deliveryCharge,
     goods_delivery_period: deliveryPeriod,
     goods_minimum_amount: minimumAmount,
-    goods_detail: detail,
+    goods_detail: detailImg,
     goods_date: newGoodsDate,
     goods_review_cnt: 0,
     goods_img: imgArr,
