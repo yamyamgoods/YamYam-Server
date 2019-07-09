@@ -66,6 +66,7 @@ async function getBestReviews(userIdx, lastIndex) {
   const reviewsLength = reviews.length;
   for (let i = 0; i < reviewsLength; i++) {
     const reviewIdx = reviews[i].goods_review_idx;
+    reviews[i].user_img = s3Location + reviews[i].user_img;
 
     if (!reviews[i].goods_review_photo_flag) { // 리뷰에 이미지가 없는 경우
       reviews[i].goods_review_img = [];
@@ -83,7 +84,7 @@ async function getBestReviews(userIdx, lastIndex) {
     }
 
     // 작성시간 String 수정
-    reviews[i].goods_review_date = makeReviewTimeString(reviews[i].goods_review_date);
+    reviews[i].goods_review_date = moment(reviews[i].goods_review_date).format('YYYY.MM.DD');
 
     // 댓글 좋아요 여부
     const reviewLike = await goodsDao.getReviewLike(userIdx, reviews[i].goods_review_idx);
@@ -340,7 +341,11 @@ async function getGoodsReviews(goodsIdx, photoFlag, lastIndex) {
 
   for (let i = 0; i < goodsReviewLength; i++) {
     // 유저 정보 가져오기
-    const userArr = await userDao.selectUser(goodsReview[i].user_idx);
+    const userIdx = goodsReview[i].user_idx;
+    delete goodsReview[i].user_idx;
+
+    const userArr = await userDao.selectUser(userIdx);
+    
     const user = userArr[0];
     const goodsReviewIdx = goodsReview[i].goods_review_idx;
     const goodsReviewImg = await goodsDao.selectReviewImg(goodsReviewIdx);
@@ -356,9 +361,18 @@ async function getGoodsReviews(goodsIdx, photoFlag, lastIndex) {
 
     // 시간 String 생성
     goodsReview[i]
-      .goods_review_date = makeReviewTimeString(goodsReview[i].goods_review_date);
+      .goods_review_date = moment(goodsReview[i].goods_review_date).format('YYYY.MM.DD');
 
     goodsReview[i].goods_review_img = imgResultArray;
+
+    // 댓글 좋아요 여부
+    const reviewLike = await goodsDao.getReviewLike(userIdx, goodsReviewIdx);
+
+    if (reviewLike.length != 0) {
+      goodsReview[i].review_like_flag = 1;
+    } else {
+      goodsReview[i].review_like_flag = 0;
+    } 
   }
 
   return goodsReview;
