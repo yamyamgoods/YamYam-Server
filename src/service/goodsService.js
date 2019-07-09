@@ -112,6 +112,13 @@ async function removeReviewLike(userIdx, reviewIdx) {
 
 async function addGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel, options) {
   // 같은 라벨이 있는 경우
+  const goodsScrapLabelArr = await goodsDao.selectGoodsScrapLabel(userIdx, goodsIdx);
+  const goodsScrapLabelArrLength = goodsScrapLabelArr.length;
+  for (let i = 0; i < goodsScrapLabelArrLength; i++) {
+    if (goodsScrapLabel == goodsScrapLabelArr[i].goods_scrap_label) {
+      throw errorResponseObject.duplicateLabelError;
+    }
+  }
 
   if (!options) { // 견적 옵션이 없는 경우
     await goodsDao.insertGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel);
@@ -125,8 +132,6 @@ async function addGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel
     for (let i = 0; i < allOptionsLength; i++) {
       if (options == allOptions[i].goods_scrap_option) {
         throw errorResponseObject.duplicateScrapOptionError;
-      } else if (goodsScrapLabel == allOptions[i].goods_scrap_label) {
-        throw errorResponseObject.duplicateLabelError;
       }
     }
 
