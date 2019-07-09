@@ -36,6 +36,16 @@ function sign(userIdx) {
   return token;
 }
 
+function makeTestJwt(userIdx) {
+  const payload = {
+    userIdx,
+  };
+
+  const token = jwt.sign(payload, jwtKey, refreshOptions);
+  console.log(token);
+  return token;
+}
+
 function verify(authorization) {
   const decoded = jwt.verify(authorization, jwtKey);
 

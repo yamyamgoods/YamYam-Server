@@ -5,7 +5,7 @@ async function getStoreByStoreName(searchAfter, storeName, order) {
   const body = {};
 
   let sort;
-  if (order == '인기순') {
+  if (order == 0) {
     sort = [{ store_rank_score: 'desc' }];
   }
 

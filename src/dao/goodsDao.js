@@ -174,7 +174,10 @@ async function insertGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, label) {
 // 모든 견적의 옵션 가져오기
 async function getAllGoodsScrapOption(userIdx, goodsIdx) {
   const sql = `
-  SELECT * FROM GOODS_SCRAP 
+  SELECT 
+  USER_SCRAP_OPTION.goods_scrap_option as goods_scrap_option,
+  GOODS_SCRAP.goods_scrap_label as goods_scrap_label
+  FROM GOODS_SCRAP 
   JOIN
   USER_SCRAP_OPTION 
   ON GOODS_SCRAP.goods_scrap_idx = USER_SCRAP_OPTION.goods_scrap_idx

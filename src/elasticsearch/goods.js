@@ -6,12 +6,12 @@ async function getGoodsByGoodsName(searchAfter, goodsName, order) {
   const body = {};
 
   let sort;
-  if (order == '인기순') {
+  if (order == 0) {
     sort = [{ goods_score: 'desc' }];
-  } else if (order == '낮은 가격순') {
-    sort = [{ goods_price: 'asc' }];
-  } else if (order == '높은 가격순') {
+  } else if (order == 1) {
     sort = [{ goods_price: 'desc' }];
+  } else if (order == 2) {
+    sort = [{ goods_price: 'asc' }];
   }
   sort.push({
     goods_idx: 'asc',
