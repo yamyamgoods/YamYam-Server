@@ -627,6 +627,9 @@ async function getGoodsBySearch(userIdx, searchAfter, goodsName, order) {
 
   const goodsLength = goodsFromES.goods.length;
   for (let i = 0; i < goodsLength; i++) {
+    // img
+    goodsFromES.goods[i].goods_img = s3Location + goodsFromES.goods[i].goods_img[0];
+
     const goodsIdx = goodsFromES.goods[i].goods_idx;
     // 유저 즐겨찾기 flag 추가
     const user = await userDao.selectUserWithGoods(userIdx, goodsIdx);
