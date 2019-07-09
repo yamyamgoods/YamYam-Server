@@ -139,6 +139,7 @@ async function insertGoodsTransaction(goodsName, storeIdx, storeName, price, del
     // 이미지 등록
     const imgArrLength = imgArr.length;
     for (let i = 0; i < imgArrLength; i++) {
+      console.log("!!");
       await insertGoodsImg(connection, goodsIdx, imgArr[i]);
     }
 

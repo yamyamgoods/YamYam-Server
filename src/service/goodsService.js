@@ -519,11 +519,10 @@ async function addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeri
 
   // img
   const imgArr = [];
-  const filesLength = files.length;
+  const filesLength = files.img.length;
   for (let i = 0; i < filesLength; i++) {
     imgArr.push(files.img[i].location.split(s3Location)[1]);
   }
-
   const storeName = storeArr[0].store_name;
 
   // contentsImg
