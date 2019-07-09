@@ -665,7 +665,7 @@ async function selectPriceRange(goodsCategoryIdx, minAmount) {
 
 async function selectStoreGoods(storeIdx, order, lastIndex, goodsCategoryIdx) {
   let sql = `
-  SELECT goods_idx, goods_name, goods_price, goods_rating, goods_minimum_amount, goods_review_cnt
+  SELECT goods_idx, store_idx, goods_name, goods_price, goods_rating, goods_minimum_amount, goods_review_cnt
   FROM GOODS
   WHERE store_idx = ? AND goods_idx > ?
   `;
@@ -716,7 +716,7 @@ async function selectGoodsScrapWithUserIdx(userIdx) {
 
 async function selectAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, priceEnd, minAmount, options, queryFlag) {
   let sql = `
-  SELECT goods_idx, goods_name, goods_price, goods_rating, goods_minimum_amount, goods_review_cnt
+  SELECT goods_idx, store_idx, goods_name, goods_price, goods_rating, goods_minimum_amount, goods_review_cnt
   FROM GOODS
   WHERE goods_category_idx = ? AND goods_idx > ?
   `;

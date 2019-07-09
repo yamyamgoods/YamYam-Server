@@ -543,6 +543,11 @@ async function getAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, price
     goods[i].goods_img = await goodsDao.selectFirstGoodsImg(goods[i].goods_idx) || '';
     goods[i].goods_img = s3Location + parseObj(goods[i].goods_img, 'goods_img')[0];
 
+    // add store name
+    goods[i].store_name = await storeDao.selectStoreName(goods[i].store_idx) || '';
+    goods[i].store_name = goods[i].store_name[0].store_name;
+    delete goods[i].store_idx;
+
     // add like flag
     if (userIdx) {
       goods[i].goods_like_flag = scrapGoods.includes(goods[i].goods_idx);

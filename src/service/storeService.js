@@ -83,7 +83,7 @@ async function getStoreCategory() {
 }
 
 async function getStoreGoods(userIdx, storeIdx, order, lastIndex, goodsCategoryIdx, firstFlag) {
-  // [{'goods_idx': 1, 'goods_img': 'http://~~', 'goods_name':'asd', 'goods_price': 32900, 'goods_rating':3.2, 'goods_minimum_amount':10, 'goods_review_cnt': 300 [goods_like_flag: true]}, ...]
+  // [{'goods_idx': 1, 'goods_img': 'http://~~', 'store_name':'asd', 'goods_name':'asd', 'goods_price': 32900, 'goods_rating':3.2, 'goods_minimum_amount':10, 'goods_review_cnt': 300 [goods_like_flag: true]}, ...]
   const goods = await goodsDao.selectStoreGoods(storeIdx, order, lastIndex, goodsCategoryIdx);
 
   let scrapGoods;
@@ -99,6 +99,11 @@ async function getStoreGoods(userIdx, storeIdx, order, lastIndex, goodsCategoryI
     // add first img url (thumnail)
     goods[i].goods_img = await goodsDao.selectFirstGoodsImg(goods[i].goods_idx) || '';
     goods[i].goods_img = s3Location + parseObj(goods[i].goods_img, 'goods_img')[0];
+
+    // add store name
+    goods[i].store_name = await storeDao.selectStoreName(goods[i].store_idx) || '';
+    goods[i].store_name = goods[i].store_name[0].store_name;
+    delete goods[i].store_idx;
 
     // add like flag
     if (userIdx) {
