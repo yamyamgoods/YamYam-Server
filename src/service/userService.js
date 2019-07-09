@@ -40,7 +40,7 @@ async function getGoodsScrap(userIdx, lastIndex) {
 }
 
 async function getUserScrapOption(goodsScrapIdx) {
-  const userScrapOptionData = [];
+  let userScrapOptionData;
   const userScrapOptionDataAll = [];
 
   const optionArr = await userDao.selectUserScrapOption(goodsScrapIdx);
@@ -73,17 +73,18 @@ async function getUserScrapOption(goodsScrapIdx) {
 
   if (optionArr.length != 0) {
     optionArr[0].goods_scrap_option = JSON.parse(optionArr[0].goods_scrap_option);
+    userScrapOptionData = optionArr[0].goods_scrap_option;
   }
 
-  const optionNameArr = Object.keys(optionArr[0].goods_scrap_option);
-  const optionValueArr = Object.values(optionArr[0].goods_scrap_option);
-  const optionLength = optionNameArr.length;
-  for (let m = 0; m < optionLength; m++) {
-    userScrapOptionData.push({
-      optionName: optionNameArr[m],
-      optionValue: optionValueArr[m],
-    });
-  }
+  // const optionNameArr = Object.keys(optionArr[0].goods_scrap_option);
+  // const optionValueArr = Object.values(optionArr[0].goods_scrap_option);
+  // const optionLength = optionNameArr.length;
+  // for (let m = 0; m < optionLength; m++) {
+  //   userScrapOptionData.push({
+  //     optionName: optionNameArr[m],
+  //     optionValue: optionValueArr[m],
+  //   });
+  // }
 
   return {
     goods_scrap_option_idx: optionArr[0].goods_scrap_option_idx,

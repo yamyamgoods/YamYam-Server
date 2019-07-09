@@ -267,7 +267,6 @@ async function addGoods(req, res) {
     const deliveryCharge = req.body.deliveryCharge;
     const deliveryPeriod = req.body.deliveryPeriod;
     const minimumAmount = req.body.minimumAmount;
-    const detail = req.body.detail;
     const categoryIdx = req.body.categoryIdx;
     const goodsCategoryOptionIdx = req.body.goodsCategoryOptionIdx;
 
@@ -305,7 +304,7 @@ async function addGoods(req, res) {
      */
     const options = req.body.options;
     
-    await goodsService.addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, detail, categoryIdx, files, options, goodsCategoryOptionIdx);
+    await goodsService.addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, categoryIdx, files, options, goodsCategoryOptionIdx);
 
     response('Success', [], res, 201);
   } catch (error) {

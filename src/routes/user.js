@@ -4,7 +4,7 @@ const router = express.Router();
 
 const { jwtCheck } = require('../library/jwtCheck');
 
-const upload = require('../library/s3Bucket').getMulter('user');    
+const upload = require('../library/s3Bucket').getMulter('user');
 
 // userController
 const userController = require('../controller/userController');

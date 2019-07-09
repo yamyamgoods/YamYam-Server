@@ -34,7 +34,7 @@ router.get('/exhibition/:exhibitionIdx/:lastIndex', goodsController.getExhibitio
 // 리뷰 상세보기 뷰
 router.get('/review/:reviewIdx/detail', goodsController.getReviewDetail);
 // 리뷰의 댓글 더보기
-router.get('/review/:reviewIdx/comment/:lastIndex', goodsController.getReviewComment)
+router.get('/review/:reviewIdx/comment/:lastIndex', goodsController.getReviewComment);
 // 댓글 작성하기
 router.post('/review/comment', jwtCheck, goodsController.addReviewComment);
 // 리뷰 보기
@@ -48,7 +48,7 @@ router.get('/:goodsIdx/options/name', goodsController.getGoodsOptionsName);
 // 굿즈 상세보기
 router.get('/:goodsIdx/detail', goodsController.getGoodsDetail);
 // 굿즈 등록
-router.post('/', adminCheck, upload.array('img'), goodsController.addGoods);
+router.post('/', adminCheck, upload.fields([{ name: 'img', maxCount: 50 }, { name: 'detailImg', maxCount: 1 }]), goodsController.addGoods);
 // 가격 범위 보기
 router.get('/category/:goodsCategoryIdx/priceRange', goodsController.getGoodsPriceRange);
 // 카테고리에 따른 굿즈 모두보기

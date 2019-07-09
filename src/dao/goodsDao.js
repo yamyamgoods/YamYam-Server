@@ -877,6 +877,17 @@ async function selectStoreGoodsCategory(storeIdx) {
   return result;
 }
 
+async function selectGoodsScrapLabel(userIdx, goodsIdx) {
+  const sql = `
+  SELECT goods_scrap_label FROM GOODS_SCRAP
+  WHERE user_idx = ? AND goods_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [userIdx, goodsIdx]);
+
+  return result;
+}
+
 module.exports = {
   selectFirstBestGoods,
   selectNextBestGoods,
@@ -935,5 +946,5 @@ module.exports = {
   updateGoodsScrapOption,
   updateGoodsScrap,
   updateGoodsScrapOptionFlag,
-
+  selectGoodsScrapLabel,
 };
