@@ -40,9 +40,9 @@ async function getGoodsScrap(userIdx, lastIndex) {
   return result;
 }
 
-async function getUserScrapOption(goodsScrapIdx) {
-  let userScrapOptionData;
-  const userScrapOptionDataAll = [];
+async function getGoodsScrapOption(goodsScrapIdx) {
+  let goodsScrapOptionData;
+  const goodsScrapOptionDataAll = [];
 
   const optionArr = await userDao.selectUserScrapOption(goodsScrapIdx);
 
@@ -59,22 +59,21 @@ async function getUserScrapOption(goodsScrapIdx) {
     const goodsOptionDetailLength = goodsOptionDetailArr.length;
 
     tempObj.goods_option_detail = [];
-    
+
     for (let k = 0; k < goodsOptionDetailLength; k++) {
       const goodsOptionDetailObject = {};
       goodsOptionDetailObject.goods_option_detail_name = goodsOptionDetailArr[k].goods_option_detail_name;
       goodsOptionDetailObject.goods_option_detail_price = goodsOptionDetailArr[k].goods_option_detail_price;
 
       tempObj.goods_option_detail.push(goodsOptionDetailObject);
-
     }
 
-    userScrapOptionDataAll.push(tempObj);
+    goodsScrapOptionDataAll.push(tempObj);
   }
 
   if (optionArr.length != 0) {
     optionArr[0].goods_scrap_option = JSON.parse(optionArr[0].goods_scrap_option);
-    userScrapOptionData = optionArr[0].goods_scrap_option;
+    goodsScrapOptionData = optionArr[0].goods_scrap_option;
   }
 
   // const optionNameArr = Object.keys(optionArr[0].goods_scrap_option);
@@ -89,8 +88,8 @@ async function getUserScrapOption(goodsScrapIdx) {
 
   return {
     goods_scrap_option_idx: optionArr[0].goods_scrap_option_idx,
-    user_scrap_option_data: userScrapOptionData,
-    goods_option_data: userScrapOptionDataAll,
+    goods_scrap_option_data: goodsScrapOptionData,
+    goods_option_data: goodsScrapOptionDataAll,
   };
 }
 
@@ -297,7 +296,7 @@ async function modifyUserNickname(userName, userIdx) {
 
 module.exports = {
   getGoodsScrap,
-  getUserScrapOption,
+  getGoodsScrapOption,
   getNewToken,
   getUserInfo,
   getUserRecentGoods,

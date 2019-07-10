@@ -439,6 +439,7 @@ async function getGoodsDetail(userIdx, goodsIdx) {
   const goods = {
     goods_idx: goodsArr[0].goods_idx,
     goods_name: goodsArr[0].goods_name,
+    goods_rating: goodsArr[0].goods_rating,
     store_name: goodsArr[0].store_name,
     store_rating: goodsArr[0].store_rating,
     goods_price: goodsArr[0].goods_price,
@@ -630,13 +631,6 @@ async function modifyUserGoodsOption(goodsScrapIdx, userIdx, goodsIdx, goodsScra
 
 async function getCategoryOption(goodsCategoryIdx) {
   const options = await goodsDao.selectCategoryOption(goodsCategoryIdx);
-
-  const optionsLength = options.length;
-
-  for (let i = 0; i < optionsLength; i++) {
-    // add option detail
-    options[i].category_option_detail = await goodsDao.selectCategoryOptionDetail(options[i].category_option_idx) || [];
-  }
 
   return options;
 }

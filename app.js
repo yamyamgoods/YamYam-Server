@@ -6,6 +6,9 @@ const logger = require('morgan');
 const bodyParser = require('body-parser');
 
 const app = express();
+var cors = require('cors');
+
+app.use(cors());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

@@ -130,7 +130,6 @@ async function insertGoodsTransaction(goodsName, storeIdx, storeName, price, del
       const goodsOptionIdx = goodsOption.insertId;
 
       // 옵션 상세 등록
-      console.log(optionArr[i].optionDetail);
       const optionDetailLength = optionArr[i].optionDetail.length;
 
       for (let j = 0; j < optionDetailLength; j++) {
@@ -141,7 +140,6 @@ async function insertGoodsTransaction(goodsName, storeIdx, storeName, price, del
     // 이미지 등록
     const imgArrLength = imgArr.length;
     for (let i = 0; i < imgArrLength; i++) {
-      console.log("!!");
       await insertGoodsImg(connection, goodsIdx, imgArr[i]);
     }
 

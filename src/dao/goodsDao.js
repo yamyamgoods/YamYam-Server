@@ -396,7 +396,7 @@ async function selectGoods(goodsIdx) {
   goods_name,
   goods_rating,
   goods_price,
-  goods_delivery_charge
+  goods_delivery_charge,
   goods_delivery_period,
   goods_minimum_amount,
   goods_detail,
@@ -808,16 +808,6 @@ async function selectCategoryOption(goodsCategoryIdx) {
   return result;
 }
 
-async function selectCategoryOptionDetail(categoryOptionIdx) {
-  const sql = `
-  SELECT goods_category_option_detail_idx as category_option_detail_idx, goods_category_option_detail_name as category_option_detail_name
-  FROM GOODS_CATEGORY_OPTION_DETAIL
-  WHERE goods_category_option_idx = ?
-  `;
-  const result = await mysql.query(sql, [categoryOptionIdx]);
-  return result;
-}
-
 async function updateAllGoodsHit(value) {
   const sql = `
   UPDATE GOODS SET goods_hit = ?
@@ -934,7 +924,6 @@ module.exports = {
   selectGoodsOption,
   selectGoodsOptionDetail,
   selectCategoryOption,
-  selectCategoryOptionDetail,
   updateAllGoodsHit,
   updateAllGoodsReviewWeekCnt,
   updateAllGoodsRank,

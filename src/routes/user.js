@@ -12,7 +12,7 @@ const userController = require('../controller/userController');
 // 나의 찜한 모든 굿즈
 router.get('/goods/scrap/:lastIndex', jwtCheck, userController.getGoodsScrap);
 // 찜한 굿즈의 견적 정보
-router.get('/goods/scrap/:goodsScrapIdx/option', jwtCheck, userController.getUserScrapOption);
+router.get('/goods/scrap/:goodsScrapIdx/option', jwtCheck, userController.getGoodsScrapOption);
 // JWT Token 만료시 새로운 JWT Token 조회
 router.get('/jwttoken', userController.getNewJwtToken);
 // 마이페이지 보기

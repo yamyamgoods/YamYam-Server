@@ -16,11 +16,11 @@ async function getGoodsScrap(req, res) {
   }
 }
 
-async function getUserScrapOption(req, res) {
+async function getGoodsScrapOption(req, res) {
   try {
     const goodsScrapIdx = req.params.goodsScrapIdx;
 
-    const result = await userService.getUserScrapOption(goodsScrapIdx);
+    const result = await userService.getGoodsScrapOption(goodsScrapIdx);
 
     response('Success', result, res, 200);
   } catch (error) {
@@ -152,7 +152,7 @@ async function modifyUserNickname(req, res) {
 
 module.exports = {
   getGoodsScrap,
-  getUserScrapOption,
+  getGoodsScrapOption,
   getNewJwtToken,
   getUserInfo,
   getUserRecentGoods,
