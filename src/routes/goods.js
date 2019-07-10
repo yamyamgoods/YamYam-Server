@@ -6,11 +6,13 @@ const { jwtCheck, adminCheck } = require('../library/jwtCheck');
 
 const upload = require('../library/s3Bucket').getMulter('goods');
 
+const { getCacheResponse } = require('../redis/redis');
+
 // goodsController
 const goodsController = require('../controller/goodsController');
 
 // best goods 가져오기
-router.get('/best/:lastIndex', goodsController.getBestGoods);
+router.get('/best/:lastIndex', getCacheResponse, goodsController.getBestGoods);
 // best review 가져오기
 router.get('/reviews/best/:lastIndex', goodsController.getBestReviews);
 // review 좋아요
