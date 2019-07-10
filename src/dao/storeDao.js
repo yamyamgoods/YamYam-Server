@@ -16,12 +16,13 @@ async function selectStoreName(storeIdx) {
 async function selectStoreRank(lastIndex, storeCategoryIdx) {
   let sql = `
   SELECT 
+  @rank := @rank+1 AS store_rank,
   store_idx,
   store_name,
   store_img,
   store_url
 
-  FROM STORE
+  FROM STORE, (SELECT @rank := 0) AS R
 
   WHERE store_idx > ?`;
 

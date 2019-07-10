@@ -654,8 +654,8 @@ async function goodsCategoryByCategoryIdx(categoryIdx) {
 async function selectPriceRange(goodsCategoryIdx, minAmount) {
   let sql = `
   SELECT 
-  MIN(goods_price) as price_start,
-  MAX(goods_price) as price_end
+  MIN( cast( replace(goods_price, ',', '') as unsigned)) as price_start,
+  MAX( cast( replace(goods_price, ',', '') as unsigned)) as price_end
   FROM GOODS
   WHERE goods_category_idx = ?
   `;
