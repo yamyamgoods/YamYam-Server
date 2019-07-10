@@ -76,7 +76,7 @@ async function selectFirstBestReviews() {
   goods_review_photo_flag
   FROM GOODS_REVIEW
   JOIN USER ON GOODS_REVIEW.user_idx = USER.user_idx
-  ORDER BY goods_review_rating DESC, goods_review_idx DESC
+  ORDER BY goods_review_like_count DESC, goods_review_idx DESC
   LIMIT ${mysqlConfig.paginationCnt}
   `;
 
