@@ -632,13 +632,6 @@ async function modifyUserGoodsOption(goodsScrapIdx, userIdx, goodsIdx, goodsScra
 async function getCategoryOption(goodsCategoryIdx) {
   const options = await goodsDao.selectCategoryOption(goodsCategoryIdx);
 
-  const optionsLength = options.length;
-
-  for (let i = 0; i < optionsLength; i++) {
-    // add option detail
-    options[i].category_option_detail = await goodsDao.selectCategoryOptionDetail(options[i].category_option_idx) || [];
-  }
-
   return options;
 }
 
