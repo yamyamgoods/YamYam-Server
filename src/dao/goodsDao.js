@@ -396,7 +396,7 @@ async function selectGoods(goodsIdx) {
   goods_name,
   goods_rating,
   goods_price,
-  goods_delivery_charge
+  goods_delivery_charge,
   goods_delivery_period,
   goods_minimum_amount,
   goods_detail,

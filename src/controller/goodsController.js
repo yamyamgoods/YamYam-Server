@@ -272,7 +272,7 @@ async function addGoods(req, res) {
 
     const files = req.files;
 
-    /* 옵션 데이터 예시 (JSON.parse 필요)
+    /* 옵션 데이터 예시
     [
           {
             "optionName" : "색상",
@@ -303,7 +303,7 @@ async function addGoods(req, res) {
       ]
      */
     const options = req.body.options;
-    
+
     await goodsService.addGoods(goodsName, storeIdx, price, deliveryCharge, deliveryPeriod, minimumAmount, categoryIdx, files, options, goodsCategoryOptionIdx);
 
     response('Success', [], res, 201);
@@ -448,7 +448,9 @@ async function removeReview(req, res) {
 
 async function modifyUserGoodsOption(req, res) {
   try {
-    const { goodsScrapIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel, options } = req.body;  
+    const {
+      goodsScrapIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel, options,
+    } = req.body;
     const userIdx = req.user.userIdx;
     await goodsService.modifyUserGoodsOption(goodsScrapIdx, userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel, options);
 
