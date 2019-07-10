@@ -143,6 +143,21 @@ async function getStoreBySearch(userIdx, searchAfter, goodsName, order) {
   return storeFromES;
 }
 
+async function getWebInfo() {
+  const result = {};
+  const store = await storeDao.selectStore();
+  const category = await goodsDao.selectGoodsCategoryWeb();
+
+  result.store = store;
+  result.goods_category = category;
+
+  for (let i = 0; i < result.goods_category.length; i++) {
+    result.goods_category[i].goods_category_option = await goodsDao.selectGoodsCategoryOptionWeb(category[i].goods_category_idx);
+  }
+
+  return result;
+}
+
 module.exports = {
   getStoreRank,
   getStoreScrap,
@@ -153,4 +168,5 @@ module.exports = {
   getStoreGoods,
   addStore,
   getStoreBySearch,
+  getWebInfo,
 };

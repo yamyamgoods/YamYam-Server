@@ -33,4 +33,7 @@ router.get('/:storeIdx/goods/:order/:lastIndex', storeController.getStoreGoods);
 // store 등록
 router.post('/', adminCheck, upload.single('img'), storeController.addStore);
 
+// web용
+router.get('/web', storeController.getWebInfo);
+
 module.exports = router;
