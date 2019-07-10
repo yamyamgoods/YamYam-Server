@@ -1,6 +1,7 @@
 const goodsService = require('../service/goodsService');
 const { getUserIdxFromJwt } = require('../library/jwtCheck');
 const { response, errorResponse } = require('../library/response');
+const { addCacheResponse } = require('../redis/redis');
 
 async function getBestGoods(req, res) {
   try {
@@ -9,6 +10,8 @@ async function getBestGoods(req, res) {
     const userIdx = getUserIdxFromJwt(req.headers.authorization);
 
     const result = await goodsService.getBestGoods(userIdx, lastIndex);
+
+    addCacheResponse(req.headers.authorization, req.url, result);
 
     response('Success', result, res, 200);
   } catch (error) {
@@ -96,6 +99,8 @@ async function getGoodsTab(req, res) {
   try {
     const result = await goodsService.getGoodsTab();
 
+    addCacheResponse(req.headers.authorization, req.url, result);
+
     response('Success', result, res, 200);
   } catch (error) {
     console.log(error);
@@ -110,6 +115,8 @@ async function getGoodsCategoryPagination(req, res) {
 
     const result = await goodsService.getGoodsCategoryPagination(goodsCategoryIdx);
 
+    addCacheResponse(req.headers.authorization, req.url, result);
+
     response('Success', result, res, 200);
   } catch (error) {
     console.log(error);
@@ -123,6 +130,8 @@ async function getExhibitionPagination(req, res) {
     const exhibitionIdx = req.params.lastIndex;
 
     const result = await goodsService.getExhibitionPagination(exhibitionIdx);
+
+    addCacheResponse(req.headers.authorization, req.url, result);
 
     response('Success', result, res, 200);
   } catch (error) {
@@ -139,6 +148,8 @@ async function getExhibitionGoodsAll(req, res) {
     const userIdx = getUserIdxFromJwt(req.headers.authorization);
 
     const result = await goodsService.getExhibitionGoodsAll(userIdx, exhibitionIdx, goodsIdx);
+
+    addCacheResponse(req.headers.authorization, req.url, result);
 
     response('Success', result, res, 200);
   } catch (error) {
@@ -320,6 +331,8 @@ async function getGoodsPriceRange(req, res) {
 
     const result = await goodsService.getGoodsPriceRange(goodsCategoryIdx, minAmount);
 
+    addCacheResponse(req.headers.authorization, req.url, result);
+
     response('Success', result, res, 200);
   } catch (error) {
     console.log(error);
@@ -341,6 +354,8 @@ async function getAllGoods(req, res) {
 
     const result = await goodsService.getAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, priceEnd, minAmount, options, userIdx);
 
+    addCacheResponse(req.headers.authorization, req.url, result);
+
     response('Success', result, res, 200);
   } catch (error) {
     console.log(error);
@@ -352,6 +367,9 @@ async function getGoodsOption(req, res) {
   try {
     const goodsIdx = req.params.goodsIdx;
     const result = await goodsService.getGoodsOption(goodsIdx);
+
+    addCacheResponse(req.headers.authorization, req.url, result);
+
     response('Success', result, res, 200);
   } catch (error) {
     console.log(error);
@@ -363,6 +381,9 @@ async function getCategoryOption(req, res) {
   try {
     const { goodsCategoryIdx } = req.params;
     const result = await goodsService.getCategoryOption(goodsCategoryIdx);
+
+    addCacheResponse(req.headers.authorization, req.url, result);
+
     response('Success', result, res, 200);
   } catch (error) {
     console.log(error);

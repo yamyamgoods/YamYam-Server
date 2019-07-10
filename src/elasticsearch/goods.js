@@ -2,6 +2,8 @@ const moment = require('moment');
 const { paginationCnt } = require('../../config/elasticsearchConfig');
 const { esClient } = require('./elasticsearch');
 
+// goods_rating 조회 시 소수점 버림 필요
+
 async function getGoodsByGoodsName(searchAfter, goodsName, order) {
   const body = {};
 
@@ -47,7 +49,7 @@ async function getGoodsByGoodsName(searchAfter, goodsName, order) {
     obj.search_after = hits[i].sort;
     obj.goods_idx = hits[i]._source.goods_idx;
     obj.goods_name = hits[i]._source.goods_name;
-    obj.goods_rating = hits[i]._source.goods_rating;
+    obj.goods_rating = Number(hits[i]._source.goods_rating.tofixed(1));
     obj.goods_price = hits[i]._source.goods_price;
     obj.goods_minimum_amount = hits[i]._source.goods_minimum_amount;
     obj.goods_detail = hits[i]._source.goods_detail;

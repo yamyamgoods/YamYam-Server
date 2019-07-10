@@ -6,11 +6,13 @@ const { jwtCheck, adminCheck } = require('../library/jwtCheck');
 
 const upload = require('../library/s3Bucket').getMulter('goods');
 
+const { getCacheResponse } = require('../redis/redis');
+
 // goodsController
 const goodsController = require('../controller/goodsController');
 
 // best goods 가져오기
-router.get('/best/:lastIndex', goodsController.getBestGoods);
+router.get('/best/:lastIndex', getCacheResponse, goodsController.getBestGoods);
 // best review 가져오기
 router.get('/reviews/best/:lastIndex', goodsController.getBestReviews);
 // review 좋아요
@@ -24,13 +26,13 @@ router.delete('/:goodsIdx/scrap', jwtCheck, goodsController.removeGoodsScrap);
 // 찜해제 (찜탭)
 router.delete('/scrap/:scrapIdx', jwtCheck, goodsController.removeGoodsScrap);
 // 굿즈탭
-router.get('/', goodsController.getGoodsTab);
+router.get('/', getCacheResponse, goodsController.getGoodsTab);
 // 굿즈 카테고리 페이지네이션
-router.get('/category/:lastIndex', goodsController.getGoodsCategoryPagination);
+router.get('/category/:lastIndex', getCacheResponse, goodsController.getGoodsCategoryPagination);
 // 기획전 페이지네이션
-router.get('/exhibition/:lastIndex', goodsController.getExhibitionPagination);
+router.get('/exhibition/:lastIndex', getCacheResponse, goodsController.getExhibitionPagination);
 // 기획전 굿즈 모두보기
-router.get('/exhibition/:exhibitionIdx/:lastIndex', goodsController.getExhibitionGoodsAll);
+router.get('/exhibition/:exhibitionIdx/:lastIndex', getCacheResponse, goodsController.getExhibitionGoodsAll);
 // 리뷰 상세보기 뷰
 router.get('/review/:reviewIdx/detail', goodsController.getReviewDetail);
 // 리뷰의 댓글 더보기
@@ -50,15 +52,15 @@ router.get('/:goodsIdx/detail', goodsController.getGoodsDetail);
 // 굿즈 등록
 router.post('/', adminCheck, upload.fields([{ name: 'img', maxCount: 50 }, { name: 'detailImg', maxCount: 1 }]), goodsController.addGoods);
 // 가격 범위 보기
-router.get('/category/:goodsCategoryIdx/priceRange', goodsController.getGoodsPriceRange);
+router.get('/category/:goodsCategoryIdx/priceRange', getCacheResponse, goodsController.getGoodsPriceRange);
 // 카테고리에 따른 굿즈 모두보기
-router.get('/category/:goodsCategoryIdx/:order/:lastIndex', goodsController.getAllGoods);
+router.get('/category/:goodsCategoryIdx/:order/:lastIndex', getCacheResponse, goodsController.getAllGoods);
 // 견적 옵션
-router.get('/:goodsIdx/options', goodsController.getGoodsOption);
+router.get('/:goodsIdx/options', getCacheResponse, goodsController.getGoodsOption);
 // 찜의 견적 수정하기
 router.put('/scrap', jwtCheck, goodsController.modifyUserGoodsOption);
 // 카테고리의 하위 옵션 보기
-router.get('/category/:goodsCategoryIdx/options', goodsController.getCategoryOption);
+router.get('/category/:goodsCategoryIdx/options', getCacheResponse, goodsController.getCategoryOption);
 // 카테고리 등록
 router.post('/category', adminCheck, goodsController.addCategory);
 // 카테고리 옵션 등록

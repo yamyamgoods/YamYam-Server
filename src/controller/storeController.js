@@ -1,6 +1,7 @@
 const storeService = require('../service/storeService');
 const { getUserIdxFromJwt } = require('../library/jwtCheck');
 const { response, errorResponse } = require('../library/response');
+const { addCacheResponse } = require('../redis/redis');
 
 // store 랭킹 가져오기
 async function getStoreRank(req, res) {
@@ -16,6 +17,8 @@ async function getStoreRank(req, res) {
     }
 
     const result = await storeService.getStoreRank(userIdx, lastIndex, storeCategoryIdx);
+
+    addCacheResponse(req.headers.authorization, req.url, result);
 
     response('Success', result, res, 200);
   } catch (error) {
@@ -78,6 +81,8 @@ async function getStoreGoodsCategory(req, res) {
 
     const result = await storeService.getStoreGoodsCategory(storeIdx);
 
+    addCacheResponse(req.headers.authorization, req.url, result);
+
     response('Success', result, res, 200);
   } catch (error) {
     console.log(error);
@@ -89,6 +94,8 @@ async function getStoreGoodsCategory(req, res) {
 async function getStoreCategory(req, res) {
   try {
     const result = await storeService.getStoreCategory();
+
+    addCacheResponse(req.headers.authorization, req.url, result);
 
     response('Success', result, res, 200);
   } catch (error) {
@@ -110,6 +117,8 @@ async function getStoreGoods(req, res) {
     }
 
     const result = await storeService.getStoreGoods(userIdx, storeIdx, order, lastIndex, goodsCategoryIdx, firstFlag);
+
+    addCacheResponse(req.headers.authorization, req.url, result);
 
     response('Success', result, res, 200);
   } catch (error) {

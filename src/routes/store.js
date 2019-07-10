@@ -6,11 +6,13 @@ const { jwtCheck, adminCheck } = require('../library/jwtCheck');
 
 const upload = require('../library/s3Bucket').getMulter('store');
 
+const { getCacheResponse } = require('../redis/redis');
+
 // storeController
 const storeController = require('../controller/storeController');
 
 // store 랭킹 가져오기
-router.get('/rank/:lastIndex', storeController.getStoreRank);
+router.get('/rank/:lastIndex', getCacheResponse, storeController.getStoreRank);
 
 // 단골 store 가져오기
 router.get('/scrap/:lastIndex', jwtCheck, storeController.getStoreScrap);
@@ -22,13 +24,13 @@ router.post('/scrap', jwtCheck, storeController.addStoreScrap);
 router.delete('/scrap/:storeIdx', jwtCheck, storeController.removeStoreScrap);
 
 // store 굿즈 카테고리 보기
-router.get('/:storeIdx/category', storeController.getStoreGoodsCategory);
+router.get('/:storeIdx/category', getCacheResponse, storeController.getStoreGoodsCategory);
 
 // store 카테고리 보기
-router.get('/category', storeController.getStoreCategory);
+router.get('/category', getCacheResponse, storeController.getStoreCategory);
 
 // store 굿즈 보기
-router.get('/:storeIdx/goods/:order/:lastIndex', storeController.getStoreGoods);
+router.get('/:storeIdx/goods/:order/:lastIndex', getCacheResponse, storeController.getStoreGoods);
 
 // store 등록
 router.post('/', adminCheck, upload.single('img'), storeController.addStore);
