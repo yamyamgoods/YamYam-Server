@@ -198,7 +198,9 @@ async function selectStore() {
   FROM STORE
   `;
 
-  await mysql.query(sql);
+  const result = await mysql.query(sql);
+
+  return result;
 }
 
 module.exports = {

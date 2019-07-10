@@ -149,6 +149,7 @@ async function getWebInfo() {
   const category = await goodsDao.selectGoodsCategoryWeb();
 
   result.store = store;
+
   result.goods_category = category;
 
   for (let i = 0; i < result.goods_category.length; i++) {
