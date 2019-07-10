@@ -439,6 +439,7 @@ async function getGoodsDetail(userIdx, goodsIdx) {
   const goods = {
     goods_idx: goodsArr[0].goods_idx,
     goods_name: goodsArr[0].goods_name,
+    goods_rating: goodsArr[0].goods_rating,
     store_name: goodsArr[0].store_name,
     store_rating: goodsArr[0].store_rating,
     goods_price: goodsArr[0].goods_price,
