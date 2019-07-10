@@ -247,7 +247,13 @@ async function getAlarmReviewDetail(alarmIdx, reviewIdx) {
 }
 
 async function modifyUserProfile(profileImg, userIdx) {
-  const userImg = profileImg.split(s3Location)[1];
+  let userImg;
+  if (!profileImg) {
+    userImg = '/user/defaultImg/user_img.png';
+  } else {
+    userImg = profileImg.split(s3Location)[1];
+  }
+
   await userDao.updateUserProfile(userImg, userIdx);
 }
 

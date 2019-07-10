@@ -607,9 +607,7 @@ async function getGoodsOption(goodsIdx) {
       // goodsOptionArr[i].goods_option_detail[k] = goodsOptionDetailArr[k].goods_option_detail_name;
       goodsOptionDetailObject.goods_option_detail_name = goodsOptionDetailArr[k].goods_option_detail_name;
       goodsOptionDetailObject.goods_option_detail_price = goodsOptionDetailArr[k].goods_option_detail_price;
-      console.log(goodsOptionDetailObject);
       goodsOptionArr[i].goods_option_detail[k] = goodsOptionDetailObject;
-
     }
     result.push(goodsOptionArr[i]);
   }
