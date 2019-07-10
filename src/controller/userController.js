@@ -122,9 +122,13 @@ async function kakaoSignin(req, res) {
 }
 
 async function modifyUserProfile(req, res) {
+  let profileImg;
   try {
-    const profileImg = req.file.location;
-
+    if (!req.file) {
+      profileImg = null;
+    } else {
+      profileImg = req.file.location;
+    }
     const userIdx = req.user.userIdx;
 
     await userService.modifyUserProfile(profileImg, userIdx);
