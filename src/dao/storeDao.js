@@ -19,9 +19,7 @@ async function selectStoreRank(lastIndex, storeCategoryIdx) {
   store_idx,
   store_name,
   store_img,
-  store_url,
-  store_ratingsum / store_review_cnt as store_rating,
-  store_review_cnt
+  store_url
 
   FROM STORE
 
@@ -87,9 +85,7 @@ async function selectStoreScrap(userIdx, lastIndex, storeCategoryIdx) {
   S.store_idx,
   store_name,
   store_img,
-  store_url,
-  store_ratingsum / store_review_cnt as store_rating,
-  store_review_cnt
+  store_url
 
   FROM STORE S, STORE_SCRAP C
 
