@@ -599,13 +599,17 @@ async function getGoodsOption(goodsIdx) {
     const goodsOptionDetailLength = goodsOptionDetailArr.length;
 
     goodsOptionArr[i].goods_option_detail = [];
-    const goodsOptionDetailObject = {};
+    
+  
 
     for (let k = 0; k < goodsOptionDetailLength; k++) {
+      const goodsOptionDetailObject = {};
       // goodsOptionArr[i].goods_option_detail[k] = goodsOptionDetailArr[k].goods_option_detail_name;
       goodsOptionDetailObject.goods_option_detail_name = goodsOptionDetailArr[k].goods_option_detail_name;
       goodsOptionDetailObject.goods_option_detail_price = goodsOptionDetailArr[k].goods_option_detail_price;
-      goodsOptionArr[i].goods_option_detail.push(goodsOptionDetailObject);
+      console.log(goodsOptionDetailObject);
+      goodsOptionArr[i].goods_option_detail[k] = goodsOptionDetailObject;
+
     }
     result.push(goodsOptionArr[i]);
   }
