@@ -192,6 +192,15 @@ async function updateStoreHit(storeIdx) {
   await mysql.query(sql, [storeIdx]);
 }
 
+async function selectStore() {
+  const sql = `
+  SELECT store_idx, store_name
+  FROM STORE
+  `;
+
+  await mysql.query(sql);
+}
+
 module.exports = {
   selectStoreName,
   selectStoreRank,
@@ -206,4 +215,5 @@ module.exports = {
   updateAllStoreHit,
   updateAllStoreScrapCnt,
   updateStoreHit,
+  selectStore,
 };

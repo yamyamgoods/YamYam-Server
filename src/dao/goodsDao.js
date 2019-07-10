@@ -877,6 +877,28 @@ async function selectGoodsScrapLabel(userIdx, goodsIdx) {
 
   return result;
 }
+async function selectGoodsCategoryWeb() {
+  const sql = `
+  SELECT goods_category_idx, goods_category_name
+  FROM GOODS_CATEGORY
+  `;
+
+  const result = await mysql.query(sql);
+
+  return result;
+}
+async function selectGoodsCategoryOptionWeb(goodsCategoryIdx) {
+  const sql = `
+  SELECT goods_category_option_idx, goods_category_option_name
+  FROM GOODS_CATEGORY_OPTION
+  WHERE goods_category_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [goodsCategoryIdx]);
+
+  return result;
+}
+
 
 module.exports = {
   selectFirstBestGoods,
@@ -936,4 +958,6 @@ module.exports = {
   updateGoodsScrap,
   updateGoodsScrapOptionFlag,
   selectGoodsScrapLabel,
+  selectGoodsCategoryWeb,
+  selectGoodsCategoryOptionWeb,
 };
