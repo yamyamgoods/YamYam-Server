@@ -28,7 +28,7 @@ router.get('/alarm/:alarmIdx/review/:reviewIdx', jwtCheck, userController.getAla
 // 카카오 로그인
 router.post('/signin/kakao', userController.kakaoSignin);
 // 유저프로필 수정
-router.put('/profile', upload.single('img'), jwtCheck, userController.modifyUserProfile);
+router.post('/profile', upload.single('img'), jwtCheck, userController.modifyUserProfile);
 // 유저이름 수정
 router.put('/name', jwtCheck, userController.modifyUserNickname);
 
