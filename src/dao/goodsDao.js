@@ -276,7 +276,7 @@ async function selectGoodsCategory() {
   const sql = `
   SELECT goods_category_idx,goods_category_name 
   FROM GOODS_CATEGORY 
-  LIMIT ${mysqlConfig.paginationCnt}
+  LIMIT 100
   `;
   const result = await mysql.query(sql);
   return result;
@@ -312,7 +312,7 @@ async function selectGoodsCategoryPaging(lastIndex) {
   FROM GOODS_CATEGORY 
   WHERE goods_category_idx > ?
   ORDER BY goods_category_idx ASC
-  LIMIT ${mysqlConfig.paginationCnt}
+  LIMIT 100
   `;
   const result = await mysql.query(sql, [lastIndex]);
 
