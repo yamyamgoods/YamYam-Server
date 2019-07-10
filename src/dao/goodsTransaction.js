@@ -122,6 +122,7 @@ async function insertGoodsTransaction(goodsName, storeIdx, storeName, price, del
     const goodsIdx = goods.insertId;
 
     // 옵션 등록
+    optionArr = JSON.parse(optionArr);
     const optionArrLength = optionArr.length;
     for (let i = 0; i < optionArrLength; i++) {
       // 옵션 등록
@@ -129,6 +130,7 @@ async function insertGoodsTransaction(goodsName, storeIdx, storeName, price, del
       const goodsOptionIdx = goodsOption.insertId;
 
       // 옵션 상세 등록
+      console.log(optionArr[i].optionDetail);
       const optionDetailLength = optionArr[i].optionDetail.length;
 
       for (let j = 0; j < optionDetailLength; j++) {
