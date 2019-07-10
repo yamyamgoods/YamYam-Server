@@ -188,6 +188,7 @@ async function selectFirstUserAlarm(userIdx) {
   const sql = `
   SELECT 
   a.alarm_idx,
+  a.alarm_check_flag,
   a.alarm_target_idx,
   a.alarm_date_time,
   a.alarm_message
@@ -204,6 +205,7 @@ async function selectNextUserAlarm(userIdx, lastIndex) {
   const sql = `
   SELECT 
   a.alarm_idx,
+  a.alarm_check_flag,
   a.alarm_target_idx,
   a.alarm_date_time,
   a.alarm_message

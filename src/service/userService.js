@@ -1,4 +1,5 @@
 const request = require('request-promise');
+const moment = require('moment');
 const userDao = require('../dao/userDao');
 const goodsDao = require('../dao/goodsDao');
 const storeDao = require('../dao/storeDao');
@@ -180,6 +181,7 @@ async function getUserAlarmList(userIdx, lastIndex) {
   for (let i = 0; i < userAlarmListLength; i++) {
     const alarmTargetIdx = userAlarmList[i].alarm_target_idx;
     const reviewComments = await userDao.selectReviewIdx(alarmTargetIdx);
+    userAlarmList[i].alarm_date_time = moment(userAlarmList[i].alarm_date_time).format('YYYY.MM.DD');
     userAlarmList[i].goods_review_idx = reviewComments[0].goods_review_idx;
     result.push(userAlarmList[i]);
   }
