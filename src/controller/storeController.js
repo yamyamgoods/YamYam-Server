@@ -136,6 +136,16 @@ async function addStore(req, res) {
   }
 }
 
+async function getWebInfo(req, res) {
+  try {
+    const result = await storeService.getWebInfo();
+    response('Success', result, res, 200);
+  } catch (error) {
+    console.log(error);
+    errorResponse(error.message, res, error.statusCode);
+  }
+}
+
 module.exports = {
   getStoreRank,
   getStoreScrap,
@@ -145,4 +155,5 @@ module.exports = {
   getStoreCategory,
   getStoreGoods,
   addStore,
+  getWebInfo,
 };

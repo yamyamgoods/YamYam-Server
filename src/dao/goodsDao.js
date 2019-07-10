@@ -276,7 +276,7 @@ async function selectGoodsCategory() {
   const sql = `
   SELECT goods_category_idx,goods_category_name 
   FROM GOODS_CATEGORY 
-  LIMIT ${mysqlConfig.paginationCnt}
+  LIMIT 100
   `;
   const result = await mysql.query(sql);
   return result;
@@ -312,7 +312,7 @@ async function selectGoodsCategoryPaging(lastIndex) {
   FROM GOODS_CATEGORY 
   WHERE goods_category_idx > ?
   ORDER BY goods_category_idx ASC
-  LIMIT ${mysqlConfig.paginationCnt}
+  LIMIT 100
   `;
   const result = await mysql.query(sql, [lastIndex]);
 
@@ -808,16 +808,6 @@ async function selectCategoryOption(goodsCategoryIdx) {
   return result;
 }
 
-async function selectCategoryOptionDetail(categoryOptionIdx) {
-  const sql = `
-  SELECT goods_category_option_detail_idx as category_option_detail_idx, goods_category_option_detail_name as category_option_detail_name
-  FROM GOODS_CATEGORY_OPTION_DETAIL
-  WHERE goods_category_option_idx = ?
-  `;
-  const result = await mysql.query(sql, [categoryOptionIdx]);
-  return result;
-}
-
 async function updateAllGoodsHit(value) {
   const sql = `
   UPDATE GOODS SET goods_hit = ?
@@ -887,6 +877,28 @@ async function selectGoodsScrapLabel(userIdx, goodsIdx) {
 
   return result;
 }
+async function selectGoodsCategoryWeb() {
+  const sql = `
+  SELECT goods_category_idx, goods_category_name
+  FROM GOODS_CATEGORY
+  `;
+
+  const result = await mysql.query(sql);
+
+  return result;
+}
+async function selectGoodsCategoryOptionWeb(goodsCategoryIdx) {
+  const sql = `
+  SELECT goods_category_option_idx, goods_category_option_name
+  FROM GOODS_CATEGORY_OPTION
+  WHERE goods_category_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [goodsCategoryIdx]);
+
+  return result;
+}
+
 
 module.exports = {
   selectFirstBestGoods,
@@ -934,7 +946,6 @@ module.exports = {
   selectGoodsOption,
   selectGoodsOptionDetail,
   selectCategoryOption,
-  selectCategoryOptionDetail,
   updateAllGoodsHit,
   updateAllGoodsReviewWeekCnt,
   updateAllGoodsRank,
@@ -947,4 +958,6 @@ module.exports = {
   updateGoodsScrap,
   updateGoodsScrapOptionFlag,
   selectGoodsScrapLabel,
+  selectGoodsCategoryWeb,
+  selectGoodsCategoryOptionWeb,
 };
