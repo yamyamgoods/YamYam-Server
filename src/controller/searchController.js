@@ -2,6 +2,7 @@ const goodsService = require('../service/goodsService');
 const storeService = require('../service/storeService');
 const { getUserIdxFromJwt } = require('../library/jwtCheck');
 const { response, errorResponse } = require('../library/response');
+const { addCacheResponse } = require('../redis/redis');
 
 async function getGoods(req, res) {
   try {
@@ -11,6 +12,8 @@ async function getGoods(req, res) {
     const order = req.params.order;
 
     const result = await goodsService.getGoodsBySearch(userIdx, searchAfter, goodsName, order);
+
+    addCacheResponse(req.headers.authorization, req.url, result);
 
     response('Success', result, res, 200);
   } catch (error) {
@@ -28,6 +31,8 @@ async function getStore(req, res) {
     const order = req.params.order;
 
     const result = await storeService.getStoreBySearch(userIdx, searchAfter, goodsName, order);
+
+    addCacheResponse(req.headers.authorization, req.url, result);
 
     response('Success', result, res, 200);
   } catch (error) {
