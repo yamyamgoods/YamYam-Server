@@ -232,12 +232,12 @@ async function insertReviewCommentTransaction(userIdx, userIdxForAlarm, reviewId
       const reviewComment = await insertReviewComment(connection, userIdx, reviewIdx, contents);
       commentIdx = reviewComment.insertId;
 
-      alarmMessage = `리뷰에 댓글이 달렸습니다. : ${contents}`;
+      alarmMessage = `리뷰에 댓글이 달렸습니다 : ${contents}`;
     } else {
       const reviewRecomment = await insertReviewRecomment(connection, userIdx, reviewIdx, contents, 1);
       commentIdx = reviewRecomment.insertId;
 
-      alarmMessage = `댓글에 답글이 달렸습니다. : ${contents}`;
+      alarmMessage = `댓글에 답글이 달렸습니다 : ${contents}`;
     }
 
     await insertAlarm(connection, userIdxForAlarm, 'GOODS_REVIEW_COMMENT', commentIdx, alarmMessage);
