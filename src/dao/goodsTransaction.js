@@ -456,13 +456,22 @@ async function selectGoodsRating(connection, goodsIdx) {
   return result;
 }
 
+async function updateUserPoint(connection, userIdx, point) {
+  const sql = `
+  UPDATE USER SET user_point = user_point + ? WHERE user_idx = ?
+  `;
+
+  await connection.query(sql, [point, userIdx]);
+}
+
 async function insertGoodsReviewTransaction(goodsIdx, userIdx, rating, content, img) {
   await mysql.transaction(async (connection) => {
     let photoFlag = false;
-    if (img) photoFlag = true;
+    
+    if (img.length != 0) photoFlag = true;
     const reviewRow = await insertGoodsReview(connection, goodsIdx, userIdx, photoFlag, rating, content);
 
-    if (img) {
+    if (img.length != 0) {
       for (let i = 0; i < img.length; i++) {
         await insertGoodsReviewImg(connection, reviewRow.insertId, img[i].location.split(s3Location)[1]);
       }
@@ -476,6 +485,12 @@ async function insertGoodsReviewTransaction(goodsIdx, userIdx, rating, content, 
 
     const goodsRatingArr = await selectGoodsRating(connection, goodsIdx);
     const goodsRating = goodsRatingArr[0].goods_rating;
+
+    if (photoFlag) {
+      await updateUserPoint(connection, userIdx, 100);
+    } else {
+      await updateUserPoint(connection, userIdx, 50);
+    }
 
     // elasticsearch rankingscore
     // elasticsearch review cnt+1
