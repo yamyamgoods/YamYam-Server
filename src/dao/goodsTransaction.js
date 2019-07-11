@@ -406,7 +406,7 @@ async function insertGoodsReviewImg(connection, goodsReviewIdx, img) {
   (?, ?)
   `;
 
-  await connection.query(sql, [goodsReviewIdx, img.key]);
+  await connection.query(sql, [goodsReviewIdx, img]);
 }
 
 async function updateGoodsRating(connection, cnt, rating, goodsIdx) {
@@ -529,7 +529,7 @@ async function updateGoodsReviewTransaction(goodsIdx, reviewIdx, userIdx, rating
     await deleteGoodsReviewImg(connection, reviewIdx);
     if (img) {
       for (let i = 0; i < img.length; i++) {
-        await insertGoodsReviewImg(connection, reviewIdx, `/${img[i]}`);
+        await insertGoodsReviewImg(connection, reviewIdx, `/${img[i].key}`);
       }
     }
 
