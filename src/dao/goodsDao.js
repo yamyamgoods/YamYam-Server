@@ -721,7 +721,6 @@ async function selectGoodsScrapWithUserIdx(userIdx) {
 }
 
 async function selectAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, priceEnd, minAmount, options, queryFlag) {
-  console.log(options);
   let sql = `
   SELECT goods_idx, store_idx, goods_name, goods_price, goods_rating, goods_minimum_amount, goods_review_cnt
   FROM GOODS
@@ -743,7 +742,7 @@ async function selectAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, pr
     }
     if (options) {
       let op = '';
-      options.array.forEach((element) => {
+      options.forEach((element) => {
         op += `${element},`;
       });
       sql += `
