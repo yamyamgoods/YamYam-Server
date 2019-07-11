@@ -661,7 +661,7 @@ async function selectPriceRange(goodsCategoryIdx, minAmount) {
   `;
 
   if (minAmount) {
-    sql += `AND goods_minimum_amount <= ${minAmount}`;
+    sql += `AND cast(replace(goods_minimum_amount, ",","") as unsigned)' <= ${minAmount}`;
   }
 
   const result = await mysql.query(sql, [goodsCategoryIdx]);
@@ -683,9 +683,9 @@ async function selectStoreGoods(storeIdx, order, lastIndex, goodsCategoryIdx) {
   if (order == 0) {
     sql += ' ORDER BY goods_score DESC';
   } else if (order == 1) { // 고가순
-    sql += ' ORDER BY goods_price DESC';
+    sql += ' ORDER BY cast(replace(goods_price, ",","") as unsigned) DESC';
   } else if (order == 2) { // 저가순
-    sql += ' ORDER BY goods_price';
+    sql += ' ORDER BY cast(replace(goods_price, ",","") as unsigned)';
   }
 
   sql += ` LIMIT ${mysqlConfig.paginationCnt}`;
@@ -730,11 +730,11 @@ async function selectAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, pr
   if (queryFlag) {
     if (priceStart) {
       sql += `
-      AND goods_price >= ${priceStart}`;
+      AND cast(replace(goods_price, ",","") as unsigned) >= ${priceStart}`;
     }
     if (priceEnd) {
       sql += `
-      AND goods_price <= ${priceEnd}`;
+      AND cast(replace(goods_price, ",","") as unsigned) <= ${priceEnd}`;
     }
     if (minAmount) {
       sql += `
