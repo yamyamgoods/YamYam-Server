@@ -1,5 +1,6 @@
 const mysql = require('../library/mysql');
 const elasticsearchGoods = require('../elasticsearch/goods');
+const { s3Location } = require('../../config/s3Config');
 const { pushAlarm } = require('../library/firebasePush');
 
 async function insertGoodsScrap(connection, userId, goodsIdx, goodsScrapPrice, goodsScrapLabel) {
