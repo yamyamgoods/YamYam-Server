@@ -743,8 +743,8 @@ async function selectAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, pr
     }
     if (options) {
       let op = '';
-      options.forEach((i) => {
-        op += `${i},`;
+      options.array.forEach((element) => {
+        op += `${element},`;
       });
       sql += `
       AND goods_idx IN (SELECT goods_idx FROM GOODS_CATEGORY_OPTION_GOODS WHERE goods_category_option_idx IN (${op.slice(0, -1)}))
