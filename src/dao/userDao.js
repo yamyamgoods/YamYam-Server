@@ -159,7 +159,7 @@ async function selectNextUserRecentGoods(userIdx, lastIndex) {
   WHERE urg.user_idx = ?
   AND urg.goods_idx = g.goods_idx
   AND urg.user_recent_goods_idx < ?
-  ORDER BY urg.user_recent_goods_date_time DESC
+  ORDER BY urg.user_recent_goods_idx DESC
   LIMIT ${mysqlConfig.paginationCnt} 
   `;
   const result = await mysql.query(sql, [userIdx, lastIndex]);
@@ -177,7 +177,7 @@ async function selectFirstUserRecentGoods(userIdx) {
   FROM USER_RECENT_GOODS urg, GOODS g
   WHERE urg.user_idx = ?
   AND urg.goods_idx = g.goods_idx
-  ORDER BY urg.user_recent_goods_date_time DESC
+  ORDER BY urg.user_recent_goods_idx DESC
   LIMIT ${mysqlConfig.paginationCnt} 
   `;
   const result = await mysql.query(sql, [userIdx]);
