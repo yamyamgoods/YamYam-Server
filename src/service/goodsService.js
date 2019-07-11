@@ -264,6 +264,14 @@ async function getReviewDetail(reviewIdx) {
   const goods = await goodsDao.selectGoods(goodsIdx);
   const goodsImg = await goodsDao.selectGoodsImg(goodsIdx);
 
+  const userIdxArr = await goodsDao.selectUserIdxByReviewIdx(reviewIdx);
+  const userIdx = userIdxArr[0].user_idx;
+
+  // 리뷰 데이터
+  result.review = {
+    user_idx: userIdx,
+  };
+
   // 굿즈 데이터
   result.goods = {
     goods_idx: goods[0].goods_idx,
@@ -351,7 +359,7 @@ async function getGoodsReviews(goodsIdx, photoFlag, lastIndex) {
   for (let i = 0; i < goodsReviewLength; i++) {
     // 유저 정보 가져오기
     const userIdx = goodsReview[i].user_idx;
-    delete goodsReview[i].user_idx;
+    // delete goodsReview[i].user_idx;
 
     const userArr = await userDao.selectUser(userIdx);
 
@@ -365,6 +373,8 @@ async function getGoodsReviews(goodsIdx, photoFlag, lastIndex) {
     for (let j = 0; j < imgObjArrLength; j++) {
       imgResultArray.push(s3Location + goodsReviewImg[j].goods_review_img);
     }
+
+    // goodsReview[i].user_idx = goodsReview[i].user_idx
     goodsReview[i].user_name = user.user_name;
     goodsReview[i].user_img = s3Location + user.user_img;
 
@@ -599,8 +609,7 @@ async function getGoodsOption(goodsIdx) {
     const goodsOptionDetailLength = goodsOptionDetailArr.length;
 
     goodsOptionArr[i].goods_option_detail = [];
-    
-  
+
 
     for (let k = 0; k < goodsOptionDetailLength; k++) {
       const goodsOptionDetailObject = {};
