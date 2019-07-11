@@ -15,8 +15,8 @@ async function getStoreByStoreName(searchAfter, storeName, order) {
 
   body.sort = sort;
 
-  if (searchAfter != -1) {
-    body.search_after = searchAfter;
+  if (searchAfter) {
+    body.search_after = JSON.parse(searchAfter);
   }
 
   body.query = {
@@ -40,7 +40,7 @@ async function getStoreByStoreName(searchAfter, storeName, order) {
   for (let i = 0; i < hitsLength; i++) {
     const obj = {};
 
-    obj.search_after = hits[i].sort;
+    obj.search_after = JSON.stringify(hits[i].sort);
     obj.store_idx = hits[i]._source.store_idx;
     obj.store_name = hits[i]._source.store_name;
     obj.store_rating = hits[i]._source.store_rating;
