@@ -738,7 +738,7 @@ async function selectAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, pr
     }
     if (minAmount) {
       sql += `
-      AND goods_minimum_amount <= ${minAmount}`;
+      AND cast(replace(goods_minimum_amount, ",","") as unsigned) <= ${minAmount}`;
     }
     if (options) {
       sql += `
@@ -750,9 +750,9 @@ async function selectAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, pr
   if (order == 0) {
     sql += ' ORDER BY goods_score DESC';
   } else if (order == 1) { // 고가순
-    sql += ' ORDER BY goods_price DESC';
+    sql += ' ORDER BY cast(replace(goods_price, ",","") as unsigned) DESC';
   } else if (order == 2) { // 저가순
-    sql += ' ORDER BY goods_price';
+    sql += ' ORDER BY cast(replace(goods_price, ",","") as unsigned)';
   }
 
   sql += ` LIMIT ${mysqlConfig.paginationCnt}`;
