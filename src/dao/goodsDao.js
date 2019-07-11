@@ -785,6 +785,19 @@ async function selectGoodsOption(goodsIdx) {
 //   return result;
 // }
 
+async function selectGoodsOptionDetail(goodsOptionIdx) {
+  const sql = `
+  SELECT goods_option_detail_name,
+  goods_option_detail_price
+  FROM GOODS_OPTION_DETAIL
+  WHERE goods_option_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [goodsOptionIdx]);
+  return result;
+}
+
+
 async function selectCategoryOption(goodsCategoryIdx) {
   const sql = `
   SELECT goods_category_option_idx as category_option_idx, goods_category_option_name as category_option_name
@@ -941,6 +954,7 @@ module.exports = {
   selectGoodsScrapWithUserIdx,
   selectAllGoods,
   selectGoodsOption,
+  selectGoodsOptionDetail,
   selectCategoryOption,
   updateAllGoodsHit,
   updateAllGoodsReviewWeekCnt,
