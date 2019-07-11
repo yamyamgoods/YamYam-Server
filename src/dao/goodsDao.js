@@ -721,6 +721,7 @@ async function selectGoodsScrapWithUserIdx(userIdx) {
 }
 
 async function selectAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, priceEnd, minAmount, options, queryFlag) {
+  console.log(options);
   let sql = `
   SELECT goods_idx, store_idx, goods_name, goods_price, goods_rating, goods_minimum_amount, goods_review_cnt
   FROM GOODS
@@ -741,8 +742,12 @@ async function selectAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, pr
       AND cast(replace(goods_minimum_amount, ",","") as unsigned) <= ${minAmount}`;
     }
     if (options) {
+      let op = '';
+      options.forEach((i) => {
+        op += `${i},`;
+      });
       sql += `
-      AND goods_idx IN (SELECT goods_idx FROM GOODS_CATEGORY_OPTION_GOODS WHERE goods_category_option_idx IN (${options.slice(1, -1)}))
+      AND goods_idx IN (SELECT goods_idx FROM GOODS_CATEGORY_OPTION_GOODS WHERE goods_category_option_idx IN (${op.slice(0, -1)}))
       `;
     }
   }
