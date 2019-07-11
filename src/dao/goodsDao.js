@@ -16,7 +16,7 @@ async function selectFirstBestGoods() {
   FROM GOODS 
   JOIN STORE ON GOODS.store_idx = STORE.store_idx 
   ORDER BY goods_score DESC, goods_idx DESC 
-  LIMIT ${mysqlConfig.paginationCnt}
+  LIMIT ${mysqlConfig.bestGoodsPagination}
   `;
 
   const result = await mysql.query(sql);
@@ -40,7 +40,7 @@ async function selectNextBestGoods(lastIndex) {
   JOIN STORE ON GOODS.store_idx = STORE.store_idx 
   WHERE goods_idx < ?
   ORDER BY goods_score DESC, goods_idx DESC 
-  LIMIT ${mysqlConfig.paginationCnt}
+  LIMIT ${mysqlConfig.bestGoodsPagination}
   `;
 
   const result = await mysql.query(sql, [lastIndex]);
