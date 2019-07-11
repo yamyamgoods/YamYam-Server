@@ -740,13 +740,17 @@ async function selectAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, pr
       sql += `
       AND cast(replace(goods_minimum_amount, ",","") as unsigned) <= ${minAmount}`;
     }
+    let res = options;
     if (options) {
-      let op = '';
-      options.forEach((element) => {
-        op += `${element},`;
-      });
+      if (typeof options == 'Object') {
+        let op = '';
+        options.forEach((element) => {
+          op += `${element},`;
+        });
+        res = op.slice(0, -1);
+      }
       sql += `
-      AND goods_idx IN (SELECT goods_idx FROM GOODS_CATEGORY_OPTION_GOODS WHERE goods_category_option_idx IN (${op.slice(0, -1)}))
+      AND goods_idx IN (SELECT goods_idx FROM GOODS_CATEGORY_OPTION_GOODS WHERE goods_category_option_idx IN (${res}))
       `;
     }
   }
