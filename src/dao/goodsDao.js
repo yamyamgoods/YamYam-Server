@@ -742,7 +742,7 @@ async function selectAllGoods(goodsCategoryIdx, order, lastIndex, priceStart, pr
     }
     if (options) {
       sql += `
-      AND goods_idx IN (SELECT goods_idx FROM GOODS_CATEGORY_OPTION_DETAIL_GOODS WHERE goods_category_option_detail_idx IN (${options.slice(1, -1)}))
+      AND goods_idx IN (SELECT goods_idx FROM GOODS_CATEGORY_OPTION_GOODS WHERE goods_category_option_idx IN (${options.slice(1, -1)}))
       `;
     }
   }
@@ -784,19 +784,6 @@ async function selectGoodsOption(goodsIdx) {
 //   const result = await mysql.query(sql, [goodsIdx]);
 //   return result;
 // }
-
-async function selectGoodsOptionDetail(goodsOptionIdx) {
-  const sql = `
-  SELECT goods_option_detail_name,
-  goods_option_detail_price
-  FROM GOODS_OPTION_DETAIL
-  WHERE goods_option_idx = ?
-  `;
-
-  const result = await mysql.query(sql, [goodsOptionIdx]);
-  return result;
-}
-
 
 async function selectCategoryOption(goodsCategoryIdx) {
   const sql = `
