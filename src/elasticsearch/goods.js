@@ -7,7 +7,7 @@ const { esClient } = require('./elasticsearch');
 async function getGoodsByGoodsName(searchAfter, goodsName, order) {
   const body = {};
 
-  let sort;
+  let sort = [];
   if (order == 0) {
     sort = [{ goods_score: 'desc' }];
   } else if (order == 1) {
@@ -21,8 +21,8 @@ async function getGoodsByGoodsName(searchAfter, goodsName, order) {
 
   body.sort = sort;
 
-  if (searchAfter != -1) {
-    body.search_after = searchAfter;
+  if (searchAfter) {
+    body.search_after = JSON.parse(searchAfter);
   }
 
   body.query = {
@@ -38,8 +38,6 @@ async function getGoodsByGoodsName(searchAfter, goodsName, order) {
     body,
   });
 
-  console.log(response);
-
   const result = {};
   result.goods = [];
 
@@ -48,7 +46,7 @@ async function getGoodsByGoodsName(searchAfter, goodsName, order) {
   for (let i = 0; i < hitsLength; i++) {
     const obj = {};
 
-    obj.search_after = hits[i].sort;
+    obj.search_after = JSON.stringify(hits[i].sort);
     obj.goods_idx = hits[i]._source.goods_idx;
     obj.goods_name = hits[i]._source.goods_name;
     obj.goods_rating = Number(hits[i]._source.goods_rating.toFixed(1));
