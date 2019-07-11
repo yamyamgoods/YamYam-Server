@@ -38,6 +38,8 @@ async function getGoodsByGoodsName(searchAfter, goodsName, order) {
     body,
   });
 
+  console.log(response);
+
   const result = {};
   result.goods = [];
 
@@ -49,7 +51,7 @@ async function getGoodsByGoodsName(searchAfter, goodsName, order) {
     obj.search_after = hits[i].sort;
     obj.goods_idx = hits[i]._source.goods_idx;
     obj.goods_name = hits[i]._source.goods_name;
-    obj.goods_rating = Number(hits[i]._source.goods_rating.tofixed(1));
+    obj.goods_rating = Number(hits[i]._source.goods_rating.toFixed(1));
     obj.goods_price = hits[i]._source.goods_price;
     obj.goods_minimum_amount = hits[i]._source.goods_minimum_amount;
     obj.goods_detail = hits[i]._source.goods_detail;
@@ -61,7 +63,6 @@ async function getGoodsByGoodsName(searchAfter, goodsName, order) {
   }
 
   result.totalCnt = response.hits.total;
-
   return result;
 }
 
