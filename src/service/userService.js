@@ -86,7 +86,12 @@ async function getGoodsScrapOption(goodsScrapIdx) {
   //   });
   // }
 
+  // 굿즈 가격 가져오기
+  const goodsArr = await goodsDao.selectGoods(goodsIdx[0].goods_idx);
+  const goodsPrice = goodsArr[0].goods_price;
+
   return {
+    goods_price: goodsPrice,
     goods_scrap_option_idx: optionArr[0].goods_scrap_option_idx,
     goods_scrap_option_data: goodsScrapOptionData,
     goods_option_data: goodsScrapOptionDataAll,
