@@ -28,7 +28,7 @@ async function getGoodsScrap(userIdx, lastIndex) {
 
     // 굿즈 첫번째 이미지 가져오기
     const goodsImg = await goodsDao.selectGoodsImg(goodsScrap[i].goods_idx);
-    goodsScrapObj.goods_img = goodsImg[0].goods_img;
+    goodsScrapObj.goods_img = s3Location + goodsImg[0].goods_img;
 
     // 스토어 이름 가져오기
     const storeName = await storeDao.selectStoreName(goodsScrap[i].store_idx);
