@@ -340,6 +340,10 @@ async function addReviewComment(userIdx, userIdxForAlarm, reviewIdx, contents, r
 async function getGoodsReviews(goodsIdx, photoFlag, lastIndex) {
   let goodsReview;
 
+  const photoCount = await goodsDao.countPhotoReviews(goodsIdx, 1);
+  const nphotoCount = await goodsDao.countPhotoReviews(goodsIdx, 0);
+  const reviewAllCount = photoCount[0].data + nphotoCount[0].data;
+
   if (photoFlag == 1) {
     if (lastIndex == -1) {
       goodsReview = await goodsDao.selectFirstGoodsReviews(goodsIdx, photoFlag);
@@ -394,7 +398,12 @@ async function getGoodsReviews(goodsIdx, photoFlag, lastIndex) {
     }
   }
 
-  return goodsReview;
+ // return goodsReview;
+ return {
+    photo_count: photoCount[0].data,
+    review_all_count: reviewAllCount,
+    review_data: goodsReview,
+ };
 }
 
 async function modifyReviewComment(userIdx, commentIdx, contents) {

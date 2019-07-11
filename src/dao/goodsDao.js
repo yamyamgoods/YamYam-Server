@@ -917,8 +917,22 @@ async function selectUserIdxByReviewIdx(reviewIdx) {
   return result;
 }
 
+async function countPhotoReviews(goodsIdx, goodsReviewPhotoFlag) {
+  const sql = `
+  SELECT count(*) as data
+  FROM GOODS_REVIEW 
+  WHERE goods_idx = ? 
+  AND goods_review_photo_flag = ?
+  `;
+
+  const result = await mysql.query(sql, [goodsIdx, goodsReviewPhotoFlag]);
+
+  return result;
+}
+
 
 module.exports = {
+  countPhotoReviews,
   selectFirstBestGoods,
   selectNextBestGoods,
   selectGoodsImg,
