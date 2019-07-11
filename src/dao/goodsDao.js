@@ -899,6 +899,16 @@ async function selectGoodsCategoryOptionWeb(goodsCategoryIdx) {
   return result;
 }
 
+async function selectUserIdxByReviewIdx(reviewIdx) {
+  const sql = `
+  SELECT user_idx FROM GOODS_REVIEW WHERE goods_review_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [reviewIdx]);
+
+  return result;
+}
+
 
 module.exports = {
   selectFirstBestGoods,
@@ -960,4 +970,5 @@ module.exports = {
   selectGoodsScrapLabel,
   selectGoodsCategoryWeb,
   selectGoodsCategoryOptionWeb,
+  selectUserIdxByReviewIdx,
 };
