@@ -463,7 +463,7 @@ async function insertGoodsReviewTransaction(goodsIdx, userIdx, rating, content, 
 
     if (img) {
       for (let i = 0; i < img.length; i++) {
-        await insertGoodsReviewImg(connection, reviewRow.insertId, img[i]);
+        await insertGoodsReviewImg(connection, reviewRow.insertId, `/${img[i]}`);
       }
     }
 
@@ -529,7 +529,7 @@ async function updateGoodsReviewTransaction(goodsIdx, reviewIdx, userIdx, rating
     await deleteGoodsReviewImg(connection, reviewIdx);
     if (img) {
       for (let i = 0; i < img.length; i++) {
-        await insertGoodsReviewImg(connection, reviewIdx, img[i]);
+        await insertGoodsReviewImg(connection, reviewIdx, `/${img[i]}`);
       }
     }
 
