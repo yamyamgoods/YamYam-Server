@@ -941,7 +941,6 @@ module.exports = {
   selectGoodsScrapWithUserIdx,
   selectAllGoods,
   selectGoodsOption,
-  selectGoodsOptionDetail,
   selectCategoryOption,
   updateAllGoodsHit,
   updateAllGoodsReviewWeekCnt,
