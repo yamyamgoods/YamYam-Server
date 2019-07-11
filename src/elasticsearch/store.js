@@ -15,7 +15,7 @@ async function getStoreByStoreName(searchAfter, storeName, order) {
 
   body.sort = sort;
 
-  if (searchAfter != -1) {
+  if (searchAfter) {
     body.search_after = JSON.parse(searchAfter);
   }
 
