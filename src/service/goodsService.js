@@ -641,10 +641,10 @@ async function modifyUserGoodsOption(goodsScrapIdx, userIdx, goodsIdx, goodsScra
   if (goodsScrapOptionFlag == 1) {
     // 견적옵션이 있을 경우 - update
     await goodsDao.updateGoodsScrap(goodsScrapLabel, goodsScrapPrice, goodsScrapIdx);
-    await goodsDao.updateGoodsScrapOption(options, goodsScrapIdx);
+    await goodsDao.updateGoodsScrapOption(JSON.stringify(options), goodsScrapIdx);
   } else {
     // 견적옵션이 없을 경우 - 새로 insert
-    await goodsDao.insertGoodsScrapOption(goodsScrapIdx, options);
+    await goodsDao.insertGoodsScrapOption(goodsScrapIdx, JSON.stringify(options));
     await goodsDao.updateGoodsScrap(goodsScrapLabel, goodsScrapPrice, goodsScrapIdx);
     await goodsDao.updateGoodsScrapOptionFlag(goodsScrapIdx);
   }
