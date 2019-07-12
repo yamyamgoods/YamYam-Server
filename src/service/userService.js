@@ -22,6 +22,7 @@ async function getGoodsScrap(userIdx, lastIndex) {
   const goodsScrapLength = goodsScrap.length;
   for (let i = 0; i < goodsScrapLength; i++) {
     const goodsScrapObj = {};
+    goodsScrapObj.goods_idx = goodsScrap[i].goods_idx;
     goodsScrapObj.goods_name = goodsScrap[i].goods_name;
     goodsScrapObj.goods_price = goodsScrap[i].goods_scrap_price;
     goodsScrapObj.goods_scrap_idx = goodsScrap[i].goods_scrap_idx;
@@ -53,6 +54,7 @@ async function getGoodsScrapOption(goodsScrapIdx) {
   const goodsOptionLength = goodsOptionArr.length;
   for (let i = 0; i < goodsOptionLength; i++) {
     const tempObj = {};
+    goodsScrapObj.goods_idx = goodsScrap[i].goods_idx;
     tempObj.goods_option_name = goodsOptionArr[i].goods_option_name;
 
     const goodsOptionIdx = goodsOptionArr[i].goods_option_idx;
