@@ -6,13 +6,13 @@ const { jwtCheck, adminCheck } = require('../library/jwtCheck');
 
 const upload = require('../library/s3Bucket').getMulter('store');
 
-const { getCacheResponse } = require('../redis/redis');
+const { getCacheResponse, getCacheResponseWithJwtCheck } = require('../redis/redis');
 
 // storeController
 const storeController = require('../controller/storeController');
 
 // store 랭킹 가져오기
-router.get('/rank/:lastIndex', getCacheResponse, storeController.getStoreRank);
+router.get('/rank/:lastIndex', getCacheResponseWithJwtCheck, storeController.getStoreRank);
 
 // 단골 store 가져오기
 router.get('/scrap/:lastIndex', jwtCheck, storeController.getStoreScrap);
