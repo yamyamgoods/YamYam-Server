@@ -46,6 +46,7 @@ async function getStoreByStoreName(searchAfter, storeName, order) {
     obj.store_rating = hits[i]._source.store_rating;
     obj.store_img = hits[i]._source.store_img;
     obj.hash_tag = hits[i]._source.hash_tag;
+    obj.store_url = hits[i]._source.store_url;
 
     result.store.push(obj);
   }
@@ -55,13 +56,14 @@ async function getStoreByStoreName(searchAfter, storeName, order) {
   return result;
 }
 
-async function addStore(storeIdx, storeName, imgArr, hashTag) {
+async function addStore(storeIdx, storeName, imgArr, hashTag, storeUrl) {
   const body = {
     store_idx: storeIdx,
     store_name: storeName,
     store_img: imgArr,
     hash_tag: hashTag,
     store_rank_score: 0,
+    store_url: storeUrl,
   };
 
   await esClient.index({

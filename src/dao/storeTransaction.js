@@ -91,7 +91,7 @@ async function insertStoreTransaction(img, name, url, hashTag, categoryName) {
 
 
     // elasticsearch store 추가
-    await elasticsearchStore.addStore(storeIdx, name, img, hashTag);
+    await elasticsearchStore.addStore(storeIdx, name, img, hashTag, url);
   });
 }
 

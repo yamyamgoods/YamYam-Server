@@ -203,6 +203,16 @@ async function selectStore() {
   return result;
 }
 
+async function selectAllStoreInfo() {
+  const sql = `
+  SELECT * FROM STORE
+  `;
+
+  const result = await mysql.query(sql);
+
+  return result;
+}
+
 module.exports = {
   selectStoreName,
   selectStoreRank,
@@ -218,4 +228,5 @@ module.exports = {
   updateAllStoreScrapCnt,
   updateStoreHit,
   selectStore,
+  selectAllStoreInfo,
 };
