@@ -467,9 +467,10 @@ async function updateUserPoint(connection, userIdx, point) {
 async function insertGoodsReviewTransaction(goodsIdx, userIdx, rating, content, img) {
   await mysql.transaction(async (connection) => {
     let photoFlag = false;
-
+    
     if (img.length != 0) photoFlag = true;
     const reviewRow = await insertGoodsReview(connection, goodsIdx, userIdx, photoFlag, rating, content);
+
 
     if (img.length != 0) {
       for (let i = 0; i < img.length; i++) {
