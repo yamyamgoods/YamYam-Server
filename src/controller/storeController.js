@@ -1,7 +1,7 @@
 const storeService = require('../service/storeService');
 const { getUserIdxFromJwt } = require('../library/jwtCheck');
 const { response, errorResponse } = require('../library/response');
-const { addCacheResponse } = require('../redis/redis');
+const { addCacheResponse, addCacheResponseWithJwtCheck } = require('../redis/redis');
 
 // store 랭킹 가져오기
 async function getStoreRank(req, res) {
@@ -18,7 +18,7 @@ async function getStoreRank(req, res) {
 
     const result = await storeService.getStoreRank(userIdx, lastIndex, storeCategoryIdx);
 
-    addCacheResponse(req.headers.authorization, req.url, result);
+    addCacheResponseWithJwtCheck(req.headers.authorization, req.url, result);
 
     response('Success', result, res, 200);
   } catch (error) {

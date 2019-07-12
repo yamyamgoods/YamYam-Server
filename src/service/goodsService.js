@@ -120,8 +120,10 @@ async function addGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel
     }
   }
 
+  const priceWithComma = addCommaIntoNum(goodsScrapPrice);
+
   if (!options) { // 견적 옵션이 없는 경우
-    await goodsDao.insertGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel);
+    await goodsDao.insertGoodsScrap(userIdx, goodsIdx, priceWithComma, goodsScrapLabel);
   } else {
     // 견적 옵션이 있는 경우
 
@@ -135,7 +137,6 @@ async function addGoodsScrap(userIdx, goodsIdx, goodsScrapPrice, goodsScrapLabel
       }
     }
 
-    const priceWithComma = addCommaIntoNum(goodsScrapPrice);
 
     await goodsTransaction.insertGoodsScrapTransaction(userIdx, goodsIdx, priceWithComma, goodsScrapLabel, options);
   }
@@ -398,12 +399,12 @@ async function getGoodsReviews(goodsIdx, photoFlag, lastIndex) {
     }
   }
 
- // return goodsReview;
- return {
+  // return goodsReview;
+  return {
     photo_count: photoCount[0].data,
     review_all_count: reviewAllCount,
     review_data: goodsReview,
- };
+  };
 }
 
 async function modifyReviewComment(userIdx, commentIdx, contents) {
@@ -638,14 +639,16 @@ async function modifyUserGoodsOption(goodsScrapIdx, userIdx, goodsIdx, goodsScra
   const goodsScrapArr = await goodsDao.selectGoodsScrapOptionFlag(userIdx, goodsIdx, goodsScrapIdx);
   // const goodsScrapIdx = await goodsDao.goodsScrapArr[0].goods_scrap_idx;
   const goodsScrapOptionFlag = goodsScrapArr[0].goods_scrap_option_flag;
+  const priceWithComma = addCommaIntoNum(goodsScrapPrice);
+
   if (goodsScrapOptionFlag == 1) {
     // 견적옵션이 있을 경우 - update
-    await goodsDao.updateGoodsScrap(goodsScrapLabel, goodsScrapPrice, goodsScrapIdx);
-    await goodsDao.updateGoodsScrapOption(options, goodsScrapIdx);
+    await goodsDao.updateGoodsScrap(goodsScrapLabel, priceWithComma, goodsScrapIdx);
+    await goodsDao.updateGoodsScrapOption(JSON.stringify(options), goodsScrapIdx);
   } else {
     // 견적옵션이 없을 경우 - 새로 insert
-    await goodsDao.insertGoodsScrapOption(goodsScrapIdx, options);
-    await goodsDao.updateGoodsScrap(goodsScrapLabel, goodsScrapPrice, goodsScrapIdx);
+    await goodsDao.insertGoodsScrapOption(goodsScrapIdx, JSON.stringify(options));
+    await goodsDao.updateGoodsScrap(goodsScrapLabel, priceWithComma, goodsScrapIdx);
     await goodsDao.updateGoodsScrapOptionFlag(goodsScrapIdx);
   }
 }
