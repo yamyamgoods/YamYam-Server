@@ -930,8 +930,29 @@ async function countPhotoReviews(goodsIdx, goodsReviewPhotoFlag) {
   return result;
 }
 
+async function selectReviewsByAlarm(reviewIdx) {
+  const sql = `
+  SELECT 
+  user_idx,
+  goods_review_idx,
+  goods_review_photo_flag,
+  goods_review_date,
+  goods_review_rating,
+  goods_review_content,
+  goods_review_like_count,
+  goods_review_cmt_count
+  FROM GOODS_REVIEW
+  WHERE goods_review_idx = ?
+  `;
+
+  const result = await mysql.query(sql, [reviewIdx]);
+
+  return result;
+}
+
 
 module.exports = {
+  selectReviewsByAlarm,
   countPhotoReviews,
   selectFirstBestGoods,
   selectNextBestGoods,

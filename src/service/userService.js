@@ -213,6 +213,37 @@ async function getAlarmReviewDetail(alarmIdx, reviewIdx) {
   const goodsIdx = goodsIdxArr[0].goods_idx;
   const goods = await goodsDao.selectGoods(goodsIdx);
   const goodsImg = await goodsDao.selectGoodsImg(goodsIdx);
+  
+
+  const reviewDataByAlarm = await goodsDao.selectReviewsByAlarm(reviewIdx);
+  const reviewUserArr = await userDao.selectUser(reviewDataByAlarm[0].user_idx);
+
+  reviewDataByAlarm[0].user_name = reviewUserArr[0].user_name;
+  reviewDataByAlarm[0].user_img = s3Location + reviewUserArr[0].user_img;
+  reviewDataByAlarm[0].goods_review_date = moment(reviewDataByAlarm[0].goods_review_date).format('YYYY.MM.DD');
+  
+  const goodsReviewPhotoFlag = reviewDataByAlarm[0].goods_review_photo_flag;
+  const imgResultArray = [];
+  if (!goodsReviewPhotoFlag) { // 리뷰에 이미지가 없는 경우
+    reviewDataByAlarm[0].goods_review_img = [];
+  } else { // 리뷰에 이미지가 있는 경우
+    const imgObjArr = await goodsDao.selectReviewImg(reviewIdx);
+    // Mysql로부터 얻은 이미지 데이터 배열로 변경
+    const imgObjArrLength = imgObjArr.length;
+    for (let j = 0; j < imgObjArrLength; j++) {
+      imgResultArray.push(s3Location + imgObjArr[j].goods_review_img);
+    }
+    reviewDataByAlarm[0].goods_review_img = imgResultArray;
+  }
+
+  // 리뷰 좋아요 여부
+  const reviewLike = await goodsDao.getReviewLike(reviewDataByAlarm[0].user_idx, reviewIdx);
+
+  if (reviewLike.length != 0) {
+    reviewDataByAlarm[0].review_like_flag = 1;
+  } else {
+    reviewDataByAlarm[0].review_like_flag = 0;
+  }
 
   const alarmIdxArr = await userDao.selectAlarmCheckFlag(alarmIdx);
   if (alarmIdxArr[0].alarm_check_flag == 0) { // 0 이면 읽었다고 1로 업데이트 하기
@@ -246,7 +277,10 @@ async function getAlarmReviewDetail(alarmIdx, reviewIdx) {
       .goods_review_cmt_date = makeReviewTimeString(reviewComment[i].goods_review_cmt_date);
   }
 
-  // 리뷰 댓글
+ delete reviewDataByAlarm[0].user_idx;
+
+  // 리뷰 데이터 및 댓글 데이터
+  result.review = reviewDataByAlarm;
   result.review_comment = reviewComment;
   return result;
 }
