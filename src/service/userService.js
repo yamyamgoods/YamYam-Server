@@ -281,8 +281,22 @@ async function getAlarmReviewDetail(alarmIdx, reviewIdx) {
 
  delete reviewDataByAlarm[0].user_idx;
 
+ 
+
   // 리뷰 데이터 및 댓글 데이터
-  result.review = reviewDataByAlarm;
+  result.review = {
+    godos_review_idx : reviewDataByAlarm[0].goods_review_idx,
+    user_name : reviewDataByAlarm[0].user_name,
+    user_img : reviewDataByAlarm[0].user_img,
+    goods_review_content : reviewDataByAlarm[0].goods_review_content,
+    goods_review_date : reviewDataByAlarm[0].goods_review_date,
+    goods_review_rating : reviewDataByAlarm[0].goods_review_rating,
+    goods_review_photo_flag : reviewDataByAlarm[0].goods_review_photo_flag,
+    goods_review_like_count : reviewDataByAlarm[0].goods_review_like_count,
+    goods_review_cmt_count : reviewDataByAlarm[0]. goods_review_cmt_count,
+    review_like_flag : reviewDataByAlarm[0].review_like_flag,
+    goods_review_img : reviewDataByAlarm[0].goods_review_img,
+  };
   result.review_comment = reviewComment;
   return result;
 }
