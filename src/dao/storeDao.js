@@ -151,6 +151,7 @@ async function selectStoreCategory() {
   const sql = `
   SELECT store_category_idx, store_category_name
   FROM STORE_CATEGORY
+  ORDER BY store_category_idx
   `;
 
   const result = await mysql.query(sql);
