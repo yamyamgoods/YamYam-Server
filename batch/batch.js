@@ -20,7 +20,7 @@ async function deleteAlarm() {
   await userDao.deleteAlarm();
 }
 
-// 매주 일요일 23:59에 크롤링
+매주 일요일 23:59에 크롤링
 schedule.scheduleJob({ hour: 23, minute: 59, dayOfWeek: 0 }, () => {
   // 스토어 랭킹 스코어 계산
   calculateStoreRank();
