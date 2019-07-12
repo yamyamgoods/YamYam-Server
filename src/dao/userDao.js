@@ -17,6 +17,7 @@ async function selectFirstGoodsScrap(userIdx) {
   const sql = `
   SELECT 
   GOODS.goods_idx as goods_idx,
+  goods_name,
   store_idx,
   goods_scrap_price,
   goods_scrap_idx,
@@ -39,6 +40,7 @@ async function selectNextGoodsScrap(userIdx, lastIndex) {
   const sql = `
   SELECT 
   GOODS.goods_idx as goods_idx,
+  goods_name,
   store_idx,
   goods_scrap_price,
   goods_scrap_idx,
