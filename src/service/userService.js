@@ -279,13 +279,11 @@ async function getAlarmReviewDetail(alarmIdx, reviewIdx) {
       .goods_review_cmt_date = makeReviewTimeString(reviewComment[i].goods_review_cmt_date);
   }
 
- delete reviewDataByAlarm[0].user_idx;
-
- 
 
   // 리뷰 데이터 및 댓글 데이터
   result.review = {
     godos_review_idx : reviewDataByAlarm[0].goods_review_idx,
+    user_idx : reviewDataByAlarm[0].user_idx,
     user_name : reviewDataByAlarm[0].user_name,
     user_img : reviewDataByAlarm[0].user_img,
     goods_review_content : reviewDataByAlarm[0].goods_review_content,
