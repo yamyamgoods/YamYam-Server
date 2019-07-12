@@ -4,9 +4,9 @@
 
 ------
 
-### Views
+### Workflow
 
-![]()
+![yamyam-workflow](./public/images/yamyam-workflow.jpeg)
 
 ------
 
