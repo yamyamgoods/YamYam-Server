@@ -28,7 +28,7 @@ const { response, errorResponse } = require('../library/response');
 const { getUserIdxFromJwt } = require('../library/jwtCheck');
 
 // key : 요청 URL, value : 응답 데이터
-async function addCacheResponse(authorization, key, value) {
+async function addCacheResponseWithJwtCheck(authorization, key, value) {
   try {
     if (!redisClient.connected) return;
 
@@ -46,7 +46,7 @@ async function addCacheResponse(authorization, key, value) {
 }
 
 // 데이터 비즈니스 로직 처리전 레디스의 데이터 유무 확인
-async function getCacheResponse(req, res, next) {
+async function getCacheResponseWithJwtCheck(req, res, next) {
   try {
     if (!redisClient.connected) next();
 
@@ -74,7 +74,45 @@ async function getCacheResponse(req, res, next) {
   }
 }
 
+async function addCacheResponse(authorization, key, value) {
+  try {
+    if (!redisClient.connected) return;
+
+    const set = util.promisify(redisClient.set).bind(redisClient);
+
+    const minute = 5; // 5 : 5초, 60 * 5 : 5분
+    await set(key, JSON.stringify(value), 'EX', minute); // 5분간 캐시
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function getCacheResponse(req, res, next) {
+  try {
+    if (!redisClient.connected) next();
+
+    const key = req.url;
+
+    const get = util.promisify(redisClient.get).bind(redisClient);
+
+    let result = await get(key);
+
+    if (result) {
+      result = JSON.parse(result);
+
+      response('Success', result, res, 200);
+      return;
+    }
+    next();
+  } catch (error) {
+    console.log(error);
+    next();
+  }
+}
+
 module.exports = {
   addCacheResponse,
   getCacheResponse,
+  addCacheResponseWithJwtCheck,
+  getCacheResponseWithJwtCheck,
 };

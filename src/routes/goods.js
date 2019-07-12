@@ -6,7 +6,7 @@ const { jwtCheck, adminCheck } = require('../library/jwtCheck');
 
 const upload = require('../library/s3Bucket').getMulter('goods');
 
-const { getCacheResponse } = require('../redis/redis');
+const { getCacheResponse} = require('../redis/redis');
 
 // goodsController
 const goodsController = require('../controller/goodsController');

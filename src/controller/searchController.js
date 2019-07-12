@@ -2,7 +2,7 @@ const goodsService = require('../service/goodsService');
 const storeService = require('../service/storeService');
 const { getUserIdxFromJwt } = require('../library/jwtCheck');
 const { response, errorResponse } = require('../library/response');
-const { addCacheResponse } = require('../redis/redis');
+const { addCacheResponse, addCacheResponseWithJwtCheck } = require('../redis/redis');
 
 async function getGoods(req, res) {
   try {
@@ -32,7 +32,7 @@ async function getStore(req, res) {
 
     const result = await storeService.getStoreBySearch(userIdx, searchAfter, goodsName, order);
 
-    addCacheResponse(req.headers.authorization, req.url, result);
+    addCacheResponseWithJwtCheck(req.headers.authorization, req.url, result);
 
     response('Success', result, res, 200);
   } catch (error) {
