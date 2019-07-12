@@ -54,7 +54,6 @@ async function getGoodsScrapOption(goodsScrapIdx) {
   const goodsOptionLength = goodsOptionArr.length;
   for (let i = 0; i < goodsOptionLength; i++) {
     const tempObj = {};
-    goodsScrapObj.goods_idx = goodsScrap[i].goods_idx;
     tempObj.goods_option_name = goodsOptionArr[i].goods_option_name;
 
     const goodsOptionIdx = goodsOptionArr[i].goods_option_idx;
